@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   
-  <title>Archives: 2019 | Linux Notes</title>
+  <title>Ubuntu配置及美化 | Linux Notes</title>
   
   
 
@@ -46,7 +46,7 @@
   
   
   <div class="cover-wrapper">
-    <cover class="cover  half">
+    <cover class="cover post half">
       
         
   <h1 class="title">Linux Notes</h1>
@@ -219,28 +219,11 @@
   <div class="l_body">
     <div class='body-wrapper'>
       <div class="l_main">
-	
-		
-  <section class="post-list">
-    
-      
-        
-          
-        
-          
-        
-          
-        
-          
-        
-      
-    
-    
-      
-        
-          <div class="post-wrapper">
-            <article class="post reveal ">
   
+
+  
+    <article id="post" class="post white-box article-type-post" itemscope itemprop="blogPost">
+      
 
 
   <section class="meta">
@@ -249,11 +232,13 @@
     <div class="meta" id="header-meta">
       
         
-  <h2 class="title">
-    <a href="/2019/05/07/Ubuntu配置及美化/">
-      Ubuntu配置及美化
-    </a>
-  </h2>
+  
+    <h1 class="title">
+      <a href="/2019/05/07/Ubuntu配置及美化/">
+        Ubuntu配置及美化
+      </a>
+    </h1>
+  
 
 
       
@@ -292,6 +277,19 @@
         
           
             
+  
+    <div class="new-meta-item browse busuanzi">
+      <a class="notlink">
+        <i class="fas fa-eye" aria-hidden="true"></i>
+        <p>
+          <span id="busuanzi_value_page_pv">
+            <i class="fas fa-spinner fa-spin fa-fw" aria-hidden="true"></i>
+          </span>
+        </p>
+      </a>
+    </div>
+  
+
 
           
         
@@ -308,307 +306,133 @@
   </section>
 
 
-  <section class="article typo">
-    <div class="article-entry" itemprop="articleBody">
-      <h2 id="一-软件安装"><a href="#一-软件安装" class="headerlink" title="一 软件安装"></a>一 软件安装</h2><p>  <a href="https://www.lulinux.com/archives/1319" target="_blank" rel="noopener">QQ/TIM</a><br>
-      
-        <div class="readmore">
-          <a href="/2019/05/07/Ubuntu配置及美化/" class="flat-box">
-            <i class="fas fa-book-open fa-fw" aria-hidden="true"></i>
-            阅读全文
-          </a>
+      <section class="article typo">
+        <div class="article-entry" itemprop="articleBody">
+          <h2 id="一-软件安装"><a href="#一-软件安装" class="headerlink" title="一 软件安装"></a>一 软件安装</h2><p>  <a href="https://www.lulinux.com/archives/1319" target="_blank" rel="noopener">QQ/TIM</a><br><a id="more"></a></p>
+<h2 id="二-gnome-shell-扩展"><a href="#二-gnome-shell-扩展" class="headerlink" title="二 gnome shell 扩展"></a>二 gnome shell 扩展</h2><p>  <a href="https://extensions.gnome.org/" target="_blank" rel="noopener">官网</a>   并在浏览器中安装<font color="cyan">GNOME Shell integration</font>插件<br>常用扩展:<br> <a href="https://extensions.gnome.org/extension/307/dash-to-dock/" target="_blank" rel="noopener">dash-to-dock</a><br><a href="https://extensions.gnome.org/extension/104/netspeed/" target="_blank" rel="noopener">netspeed</a><br><a href="https://extensions.gnome.org/extension/1031/topicons/" target="_blank" rel="noopener">topicons</a></p>
+<h2 id="三-美化"><a href="#三-美化" class="headerlink" title="三 美化"></a>三 美化</h2><h3 id="主题-图标-shell"><a href="#主题-图标-shell" class="headerlink" title="主题,图标,shell"></a>主题,图标,shell</h3><p>首先安装 tweaks，使用该软件统一管理主题中的各个部分<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo apt install gnome-tweak-tool</span><br></pre></td></tr></table></figure></p>
+<p><a href="https://www.gnome-look.org/" target="_blank" rel="noopener">gnome主题官网</a>  主题解压后放在/usr/share/themes目录,图标放在/usr/share/icons目录</p>
+<p>如果Shell显示不可修改:   然后在tweaks-&gt;扩展里启用<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo apt install gnome-shell-extensions</span><br></pre></td></tr></table></figure></p>
+<h3 id="字体"><a href="#字体" class="headerlink" title="字体"></a>字体</h3><p><a href="https://www.cnblogs.com/jiqing9006/p/9021756.html" target="_blank" rel="noopener">consolas</a>  <a href="https://github.com/cstrap/monaco-font" target="_blank" rel="noopener">苹果字体</a></p>
+<h3 id="修改登录界面背景"><a href="#修改登录界面背景" class="headerlink" title="修改登录界面背景"></a>修改登录界面背景</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ sudo gedit /etc/alternatives/gdm3.css</span><br></pre></td></tr></table></figure>
+<p>找到lockDialogGroup并修改:<br><figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"> <span class="selector-id">#lockDialogGroup</span> &#123;</span><br><span class="line">  <span class="attribute">background</span>: <span class="number">#2c001e</span> <span class="built_in">url</span>(file:///usr/share/backgrounds/HighSierra-wallpapers/Sierra.jpg);</span><br><span class="line">  <span class="attribute">background-repeat</span>: no-repeat;</span><br><span class="line">  <span class="attribute">background-size</span>: cover;</span><br><span class="line">  <span class="attribute">background-position</span>: center; </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h2 id="四-针对双系统"><a href="#四-针对双系统" class="headerlink" title="四 针对双系统"></a>四 针对双系统</h2><h3 id="双系统造成的windows时间错误"><a href="#双系统造成的windows时间错误" class="headerlink" title="双系统造成的windows时间错误"></a>双系统造成的windows时间错误</h3><p>方法1<br>将时间更新到硬件上<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo hwclock --localtime --systohc</span><br></pre></td></tr></table></figure></p>
+<p><a href="http://ubuntuhandbook.org/index.php/2016/05/time-differences-ubuntu-1604-windows-10/" target="_blank" rel="noopener">方法2</a></p>
+
         </div>
-      
-    </p></div>
-    
-  </section>
-</article>
-
-          </div>
-        
-      
-        
-          <div class="post-wrapper">
-            <article class="post reveal ">
-  
-
-
-  <section class="meta">
-    
-    
-    <div class="meta" id="header-meta">
-      
-        
-  <h2 class="title">
-    <a href="/2019/05/07/Ubuntu安装zsh/">
-      Ubuntu安装zsh
-    </a>
-  </h2>
-
-
-      
-      <div class="new-meta-box">
         
           
-        
-          
-            
-  <div class="new-meta-item author">
-    <a href="/azxkenzo.github.io" rel="nofollow">
-      
-        <i class="fas fa-user" aria-hidden="true"></i>
-      
-      <p>kenzo</p>
-    </a>
-  </div>
 
 
-          
+  <section class="meta" id="footer-meta">
+    <hr>
+    <div class="new-meta-box">
+      
         
-          
-            <div class="new-meta-item date">
+          <div class="new-meta-item date" itemprop="dateUpdated" datetime="2019-05-07T17:38:59+08:00">
   <a class="notlink">
-    <i class="fas fa-calendar-alt" aria-hidden="true"></i>
-    <p>2019-05-07</p>
+    <i class="fas fa-clock" aria-hidden="true"></i>
+    <p>最后更新于 2019年5月7日</p>
   </a>
 </div>
 
-          
+        
+      
         
           
-            
 
-          
+        
+      
         
           
-            
-
-          
-        
-          
-            
-
-          
-        
-      </div>
-      
-        <hr>
-      
-    </div>
-  </section>
-
-
-  <section class="article typo">
-    <div class="article-entry" itemprop="articleBody">
-      <h3 id="1-安装zsh"><a href="#1-安装zsh" class="headerlink" title="1.安装zsh"></a>1.安装zsh</h3>  <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ sudo apt install zsh</span><br></pre></td></tr></table></figure>
-      
-        <div class="readmore">
-          <a href="/2019/05/07/Ubuntu安装zsh/" class="flat-box">
-            <i class="fas fa-book-open fa-fw" aria-hidden="true"></i>
-            阅读全文
-          </a>
-        </div>
-      
-    </div>
+  <div class="new-meta-item share -mob-share-list">
+  <div class="-mob-share-list share-body">
     
-  </section>
-</article>
-
-          </div>
-        
       
-        
-          <div class="post-wrapper">
-            <article class="post reveal ">
-  
-
-
-  <section class="meta">
-    
-    
-    <div class="meta" id="header-meta">
-      
-        
-  <h2 class="title">
-    <a href="/2019/05/07/Linux配置SSR/">
-      Linux配置SSR
-    </a>
-  </h2>
-
-
-      
-      <div class="new-meta-box">
-        
+        <a class="-mob-share-qq" title="QQ好友" rel="external nofollow noopener noreferrer" href="http://connect.qq.com/widget/shareqq/index.html?url=azxkenzo.github.io/2019/05/07/Ubuntu配置及美化/&title=Ubuntu配置及美化 | Linux Notes&summary=一 软件安装  QQ/TIM">
           
-        
+            <img src="https://cdn.jsdelivr.net/gh/xaoxuu/assets@19.1.9/logo/128/qq.png">
           
-            
-  <div class="new-meta-item author">
-    <a href="/azxkenzo.github.io" rel="nofollow">
+        </a>
       
-        <i class="fas fa-user" aria-hidden="true"></i>
+    
       
-      <p>kenzo</p>
-    </a>
+        <a class="-mob-share-qzone" title="QQ空间" rel="external nofollow noopener noreferrer" href="https://sns.qzone.qq.com/cgi-bin/qzshare/cgi_qzshare_onekey?url=azxkenzo.github.io/2019/05/07/Ubuntu配置及美化/&title=Ubuntu配置及美化 | Linux Notes&summary=一 软件安装  QQ/TIM">
+          
+            <img src="https://cdn.jsdelivr.net/gh/xaoxuu/assets@19.1.9/logo/128/qzone.png">
+          
+        </a>
+      
+    
+      
+        <a class="-mob-share-weibo" title="微博" rel="external nofollow noopener noreferrer" href="http://service.weibo.com/share/share.php?url=azxkenzo.github.io/2019/05/07/Ubuntu配置及美化/&title=Ubuntu配置及美化 | Linux Notes&summary=一 软件安装  QQ/TIM">
+          
+            <img src="https://cdn.jsdelivr.net/gh/xaoxuu/assets@19.1.9/logo/128/weibo.png">
+          
+        </a>
+      
+    
   </div>
-
-
-          
-        
-          
-            <div class="new-meta-item date">
-  <a class="notlink">
-    <i class="fas fa-calendar-alt" aria-hidden="true"></i>
-    <p>2019-05-07</p>
-  </a>
 </div>
 
-          
-        
-          
-            
 
-          
-        
-          
-            
 
-          
         
-          
-            
-
-          
-        
-      </div>
-      
-        <hr>
       
     </div>
   </section>
 
 
-  <section class="article typo">
-    <div class="article-entry" itemprop="articleBody">
-      <h2 id="配置SSR客户端"><a href="#配置SSR客户端" class="headerlink" title="配置SSR客户端"></a>配置SSR客户端</h2><h3 id="1-下载ssr客户端"><a href="#1-下载ssr客户端" class="headerlink" title="1.下载ssr客户端"></a>1.下载ssr客户端</h3>  <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ git <span class="built_in">clone</span> https://github.com/ssrbackup/shadowsocksr</span><br></pre></td></tr></table></figure>
-      
-        <div class="readmore">
-          <a href="/2019/05/07/Linux配置SSR/" class="flat-box">
-            <i class="fas fa-book-open fa-fw" aria-hidden="true"></i>
-            阅读全文
-          </a>
-        </div>
-      
-    </div>
-    
-  </section>
-</article>
-
-          </div>
         
-      
         
-          <div class="post-wrapper">
-            <article class="post reveal ">
+            <div class="prev-next">
+                
+                
+                    <section class="next">
+                        <span class="art-item-right" aria-hidden="true">
+                            <h6>下一页&nbsp;<i class="fas fa-chevron-right" aria-hidden="true"></i></h6>
+                            <h4>
+                                <a href="/2019/05/07/Ubuntu安装zsh/" rel="prev" title="Ubuntu安装zsh">
+                                    
+                                        Ubuntu安装zsh
+                                    
+                                </a>
+                            </h4>
+                            
+                        </span>
+                    </section>
+                
+            </div>
+        
+      </section>
+    </article>
   
 
-
-  <section class="meta">
-    
-    
-    <div class="meta" id="header-meta">
-      
-        
-  <h2 class="title">
-    <a href="/2019/05/07/Linux常用网络命令/">
-      Linux常用网络命令
-    </a>
-  </h2>
-
-
-      
-      <div class="new-meta-box">
-        
-          
-        
-          
-            
-  <div class="new-meta-item author">
-    <a href="/azxkenzo.github.io" rel="nofollow">
-      
-        <i class="fas fa-user" aria-hidden="true"></i>
-      
-      <p>kenzo</p>
-    </a>
-  </div>
-
-
-          
-        
-          
-            <div class="new-meta-item date">
-  <a class="notlink">
-    <i class="fas fa-calendar-alt" aria-hidden="true"></i>
-    <p>2019-05-07</p>
-  </a>
-</div>
-
-          
-        
-          
-            
-
-          
-        
-          
-            
-
-          
-        
-          
-            
-
-          
-        
-      </div>
-      
-        <hr>
-      
-    </div>
-  </section>
-
-
-  <section class="article typo">
-    <div class="article-entry" itemprop="articleBody">
-      <h2 id="hostname"><a href="#hostname" class="headerlink" title="hostname"></a>hostname</h2><p>hostname 没有选项，显示主机名字<br>hostname –d 显示机器所属域名<br>hostname –f 显示完整的主机名和域名<br>hostname –i 显示当前机器的 ip 地址</p>
-      
-        <div class="readmore">
-          <a href="/2019/05/07/Linux常用网络命令/" class="flat-box">
-            <i class="fas fa-book-open fa-fw" aria-hidden="true"></i>
-            阅读全文
-          </a>
-        </div>
-      
-    </div>
-    
-  </section>
-</article>
-
-          </div>
-        
-      
-    
-  </section>
   
-    
-    <!-- 根据主题中的设置决定是否在archive中针对摘要部分的MathJax公式加载mathjax.js文件 -->
-    
-    
+    <!-- 显示推荐文章和评论 -->
+
+
 
   
 
 
-	
+  
+
+
+
+
+<!-- 根据页面mathjax变量决定是否加载MathJax数学公式js -->
+
+
+
+  <script>
+    window.subData = {
+      title: 'Ubuntu配置及美化',
+      tools: true
+    }
+  </script>
+
+
 </div>
 <aside class="l_side">
   
@@ -661,6 +485,20 @@
           
           
             
+  <section class="widget toc-wrapper">
+    
+<header class="pure">
+  <div><i class="fas fa-list fa-fw" aria-hidden="true"></i>&nbsp;&nbsp;本文目录</div>
+  
+    <div class="wrapper"><a class="s-toc rightBtn" rel="external nofollow noopener noreferrer" href="javascript:void(0)"><i class="fas fa-thumbtack fa-fw"></i></a></div>
+  
+</header>
+
+    <div class="content pure">
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#一-软件安装"><span class="toc-text">一 软件安装</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#二-gnome-shell-扩展"><span class="toc-text">二 gnome shell 扩展</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#三-美化"><span class="toc-text">三 美化</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#主题-图标-shell"><span class="toc-text">主题,图标,shell</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#字体"><span class="toc-text">字体</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#修改登录界面背景"><span class="toc-text">修改登录界面背景</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#四-针对双系统"><span class="toc-text">四 针对双系统</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#双系统造成的windows时间错误"><span class="toc-text">双系统造成的windows时间错误</span></a></li></ol></li></ol>
+    </div>
+  </section>
+
 
           
         
@@ -824,14 +662,6 @@
   </div>
 </footer>
 <script>setLoadingBarProgress(80);</script>
-
-
-
-
-	<!-- 根据主题中的设置决定是否在archive中针对摘要部分的MathJax公式加载mathjax.js文件 -->
-	
-
-	
 
 
       <script>setLoadingBarProgress(60);</script>

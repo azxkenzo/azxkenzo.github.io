@@ -320,7 +320,7 @@
 <p>  验证代理是否正常工作：<br>  <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ <span class="built_in">export</span> http_proxy=<span class="string">"http://127.0.0.1:8123/"</span></span><br><span class="line">$ curl www.google.com</span><br></pre></td></tr></table></figure></p>
 <p>  另外，在浏览器中输入<a href="http://127.0.0.1:8123/便可以进入到Polipo的使用说明和配置界面。" target="_blank" rel="noopener">http://127.0.0.1:8123/便可以进入到Polipo的使用说明和配置界面。</a></p>
 <h3 id="5-配置浏览器"><a href="#5-配置浏览器" class="headerlink" title="5.配置浏览器"></a>5.配置浏览器</h3><p>  无论对于firefox或者chrome，有的配置方法对与firefox管用，但是对于chrome却不管用，所以这里我们直接来修改全局网络，对于firefox和chrome都适用。<br>  打开setting –&gt;Network –&gt;Network Proxy : Method:Manual<br>  下面的几栏都设置为：127.0.0.1 端口：8123 保存或者应用到全局</p>
-<h2 id="注意"><a href="#注意" class="headerlink" title="注意"></a>注意</h2><p>  每次开机后都要执行：python ~/shadowsocksr/shadowsocks/local.py -c /etc/shadowsocks.json来启动ss服务。</p>
+<h2 id="注意"><a href="#注意" class="headerlink" title="注意"></a>注意</h2><p>  开机后要执行 <code>python ~/shadowsocksr/shadowsocks/local.py -c /etc/shadowsocks.json</code>来启动ss服务。</p>
 
         </div>
         
@@ -332,7 +332,7 @@
     <div class="new-meta-box">
       
         
-          <div class="new-meta-item date" itemprop="dateUpdated" datetime="2019-05-07T11:15:38+08:00">
+          <div class="new-meta-item date" itemprop="dateUpdated" datetime="2019-05-07T16:57:46+08:00">
   <a class="notlink">
     <i class="fas fa-clock" aria-hidden="true"></i>
     <p>最后更新于 2019年5月7日</p>
