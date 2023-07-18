@@ -45,7 +45,7 @@
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png">
 <meta property="article:published_time" content="2022-05-27T23:09:42.000Z">
-<meta property="article:modified_time" content="2023-07-14T04:40:17.265Z">
+<meta property="article:modified_time" content="2023-07-18T04:22:50.342Z">
 <meta property="article:author" content="Son GoKu">
 <meta property="article:tag" content="Kotlin">
 <meta name="twitter:card" content="summary">
@@ -1745,7 +1745,7 @@ if (/*@cc_on!@*/false || (!!window.MSInputMethodContext && !!document.documentMo
     debug: "env",
     cdn: {"js":{"app":"/js/app.js","parallax":"/js/plugins/parallax.js","rightMenu":"/js/plugins/rightMenu.js","rightMenus":"/js/plugins/rightMenus.js","sites":"/js/plugins/tags/sites.js","friends":"/js/plugins/tags/friends.js","contributors":"/js/plugins/tags/contributors.js","search":"/js/search/hexo.js"},"css":{"style":"/css/style.css"}},
     default: {"avatar":"https://unpkg.com/volantis-static@0.0.1654736714924/media/placeholder/avatar/round/3442075.svg","link":"https://unpkg.com/volantis-static@0.0.1654736714924/media/placeholder/link/8f277b4ee0ecd.svg","cover":"https://unpkg.com/volantis-static@0.0.1654736714924/media/placeholder/cover/76b86c0226ffd.svg","image":"https://unpkg.com/volantis-static@0.0.1654736714924/media/placeholder/image/2659360.svg"},
-    lastupdate: new Date(1689650034313),
+    lastupdate: new Date(1689654192416),
     sidebar: {
       for_page: ["blogger","category","tagcloud","donate"],
       for_post: ["toc"],
@@ -2588,11 +2588,11 @@ if (/*@cc_on!@*/false || (!!window.MSInputMethodContext && !!document.documentMo
   <div id="post-body" itemprop="articleBody">
     <p><a target="_blank" rel="noopener" href="https://kotlinlang.org/docs/generics.html">原文</a></p>
 <p>Kotlin 中的类可以有类型参数，就像在 Java 中一样：</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">class Box&lt;T&gt;(t: T) &#123;</span><br><span class="line">    var value = t</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Box</span>&lt;<span class="type">T</span>&gt;</span>(t: T) &#123;</span><br><span class="line">    <span class="keyword">var</span> value = t</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>要创建此类的实例，只需提供类型参数：</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">val box: Box&lt;Int&gt; = Box&lt;Int&gt;(1)</span><br></pre></td></tr></table></figure>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">val</span> box: Box&lt;<span class="built_in">Int</span>&gt; = Box&lt;<span class="built_in">Int</span>&gt;(<span class="number">1</span>)</span><br></pre></td></tr></table></figure>
 <p>但是如果参数可以推断出来，例如，从构造函数参数，可以省略类型参数：</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">val box = Box(1) // 1 has type Int, so the compiler figures out that it is Box&lt;Int&gt;</span><br></pre></td></tr></table></figure>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">val</span> box = Box(<span class="number">1</span>) <span class="comment">// 1 has type Int, so the compiler figures out that it is Box&lt;Int&gt;</span></span><br></pre></td></tr></table></figure>
 
 
 
@@ -2693,10 +2693,10 @@ if (/*@cc_on!@*/false || (!!window.MSInputMethodContext && !!document.documentMo
     <div class='new-meta-box'>
       
         
-          <div class="new-meta-item date" itemprop="dateModified" datetime="2023-07-14T12:40:17+08:00">
+          <div class="new-meta-item date" itemprop="dateModified" datetime="2023-07-18T12:22:50+08:00">
   <a class='notlink'>
     <i class="fa-solid fa-edit fa-fw" aria-hidden="true"></i>
-    <p>更新于：2023年7月14日</p>
+    <p>更新于：2023年7月18日</p>
   </a>
 </div>
 
@@ -3412,7 +3412,7 @@ if (/*@cc_on!@*/false || (!!window.MSInputMethodContext && !!document.documentMo
 </script>
 
 
-  <script type="application/ld+json">[{"@context":"http://schema.org","@type":"Organization","name":"SonGoKu の Blog","url":"https://azxkenzo.github.io/","logo":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png","width":192,"height":192}},{"@context":"http://schema.org","@type":"Person","name":"Son GoKu","image":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png"},"url":"https://azxkenzo.github.io/","sameAs":["https://github.com/volantis-x"],"description":"勤练带来力量"},{"@context":"http://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"item":{"@id":"https://azxkenzo.github.io/","name":"SonGoKu の Blog"}},{"@type":"ListItem","position":3,"item":{"@id":"https://azxkenzo.github.io/2022/05/28/Kotlin-泛型/","name":"Kotlin - 泛型"}}]},{"@context":"http://schema.org","@type":"WebSite","name":"SonGoKu の Blog","url":"https://azxkenzo.github.io/","keywords":"Android,Kotlin,Linux","description":"勤练带来力量","author":{"@type":"Person","name":"Son GoKu","image":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png"},"url":"https://azxkenzo.github.io/","description":"勤练带来力量"},"publisher":{"@type":"Organization","name":"SonGoKu の Blog","url":"https://azxkenzo.github.io/","logo":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png","width":192,"height":192}},"potentialAction":{"@type":"SearchAction","name":"Site Search","target":{"@type":"EntryPoint","urlTemplate":"https://azxkenzo.github.io?s={search_term_string}"},"query-input":"required name=search_term_string"}},{"@context":"http://schema.org","@type":"BlogPosting","headline":"Kotlin - 泛型","description":"勤练带来力量","inLanguage":"zh-CN","mainEntityOfPage":{"@type":"WebPage","@id":"https://azxkenzo.github.io/2022/05/28/Kotlin-%E6%B3%9B%E5%9E%8B/"},"author":{"@type":"Person","name":"Son GoKu","image":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png"},"url":"https://azxkenzo.github.io/"},"publisher":{"@type":"Organization","name":"SonGoKu の Blog","logo":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png","width":192,"height":192}},"url":"https://azxkenzo.github.io/2022/05/28/Kotlin-%E6%B3%9B%E5%9E%8B/","wordCount":0,"datePublished":"2022-05-27T23:09:42.000Z","dateModified":"2023-07-14T04:40:17.265Z","keywords":"Kotlin","image":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png","width":192,"height":192}}]</script>
+  <script type="application/ld+json">[{"@context":"http://schema.org","@type":"Organization","name":"SonGoKu の Blog","url":"https://azxkenzo.github.io/","logo":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png","width":192,"height":192}},{"@context":"http://schema.org","@type":"Person","name":"Son GoKu","image":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png"},"url":"https://azxkenzo.github.io/","sameAs":["https://github.com/volantis-x"],"description":"勤练带来力量"},{"@context":"http://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"item":{"@id":"https://azxkenzo.github.io/","name":"SonGoKu の Blog"}},{"@type":"ListItem","position":3,"item":{"@id":"https://azxkenzo.github.io/2022/05/28/Kotlin-泛型/","name":"Kotlin - 泛型"}}]},{"@context":"http://schema.org","@type":"WebSite","name":"SonGoKu の Blog","url":"https://azxkenzo.github.io/","keywords":"Android,Kotlin,Linux","description":"勤练带来力量","author":{"@type":"Person","name":"Son GoKu","image":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png"},"url":"https://azxkenzo.github.io/","description":"勤练带来力量"},"publisher":{"@type":"Organization","name":"SonGoKu の Blog","url":"https://azxkenzo.github.io/","logo":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png","width":192,"height":192}},"potentialAction":{"@type":"SearchAction","name":"Site Search","target":{"@type":"EntryPoint","urlTemplate":"https://azxkenzo.github.io?s={search_term_string}"},"query-input":"required name=search_term_string"}},{"@context":"http://schema.org","@type":"BlogPosting","headline":"Kotlin - 泛型","description":"勤练带来力量","inLanguage":"zh-CN","mainEntityOfPage":{"@type":"WebPage","@id":"https://azxkenzo.github.io/2022/05/28/Kotlin-%E6%B3%9B%E5%9E%8B/"},"author":{"@type":"Person","name":"Son GoKu","image":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png"},"url":"https://azxkenzo.github.io/"},"publisher":{"@type":"Organization","name":"SonGoKu の Blog","logo":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png","width":192,"height":192}},"url":"https://azxkenzo.github.io/2022/05/28/Kotlin-%E6%B3%9B%E5%9E%8B/","wordCount":0,"datePublished":"2022-05-27T23:09:42.000Z","dateModified":"2023-07-18T04:22:50.342Z","keywords":"Kotlin","image":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png","width":192,"height":192}}]</script>
 
 
 
