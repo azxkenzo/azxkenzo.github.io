@@ -1,0 +1,3691 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+    <head hexo-theme='https://github.com/volantis-x/hexo-theme-volantis/#5.8.0'>
+  <meta name="generator" content="Hexo 6.2.0">
+  <meta name="Volantis" content="5.8.0">
+  <meta charset="utf-8">
+  <!-- SEO相关 -->
+  
+  <link rel="canonical" href="https://azxkenzo.github.io/2023/04/14/android-build-system/"/>
+  <!-- 渲染优化 -->
+    <meta http-equiv='x-dns-prefetch-control' content='on' />
+      <link rel='dns-prefetch' href='https://unpkg.com'>
+      <link rel="preconnect" href="https://unpkg.com" crossorigin>
+  <meta name="renderer" content="webkit">
+  <meta name="force-rendering" content="webkit">
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+    <meta http-equiv="Content-Security-Policy" content=" default-src 'self' https:; block-all-mixed-content; base-uri 'self' https:; form-action 'self' https:; worker-src 'self' https:; connect-src 'self' https: *; img-src 'self' data: https: *; media-src 'self' https: *; font-src 'self' data: https: *; frame-src 'self' https: *; manifest-src 'self' https: *; child-src https:; script-src 'self' https: 'unsafe-inline' *; style-src 'self' https: 'unsafe-inline' *; ">
+  <meta name="HandheldFriendly" content="True" >
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5">
+  <meta content="black-translucent" name="apple-mobile-web-app-status-bar-style">
+  <meta content="telephone=no" name="format-detection">
+  <!-- import head_begin begin -->
+  <!-- import head_begin end -->
+  <!-- Custom Files headBegin begin-->
+  
+  <!-- Custom Files headBegin end-->
+  <!-- front-matter head_begin begin -->
+  <!-- front-matter head_begin end -->
+  <link rel="preload" href="/css/style.css" as="style">
+  <link rel="preload" href="https://unpkg.com/volantis-static@0.0.1654736714924/media/fonts/VarelaRound/VarelaRound-Regular.ttf" as="font" type="font/ttf" crossorigin="anonymous">
+<link rel="preload" href="https://unpkg.com/volantis-static@0.0.1654736714924/media/fonts/UbuntuMono/UbuntuMono-Regular.ttf" as="font" type="font/ttf" crossorigin="anonymous">
+
+  <!-- feed -->
+  <!-- 页面元数据 -->
+  <title>Android - Build System - SonGoKu の Blog</title>
+  <meta name="keywords" content="Android,Android,Kotlin,Linux">
+  <meta desc name="description" content="勤练带来力量 - Son GoKu - SonGoKu の Blog">
+  
+<meta property="og:type" content="article">
+<meta property="og:title" content="Android - Build System">
+<meta property="og:url" content="https://azxkenzo.github.io/2023/04/14/Android-Build-System/">
+<meta property="og:site_name" content="SonGoKu の Blog">
+<meta property="og:description" content="Android build system 编译应用资源和源代码并将它们打包成 APK 或 Android App Bundle，你可以测试、部署、签名和分发这些应用程序包。 Android Studio 使用高级构建工具包 Gradle 来自动化和管理构建过程，同时允许你定义灵活的自定义构建配置。 每个构建配置都可以定义自己的一组代码和资源，同时重用所有版本的应用程序通用的部分。 Android">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png">
+<meta property="article:published_time" content="2023-04-14T03:53:38.000Z">
+<meta property="article:modified_time" content="2023-07-17T14:38:22.413Z">
+<meta property="article:author" content="Son GoKu">
+<meta property="article:tag" content="Android">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png">
+  <style>
+    /* 首屏样式 */
+    #safearea {
+  display: none;
+}
+:root {
+  --color-site-body: #f4f4f4;
+  --color-site-bg: #f4f4f4;
+  --color-site-inner: #fff;
+  --color-site-footer: #666;
+  --color-card: #fff;
+  --color-text: #444;
+  --color-block: #f6f6f6;
+  --color-inlinecode: #c74f00;
+  --color-codeblock: #fff7ea;
+  --color-h1: #3a3a3a;
+  --color-h2: #3a3a3a;
+  --color-h3: #333;
+  --color-h4: #444;
+  --color-h5: #555;
+  --color-h6: #666;
+  --color-p: #444;
+  --color-list: #666;
+  --color-list-hl: #30ad91;
+  --color-meta: #888;
+  --color-read-bkg: #e0d8c8;
+  --color-read-post: #f8f1e2;
+  --color-copyright-bkg: #f5f5f5;
+}
+* {
+  box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  outline: none;
+  margin: 0;
+  padding: 0;
+}
+*::-webkit-scrollbar {
+  height: 4px;
+  width: 4px;
+}
+*::-webkit-scrollbar-track-piece {
+  background: transparent;
+}
+*::-webkit-scrollbar-thumb {
+  background: #3dd9b6;
+  cursor: pointer;
+  border-radius: 2px;
+  -webkit-border-radius: 2px;
+}
+*::-webkit-scrollbar-thumb:hover {
+  background: #ff5722;
+}
+html {
+  color: var(--color-text);
+  width: 100%;
+  height: 100%;
+  font-family: UbuntuMono, "Varela Round", "PingFang SC", "Microsoft YaHei", Helvetica, Arial, Menlo, Monaco, monospace, sans-serif;
+  font-size: 16px;
+}
+html >::-webkit-scrollbar {
+  height: 4px;
+  width: 4px;
+}
+html >::-webkit-scrollbar-track-piece {
+  background: transparent;
+}
+html >::-webkit-scrollbar-thumb {
+  background: #54b5a0 linear-gradient(45deg, rgba(255,255,255,0.4) 25%, transparent 25%, transparent 50%, rgba(255,255,255,0.4) 50%, rgba(255,255,255,0.4) 75%, transparent 75%, transparent);
+  cursor: pointer;
+  border-radius: 2px;
+  -webkit-border-radius: 2px;
+}
+html >::-webkit-scrollbar-thumb:hover {
+  background: #54b5a0 linear-gradient(45deg, rgba(255,255,255,0.4) 25%, transparent 25%, transparent 50%, rgba(255,255,255,0.4) 50%, rgba(255,255,255,0.4) 75%, transparent 75%, transparent);
+}
+body {
+  background-color: var(--color-site-body);
+  text-rendering: optimizelegibility;
+  -webkit-tap-highlight-color: rgba(0,0,0,0);
+  line-height: 1.6;
+  -webkit-text-size-adjust: 100%;
+  -ms-text-size-adjust: 100%;
+}
+body.modal-active {
+  overflow: hidden;
+}
+@media screen and (max-width: 680px) {
+  body.modal-active {
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+  }
+}
+a {
+  color: #2092ec;
+  cursor: pointer;
+  text-decoration: none;
+  transition: all 0.28s ease;
+  -webkit-transition: all 0.28s ease;
+  -khtml-transition: all 0.28s ease;
+  -moz-transition: all 0.28s ease;
+  -o-transition: all 0.28s ease;
+  -ms-transition: all 0.28s ease;
+}
+a:hover {
+  color: #ff5722;
+}
+a:active,
+a:hover {
+  outline: 0;
+}
+ul,
+ol {
+  padding-left: 0;
+}
+ul li,
+ol li {
+  list-style: none;
+}
+header {
+  display: -webkit-box /* OLD - iOS 6-, Safari 3.1-6 */;
+  display: -moz-box /* OLD - Firefox 19- (buggy but mostly works) */;
+  display: block;
+}
+img {
+  border: 0;
+  background: none;
+  max-width: 100%;
+}
+svg:not(:root) {
+  overflow: hidden;
+}
+hr {
+  -moz-box-sizing: content-box;
+  box-sizing: content-box;
+  -webkit-box-sizing: content-box;
+  -moz-box-sizing: content-box;
+  height: 0;
+  border: 0;
+  border-radius: 1px;
+  -webkit-border-radius: 1px;
+  border-bottom: 1px solid rgba(68,68,68,0.1);
+}
+button,
+input {
+  color: inherit;
+  font: inherit;
+  margin: 0;
+}
+button {
+  overflow: visible;
+  text-transform: none;
+  -webkit-appearance: button;
+  cursor: pointer;
+}
+@supports (backdrop-filter: blur(20px)) {
+  .blur {
+    background: rgba(255,255,255,0.9) !important;
+    backdrop-filter: saturate(200%) blur(20px);
+  }
+}
+.shadow {
+  box-shadow: 0 1px 2px 0px rgba(0,0,0,0.1);
+  -webkit-box-shadow: 0 1px 2px 0px rgba(0,0,0,0.1);
+}
+.shadow.floatable {
+  transition: all 0.28s ease;
+  -webkit-transition: all 0.28s ease;
+  -khtml-transition: all 0.28s ease;
+  -moz-transition: all 0.28s ease;
+  -o-transition: all 0.28s ease;
+  -ms-transition: all 0.28s ease;
+}
+.shadow.floatable:hover {
+  box-shadow: 0 2px 4px 0px rgba(0,0,0,0.1), 0 4px 8px 0px rgba(0,0,0,0.1), 0 8px 16px 0px rgba(0,0,0,0.1);
+  -webkit-box-shadow: 0 2px 4px 0px rgba(0,0,0,0.1), 0 4px 8px 0px rgba(0,0,0,0.1), 0 8px 16px 0px rgba(0,0,0,0.1);
+}
+#l_cover {
+  min-height: 64px;
+}
+.cover-wrapper {
+  top: 0;
+  left: 0;
+  max-width: 100%;
+  height: 100vh;
+  display: -webkit-box /* OLD - iOS 6-, Safari 3.1-6 */;
+  display: -moz-box /* OLD - Firefox 19- (buggy but mostly works) */;
+  display: -ms-flexbox /* TWEENER - IE 10 */;
+  display: -webkit-flex /* NEW - Chrome */;
+  display: flex /* NEW, Spec - Opera 12.1, Firefox 20+ */;
+  display: flex;
+  flex-wrap: nowrap;
+  -webkit-flex-wrap: nowrap;
+  -khtml-flex-wrap: nowrap;
+  -moz-flex-wrap: nowrap;
+  -o-flex-wrap: nowrap;
+  -ms-flex-wrap: nowrap;
+  -webkit-box-direction: normal;
+  -moz-box-direction: normal;
+  -webkit-box-orient: vertical;
+  -moz-box-orient: vertical;
+  -webkit-flex-direction: column;
+  -ms-flex-direction: column;
+  flex-direction: column;
+  align-items: center;
+  align-self: center;
+  align-content: center;
+  color: var(--color-site-inner);
+  padding: 0 16px;
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  position: relative;
+  overflow: hidden;
+  margin-bottom: -100px;
+}
+.cover-wrapper .cover-bg {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background-position: center;
+  background-size: cover;
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+}
+.cover-wrapper .cover-bg.lazyload:not(.loaded) {
+  opacity: 0;
+  -webkit-opacity: 0;
+  -moz-opacity: 0;
+}
+.cover-wrapper .cover-bg.lazyload.loaded {
+  animation-delay: 0s;
+  animation-duration: 0.5s;
+  animation-fill-mode: forwards;
+  animation-timing-function: ease-out;
+  animation-name: fadeIn;
+}
+@-moz-keyframes fadeIn {
+  0% {
+    opacity: 0;
+    -webkit-opacity: 0;
+    -moz-opacity: 0;
+    filter: blur(12px);
+    transform: scale(1.02);
+    -webkit-transform: scale(1.02);
+    -khtml-transform: scale(1.02);
+    -moz-transform: scale(1.02);
+    -o-transform: scale(1.02);
+    -ms-transform: scale(1.02);
+  }
+  100% {
+    opacity: 1;
+    -webkit-opacity: 1;
+    -moz-opacity: 1;
+  }
+}
+@-webkit-keyframes fadeIn {
+  0% {
+    opacity: 0;
+    -webkit-opacity: 0;
+    -moz-opacity: 0;
+    filter: blur(12px);
+    transform: scale(1.02);
+    -webkit-transform: scale(1.02);
+    -khtml-transform: scale(1.02);
+    -moz-transform: scale(1.02);
+    -o-transform: scale(1.02);
+    -ms-transform: scale(1.02);
+  }
+  100% {
+    opacity: 1;
+    -webkit-opacity: 1;
+    -moz-opacity: 1;
+  }
+}
+@-o-keyframes fadeIn {
+  0% {
+    opacity: 0;
+    -webkit-opacity: 0;
+    -moz-opacity: 0;
+    filter: blur(12px);
+    transform: scale(1.02);
+    -webkit-transform: scale(1.02);
+    -khtml-transform: scale(1.02);
+    -moz-transform: scale(1.02);
+    -o-transform: scale(1.02);
+    -ms-transform: scale(1.02);
+  }
+  100% {
+    opacity: 1;
+    -webkit-opacity: 1;
+    -moz-opacity: 1;
+  }
+}
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+    -webkit-opacity: 0;
+    -moz-opacity: 0;
+    filter: blur(12px);
+    transform: scale(1.02);
+    -webkit-transform: scale(1.02);
+    -khtml-transform: scale(1.02);
+    -moz-transform: scale(1.02);
+    -o-transform: scale(1.02);
+    -ms-transform: scale(1.02);
+  }
+  100% {
+    opacity: 1;
+    -webkit-opacity: 1;
+    -moz-opacity: 1;
+  }
+}
+.cover-wrapper .cover-body {
+  z-index: 1;
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+.cover-wrapper#full {
+  height: calc(100vh + 100px);
+  padding-bottom: 100px;
+}
+.cover-wrapper#half {
+  max-height: 640px;
+  min-height: 400px;
+  height: calc(36vh - 64px + 200px);
+}
+.cover-wrapper #scroll-down {
+  width: 100%;
+  height: 64px;
+  position: absolute;
+  bottom: 100px;
+  text-align: center;
+  cursor: pointer;
+}
+.cover-wrapper #scroll-down .scroll-down-effects {
+  color: #fff;
+  font-size: 24px;
+  line-height: 64px;
+  position: absolute;
+  width: 24px;
+  left: calc(50% - 12px);
+  text-shadow: 0 1px 2px rgba(0,0,0,0.1);
+  animation: scroll-down-effect 1.5s infinite;
+  -webkit-animation: scroll-down-effect 1.5s infinite;
+  -khtml-animation: scroll-down-effect 1.5s infinite;
+  -moz-animation: scroll-down-effect 1.5s infinite;
+  -o-animation: scroll-down-effect 1.5s infinite;
+  -ms-animation: scroll-down-effect 1.5s infinite;
+}
+@-moz-keyframes scroll-down-effect {
+  0% {
+    top: 0;
+    opacity: 1;
+    -webkit-opacity: 1;
+    -moz-opacity: 1;
+  }
+  50% {
+    top: -16px;
+    opacity: 0.4;
+    -webkit-opacity: 0.4;
+    -moz-opacity: 0.4;
+  }
+  100% {
+    top: 0;
+    opacity: 1;
+    -webkit-opacity: 1;
+    -moz-opacity: 1;
+  }
+}
+@-webkit-keyframes scroll-down-effect {
+  0% {
+    top: 0;
+    opacity: 1;
+    -webkit-opacity: 1;
+    -moz-opacity: 1;
+  }
+  50% {
+    top: -16px;
+    opacity: 0.4;
+    -webkit-opacity: 0.4;
+    -moz-opacity: 0.4;
+  }
+  100% {
+    top: 0;
+    opacity: 1;
+    -webkit-opacity: 1;
+    -moz-opacity: 1;
+  }
+}
+@-o-keyframes scroll-down-effect {
+  0% {
+    top: 0;
+    opacity: 1;
+    -webkit-opacity: 1;
+    -moz-opacity: 1;
+  }
+  50% {
+    top: -16px;
+    opacity: 0.4;
+    -webkit-opacity: 0.4;
+    -moz-opacity: 0.4;
+  }
+  100% {
+    top: 0;
+    opacity: 1;
+    -webkit-opacity: 1;
+    -moz-opacity: 1;
+  }
+}
+@keyframes scroll-down-effect {
+  0% {
+    top: 0;
+    opacity: 1;
+    -webkit-opacity: 1;
+    -moz-opacity: 1;
+  }
+  50% {
+    top: -16px;
+    opacity: 0.4;
+    -webkit-opacity: 0.4;
+    -moz-opacity: 0.4;
+  }
+  100% {
+    top: 0;
+    opacity: 1;
+    -webkit-opacity: 1;
+    -moz-opacity: 1;
+  }
+}
+.cover-wrapper .cover-body {
+  margin-top: 64px;
+  margin-bottom: 100px;
+}
+.cover-wrapper .cover-body,
+.cover-wrapper .cover-body .top,
+.cover-wrapper .cover-body .bottom {
+  display: -webkit-box /* OLD - iOS 6-, Safari 3.1-6 */;
+  display: -moz-box /* OLD - Firefox 19- (buggy but mostly works) */;
+  display: -ms-flexbox /* TWEENER - IE 10 */;
+  display: -webkit-flex /* NEW - Chrome */;
+  display: flex /* NEW, Spec - Opera 12.1, Firefox 20+ */;
+  display: flex;
+  -webkit-box-direction: normal;
+  -moz-box-direction: normal;
+  -webkit-box-orient: vertical;
+  -moz-box-orient: vertical;
+  -webkit-flex-direction: column;
+  -ms-flex-direction: column;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  -webkit-justify-content: center;
+  -khtml-justify-content: center;
+  -moz-justify-content: center;
+  -o-justify-content: center;
+  -ms-justify-content: center;
+  max-width: 100%;
+}
+.cover-wrapper .cover-body .bottom {
+  margin-top: 32px;
+}
+.cover-wrapper .cover-body .title {
+  font-family: "Varela Round", "PingFang SC", "Microsoft YaHei", Helvetica, Arial, Helvetica, monospace;
+  font-size: 3.125rem;
+  line-height: 1.2;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.1);
+}
+.cover-wrapper .cover-body .subtitle {
+  font-size: 20px;
+}
+.cover-wrapper .cover-body .logo {
+  max-height: 120px;
+  max-width: calc(100% - 4 * 16px);
+}
+@media screen and (min-height: 1024px) {
+  .cover-wrapper .cover-body .title {
+    font-size: 3rem;
+  }
+  .cover-wrapper .cover-body .subtitle {
+    font-size: 1.05rem;
+  }
+  .cover-wrapper .cover-body .logo {
+    max-height: 150px;
+  }
+}
+.cover-wrapper .cover-body .m_search {
+  position: relative;
+  max-width: calc(100% - 16px);
+  width: 320px;
+  vertical-align: middle;
+}
+.cover-wrapper .cover-body .m_search .form {
+  position: relative;
+  display: -webkit-box /* OLD - iOS 6-, Safari 3.1-6 */;
+  display: -moz-box /* OLD - Firefox 19- (buggy but mostly works) */;
+  display: block;
+  width: 100%;
+}
+.cover-wrapper .cover-body .m_search .icon,
+.cover-wrapper .cover-body .m_search .input {
+  transition: all 0.28s ease;
+  -webkit-transition: all 0.28s ease;
+  -khtml-transition: all 0.28s ease;
+  -moz-transition: all 0.28s ease;
+  -o-transition: all 0.28s ease;
+  -ms-transition: all 0.28s ease;
+}
+.cover-wrapper .cover-body .m_search .icon {
+  position: absolute;
+  display: -webkit-box /* OLD - iOS 6-, Safari 3.1-6 */;
+  display: -moz-box /* OLD - Firefox 19- (buggy but mostly works) */;
+  display: block;
+  line-height: 2.5rem;
+  width: 32px;
+  top: 0;
+  left: 5px;
+  color: rgba(68,68,68,0.75);
+}
+.cover-wrapper .cover-body .m_search .input {
+  display: -webkit-box /* OLD - iOS 6-, Safari 3.1-6 */;
+  display: -moz-box /* OLD - Firefox 19- (buggy but mostly works) */;
+  display: block;
+  height: 2.5rem;
+  width: 100%;
+  box-shadow: none;
+  -webkit-box-shadow: none;
+  box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  font-size: 0.875rem;
+  -webkit-appearance: none;
+  padding-left: 36px;
+  border-radius: 1.4rem;
+  -webkit-border-radius: 1.4rem;
+  background: rgba(255,255,255,0.6);
+  backdrop-filter: blur(10px);
+  border: none;
+  color: var(--color-text);
+}
+@media screen and (max-width: 500px) {
+  .cover-wrapper .cover-body .m_search .input {
+    padding-left: 36px;
+  }
+}
+.cover-wrapper .cover-body .m_search .input:hover {
+  background: rgba(255,255,255,0.8);
+}
+.cover-wrapper .cover-body .m_search .input:focus {
+  background: #fff;
+}
+.cover-wrapper .list-h {
+  display: -webkit-box /* OLD - iOS 6-, Safari 3.1-6 */;
+  display: -moz-box /* OLD - Firefox 19- (buggy but mostly works) */;
+  display: -ms-flexbox /* TWEENER - IE 10 */;
+  display: -webkit-flex /* NEW - Chrome */;
+  display: flex /* NEW, Spec - Opera 12.1, Firefox 20+ */;
+  display: flex;
+  -webkit-box-direction: normal;
+  -moz-box-direction: normal;
+  -webkit-box-orient: horizontal;
+  -moz-box-orient: horizontal;
+  -webkit-flex-direction: row;
+  -ms-flex-direction: row;
+  flex-direction: row;
+  flex-wrap: wrap;
+  -webkit-flex-wrap: wrap;
+  -khtml-flex-wrap: wrap;
+  -moz-flex-wrap: wrap;
+  -o-flex-wrap: wrap;
+  -ms-flex-wrap: wrap;
+  align-items: stretch;
+  border-radius: 4px;
+  -webkit-border-radius: 4px;
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+}
+.cover-wrapper .list-h a {
+  -webkit-box-flex: 1;
+  -moz-box-flex: 1;
+  -webkit-flex: 1 0;
+  -ms-flex: 1 0;
+  flex: 1 0;
+  display: -webkit-box /* OLD - iOS 6-, Safari 3.1-6 */;
+  display: -moz-box /* OLD - Firefox 19- (buggy but mostly works) */;
+  display: -ms-flexbox /* TWEENER - IE 10 */;
+  display: -webkit-flex /* NEW - Chrome */;
+  display: flex /* NEW, Spec - Opera 12.1, Firefox 20+ */;
+  display: flex;
+  font-weight: 600;
+}
+.cover-wrapper .list-h a img {
+  display: -webkit-box /* OLD - iOS 6-, Safari 3.1-6 */;
+  display: -moz-box /* OLD - Firefox 19- (buggy but mostly works) */;
+  display: block;
+  border-radius: 2px;
+  -webkit-border-radius: 2px;
+  margin: 4px;
+  min-width: 40px;
+  max-width: 44px;
+}
+@media screen and (max-width: 768px) {
+  .cover-wrapper .list-h a img {
+    min-width: 36px;
+    max-width: 40px;
+  }
+}
+@media screen and (max-width: 500px) {
+  .cover-wrapper .list-h a img {
+    margin: 2px 4px;
+    min-width: 32px;
+    max-width: 36px;
+  }
+}
+@media screen and (max-width: 375px) {
+  .cover-wrapper .list-h a img {
+    min-width: 28px;
+    max-width: 32px;
+  }
+}
+.cover-wrapper {
+  max-width: 100%;
+}
+.cover-wrapper.search .bottom .menu {
+  margin-top: 16px;
+}
+.cover-wrapper.search .bottom .menu .list-h a {
+  white-space: nowrap;
+  -webkit-box-direction: normal;
+  -moz-box-direction: normal;
+  -webkit-box-orient: horizontal;
+  -moz-box-orient: horizontal;
+  -webkit-flex-direction: row;
+  -ms-flex-direction: row;
+  flex-direction: row;
+  align-items: baseline;
+  padding: 2px;
+  margin: 4px;
+  color: var(--color-site-inner);
+  opacity: 0.75;
+  -webkit-opacity: 0.75;
+  -moz-opacity: 0.75;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.05);
+  border-bottom: 2px solid transparent;
+}
+.cover-wrapper.search .bottom .menu .list-h a i {
+  margin-right: 4px;
+}
+.cover-wrapper.search .bottom .menu .list-h a p {
+  font-size: 0.9375rem;
+}
+.cover-wrapper.search .bottom .menu .list-h a:hover,
+.cover-wrapper.search .bottom .menu .list-h a.active,
+.cover-wrapper.search .bottom .menu .list-h a:active {
+  opacity: 1;
+  -webkit-opacity: 1;
+  -moz-opacity: 1;
+  border-bottom: 2px solid var(--color-site-inner);
+}
+.cover-wrapper.dock .menu,
+.cover-wrapper.featured .menu,
+.cover-wrapper.focus .menu {
+  border-radius: 6px;
+  -webkit-border-radius: 6px;
+}
+.cover-wrapper.dock .menu .list-h a,
+.cover-wrapper.featured .menu .list-h a,
+.cover-wrapper.focus .menu .list-h a {
+  -webkit-box-direction: normal;
+  -moz-box-direction: normal;
+  -webkit-box-orient: vertical;
+  -moz-box-orient: vertical;
+  -webkit-flex-direction: column;
+  -ms-flex-direction: column;
+  flex-direction: column;
+  align-items: center;
+  padding: 12px;
+  line-height: 24px;
+  border-radius: 4px;
+  -webkit-border-radius: 4px;
+  border-bottom: none;
+  text-align: center;
+  align-content: flex-end;
+  color: rgba(68,68,68,0.7);
+  font-size: 1.5rem;
+}
+@media screen and (max-width: 500px) {
+  .cover-wrapper.dock .menu .list-h a,
+  .cover-wrapper.featured .menu .list-h a,
+  .cover-wrapper.focus .menu .list-h a {
+    padding: 12px 8px;
+  }
+}
+.cover-wrapper.dock .menu .list-h a i,
+.cover-wrapper.featured .menu .list-h a i,
+.cover-wrapper.focus .menu .list-h a i {
+  margin: 8px;
+}
+.cover-wrapper.dock .menu .list-h a p,
+.cover-wrapper.featured .menu .list-h a p,
+.cover-wrapper.focus .menu .list-h a p {
+  font-size: 0.875rem;
+}
+.cover-wrapper.dock .menu .list-h a.active,
+.cover-wrapper.featured .menu .list-h a.active,
+.cover-wrapper.focus .menu .list-h a.active {
+  background: var(--color-card);
+  backdrop-filter: none;
+}
+.cover-wrapper.dock .menu .list-h a.active i,
+.cover-wrapper.featured .menu .list-h a.active i,
+.cover-wrapper.focus .menu .list-h a.active i,
+.cover-wrapper.dock .menu .list-h a.active i+p,
+.cover-wrapper.featured .menu .list-h a.active i+p,
+.cover-wrapper.focus .menu .list-h a.active i+p {
+  color: #3dd9b6;
+}
+.cover-wrapper.dock .menu .list-h a.active img+p,
+.cover-wrapper.featured .menu .list-h a.active img+p,
+.cover-wrapper.focus .menu .list-h a.active img+p {
+  color: var(--color-text);
+}
+.cover-wrapper.dock .menu .list-h a:hover,
+.cover-wrapper.featured .menu .list-h a:hover,
+.cover-wrapper.focus .menu .list-h a:hover {
+  background: var(--color-card);
+}
+.cover-wrapper.dock .top {
+  margin-bottom: 48px;
+}
+.cover-wrapper.dock .menu {
+  background: rgba(255,255,255,0.5);
+  position: absolute;
+  bottom: 0;
+  max-width: 100%;
+}
+.cover-wrapper.dock .menu .list-h {
+  flex-wrap: nowrap;
+  -webkit-flex-wrap: nowrap;
+  -khtml-flex-wrap: nowrap;
+  -moz-flex-wrap: nowrap;
+  -o-flex-wrap: nowrap;
+  -ms-flex-wrap: nowrap;
+  margin: 4px;
+}
+.cover-wrapper.dock .menu .list-h a+a {
+  margin-left: 4px;
+}
+@media screen and (max-width: 500px) {
+  .cover-wrapper.dock .menu .list-h {
+    overflow-x: scroll;
+  }
+  .cover-wrapper.dock .menu .list-h::-webkit-scrollbar {
+    height: 0;
+    width: 0;
+  }
+  .cover-wrapper.dock .menu .list-h::-webkit-scrollbar-track-piece {
+    background: transparent;
+  }
+  .cover-wrapper.dock .menu .list-h::-webkit-scrollbar-thumb {
+    background: #3dd9b6;
+    cursor: pointer;
+    border-radius: 0;
+    -webkit-border-radius: 0;
+  }
+  .cover-wrapper.dock .menu .list-h::-webkit-scrollbar-thumb:hover {
+    background: #ff5722;
+  }
+}
+@supports (backdrop-filter: blur(20px)) {
+  .cover-wrapper.dock .menu {
+    background: rgba(255,255,255,0.5);
+    backdrop-filter: saturate(200%) blur(20px);
+  }
+}
+@font-face {
+  font-family: 'UbuntuMono';
+  src: url("https://unpkg.com/volantis-static@0.0.1654736714924/media/fonts/UbuntuMono/UbuntuMono-Regular.ttf");
+  font-weight: 'normal';
+  font-style: 'normal';
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Varela Round';
+  src: url("https://unpkg.com/volantis-static@0.0.1654736714924/media/fonts/VarelaRound/VarelaRound-Regular.ttf");
+  font-weight: 'normal';
+  font-style: 'normal';
+  font-display: swap;
+}
+.l_header {
+  position: fixed;
+  z-index: 1000;
+  top: 0;
+  width: 100%;
+  height: 64px;
+  background: var(--color-card);
+  box-shadow: 0 1px 2px 0px rgba(0,0,0,0.1);
+  -webkit-box-shadow: 0 1px 2px 0px rgba(0,0,0,0.1);
+}
+.l_header.auto {
+  transition: opacity 0.4s ease;
+  -webkit-transition: opacity 0.4s ease;
+  -khtml-transition: opacity 0.4s ease;
+  -moz-transition: opacity 0.4s ease;
+  -o-transition: opacity 0.4s ease;
+  -ms-transition: opacity 0.4s ease;
+  visibility: hidden;
+}
+.l_header.auto.show {
+  opacity: 1 !important;
+  -webkit-opacity: 1 !important;
+  -moz-opacity: 1 !important;
+  visibility: visible;
+}
+.l_header .container {
+  margin-left: 16px;
+  margin-right: 16px;
+}
+.l_header #wrapper {
+  height: 100%;
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+}
+.l_header #wrapper .nav-main,
+.l_header #wrapper .nav-sub {
+  display: -webkit-box /* OLD - iOS 6-, Safari 3.1-6 */;
+  display: -moz-box /* OLD - Firefox 19- (buggy but mostly works) */;
+  display: -ms-flexbox /* TWEENER - IE 10 */;
+  display: -webkit-flex /* NEW - Chrome */;
+  display: flex /* NEW, Spec - Opera 12.1, Firefox 20+ */;
+  display: flex;
+  flex-wrap: nowrap;
+  -webkit-flex-wrap: nowrap;
+  -khtml-flex-wrap: nowrap;
+  -moz-flex-wrap: nowrap;
+  -o-flex-wrap: nowrap;
+  -ms-flex-wrap: nowrap;
+  justify-content: space-between;
+  -webkit-justify-content: space-between;
+  -khtml-justify-content: space-between;
+  -moz-justify-content: space-between;
+  -o-justify-content: space-between;
+  -ms-justify-content: space-between;
+  align-items: center;
+}
+.l_header #wrapper .nav-main {
+  transition: all 0.28s ease;
+  -webkit-transition: all 0.28s ease;
+  -khtml-transition: all 0.28s ease;
+  -moz-transition: all 0.28s ease;
+  -o-transition: all 0.28s ease;
+  -ms-transition: all 0.28s ease;
+}
+.l_header #wrapper.sub .nav-main {
+  transform: translateY(-64px);
+  -webkit-transform: translateY(-64px);
+  -khtml-transform: translateY(-64px);
+  -moz-transform: translateY(-64px);
+  -o-transform: translateY(-64px);
+  -ms-transform: translateY(-64px);
+}
+.l_header #wrapper .nav-sub {
+  transition: all 0.28s ease;
+  -webkit-transition: all 0.28s ease;
+  -khtml-transition: all 0.28s ease;
+  -moz-transition: all 0.28s ease;
+  -o-transition: all 0.28s ease;
+  -ms-transition: all 0.28s ease;
+  opacity: 0;
+  -webkit-opacity: 0;
+  -moz-opacity: 0;
+  height: 64px;
+  width: calc(100% - 2 * 16px);
+  position: absolute;
+}
+.l_header #wrapper .nav-sub ::-webkit-scrollbar {
+  display: -webkit-box /* OLD - iOS 6-, Safari 3.1-6 */;
+  display: -moz-box /* OLD - Firefox 19- (buggy but mostly works) */;
+  display: none;
+}
+@media screen and (min-width: 2048px) {
+  .l_header #wrapper .nav-sub {
+    max-width: 55vw;
+    margin: auto;
+  }
+}
+.l_header #wrapper.sub .nav-sub {
+  opacity: 1;
+  -webkit-opacity: 1;
+  -moz-opacity: 1;
+}
+.l_header #wrapper .title {
+  position: relative;
+  color: var(--color-text);
+  padding-left: 24px;
+  max-height: 64px;
+}
+.l_header #wrapper .nav-main .title {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  flex-shrink: 0;
+  line-height: 64px;
+  padding: 0 24px;
+  font-size: 1.25rem;
+  font-family: "Varela Round", "PingFang SC", "Microsoft YaHei", Helvetica, Arial, Helvetica, monospace;
+}
+.l_header #wrapper .nav-main .title img {
+  height: 64px;
+}
+.l_header .nav-sub {
+  max-width: 1080px;
+  margin: auto;
+}
+.l_header .nav-sub .title {
+  font-weight: bold;
+  font-family: UbuntuMono, "Varela Round", "PingFang SC", "Microsoft YaHei", Helvetica, Arial, Menlo, Monaco, monospace, sans-serif;
+  line-height: 1.2;
+  max-height: 64px;
+  white-space: normal;
+  flex-shrink: 1;
+}
+.l_header .switcher {
+  display: -webkit-box /* OLD - iOS 6-, Safari 3.1-6 */;
+  display: -moz-box /* OLD - Firefox 19- (buggy but mostly works) */;
+  display: none;
+  line-height: 64px;
+  align-items: center;
+}
+.l_header .switcher .s-toc {
+  display: -webkit-box /* OLD - iOS 6-, Safari 3.1-6 */;
+  display: -moz-box /* OLD - Firefox 19- (buggy but mostly works) */;
+  display: none;
+}
+@media screen and (max-width: 768px) {
+  .l_header .switcher .s-toc {
+    display: -webkit-box /* OLD - iOS 6-, Safari 3.1-6 */;
+    display: -moz-box /* OLD - Firefox 19- (buggy but mostly works) */;
+    display: -ms-flexbox /* TWEENER - IE 10 */;
+    display: -webkit-flex /* NEW - Chrome */;
+    display: flex /* NEW, Spec - Opera 12.1, Firefox 20+ */;
+    display: flex;
+  }
+}
+.l_header .switcher >li {
+  height: 48px;
+  transition: all 0.28s ease;
+  -webkit-transition: all 0.28s ease;
+  -khtml-transition: all 0.28s ease;
+  -moz-transition: all 0.28s ease;
+  -o-transition: all 0.28s ease;
+  -ms-transition: all 0.28s ease;
+  margin: 2px;
+}
+@media screen and (max-width: 500px) {
+  .l_header .switcher >li {
+    margin: 0 1px;
+    height: 48px;
+  }
+}
+.l_header .switcher >li >a {
+  display: -webkit-box /* OLD - iOS 6-, Safari 3.1-6 */;
+  display: -moz-box /* OLD - Firefox 19- (buggy but mostly works) */;
+  display: -ms-flexbox /* TWEENER - IE 10 */;
+  display: -webkit-flex /* NEW - Chrome */;
+  display: flex /* NEW, Spec - Opera 12.1, Firefox 20+ */;
+  display: flex;
+  justify-content: center;
+  -webkit-justify-content: center;
+  -khtml-justify-content: center;
+  -moz-justify-content: center;
+  -o-justify-content: center;
+  -ms-justify-content: center;
+  align-items: center;
+  width: 48px;
+  height: 48px;
+  padding: 0.85em 1.1em;
+  border-radius: 100px;
+  -webkit-border-radius: 100px;
+  border: none;
+  transition: all 0.28s ease;
+  -webkit-transition: all 0.28s ease;
+  -khtml-transition: all 0.28s ease;
+  -moz-transition: all 0.28s ease;
+  -o-transition: all 0.28s ease;
+  -ms-transition: all 0.28s ease;
+  color: #3dd9b6;
+}
+.l_header .switcher >li >a:hover {
+  border: none;
+}
+.l_header .switcher >li >a.active,
+.l_header .switcher >li >a:active {
+  border: none;
+  background: var(--color-site-bg);
+}
+@media screen and (max-width: 500px) {
+  .l_header .switcher >li >a {
+    width: 36px;
+    height: 48px;
+  }
+}
+.l_header .nav-sub .switcher {
+  display: -webkit-box /* OLD - iOS 6-, Safari 3.1-6 */;
+  display: -moz-box /* OLD - Firefox 19- (buggy but mostly works) */;
+  display: -ms-flexbox /* TWEENER - IE 10 */;
+  display: -webkit-flex /* NEW - Chrome */;
+  display: flex /* NEW, Spec - Opera 12.1, Firefox 20+ */;
+  display: flex;
+}
+.l_header .m_search {
+  display: -webkit-box /* OLD - iOS 6-, Safari 3.1-6 */;
+  display: -moz-box /* OLD - Firefox 19- (buggy but mostly works) */;
+  display: -ms-flexbox /* TWEENER - IE 10 */;
+  display: -webkit-flex /* NEW - Chrome */;
+  display: flex /* NEW, Spec - Opera 12.1, Firefox 20+ */;
+  display: flex;
+  height: 64px;
+  width: 240px;
+  transition: all 0.28s ease;
+  -webkit-transition: all 0.28s ease;
+  -khtml-transition: all 0.28s ease;
+  -moz-transition: all 0.28s ease;
+  -o-transition: all 0.28s ease;
+  -ms-transition: all 0.28s ease;
+}
+@media screen and (max-width: 1024px) {
+  .l_header .m_search {
+    width: 44px;
+    min-width: 44px;
+  }
+  .l_header .m_search input::placeholder {
+    opacity: 0;
+    -webkit-opacity: 0;
+    -moz-opacity: 0;
+  }
+  .l_header .m_search:hover {
+    width: 240px;
+  }
+  .l_header .m_search:hover input::placeholder {
+    opacity: 1;
+    -webkit-opacity: 1;
+    -moz-opacity: 1;
+  }
+}
+@media screen and (min-width: 500px) {
+  .l_header .m_search:hover .input {
+    width: 100%;
+  }
+  .l_header .m_search:hover .input::placeholder {
+    opacity: 1;
+    -webkit-opacity: 1;
+    -moz-opacity: 1;
+  }
+}
+@media screen and (max-width: 500px) {
+  .l_header .m_search {
+    min-width: 0;
+  }
+  .l_header .m_search input::placeholder {
+    opacity: 1;
+    -webkit-opacity: 1;
+    -moz-opacity: 1;
+  }
+}
+.l_header .m_search .form {
+  position: relative;
+  display: -webkit-box /* OLD - iOS 6-, Safari 3.1-6 */;
+  display: -moz-box /* OLD - Firefox 19- (buggy but mostly works) */;
+  display: -ms-flexbox /* TWEENER - IE 10 */;
+  display: -webkit-flex /* NEW - Chrome */;
+  display: flex /* NEW, Spec - Opera 12.1, Firefox 20+ */;
+  display: flex;
+  width: 100%;
+  align-items: center;
+}
+.l_header .m_search .icon {
+  position: absolute;
+  width: 36px;
+  left: 5px;
+  color: var(--color-meta);
+}
+@media screen and (max-width: 500px) {
+  .l_header .m_search .icon {
+    display: -webkit-box /* OLD - iOS 6-, Safari 3.1-6 */;
+    display: -moz-box /* OLD - Firefox 19- (buggy but mostly works) */;
+    display: none;
+  }
+}
+.l_header .m_search .input {
+  display: -webkit-box /* OLD - iOS 6-, Safari 3.1-6 */;
+  display: -moz-box /* OLD - Firefox 19- (buggy but mostly works) */;
+  display: block;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  line-height: 1.3;
+  width: 100%;
+  color: var(--color-text);
+  background: #fafafa;
+  box-shadow: none;
+  -webkit-box-shadow: none;
+  box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  padding-left: 40px;
+  font-size: 0.875rem;
+  border-radius: 8px;
+  -webkit-border-radius: 8px;
+  border: none;
+  transition: all 0.28s ease;
+  -webkit-transition: all 0.28s ease;
+  -khtml-transition: all 0.28s ease;
+  -moz-transition: all 0.28s ease;
+  -o-transition: all 0.28s ease;
+  -ms-transition: all 0.28s ease;
+}
+@media screen and (min-width: 500px) {
+  .l_header .m_search .input:focus {
+    box-shadow: 0 4px 8px 0px rgba(0,0,0,0.1);
+    -webkit-box-shadow: 0 4px 8px 0px rgba(0,0,0,0.1);
+  }
+}
+@media screen and (max-width: 500px) {
+  .l_header .m_search .input {
+    background: var(--color-block);
+    padding-left: 8px;
+    border: none;
+  }
+  .l_header .m_search .input:hover,
+  .l_header .m_search .input:focus {
+    border: none;
+  }
+}
+@media (max-width: 500px) {
+  .l_header .m_search {
+    left: 0;
+    width: 0;
+    overflow: hidden;
+    position: absolute;
+    background: #fff;
+    transition: all 0.28s ease;
+    -webkit-transition: all 0.28s ease;
+    -khtml-transition: all 0.28s ease;
+    -moz-transition: all 0.28s ease;
+    -o-transition: all 0.28s ease;
+    -ms-transition: all 0.28s ease;
+  }
+  .l_header .m_search .input {
+    border-radius: 32px;
+    -webkit-border-radius: 32px;
+    margin-left: 16px;
+    padding-left: 16px;
+  }
+  .l_header.z_search-open .m_search {
+    width: 100%;
+  }
+  .l_header.z_search-open .m_search .input {
+    width: calc(100% - 120px);
+  }
+}
+ul.m-pc >li>a {
+  color: inherit;
+  border-bottom: 2px solid transparent;
+}
+ul.m-pc >li>a:active,
+ul.m-pc >li>a.active {
+  border-bottom: 2px solid #3dd9b6;
+}
+ul.m-pc li:hover >ul.list-v,
+ul.list-v li:hover >ul.list-v {
+  display: -webkit-box /* OLD - iOS 6-, Safari 3.1-6 */;
+  display: -moz-box /* OLD - Firefox 19- (buggy but mostly works) */;
+  display: block;
+}
+ul.nav-list-h {
+  display: -webkit-box /* OLD - iOS 6-, Safari 3.1-6 */;
+  display: -moz-box /* OLD - Firefox 19- (buggy but mostly works) */;
+  display: -ms-flexbox /* TWEENER - IE 10 */;
+  display: -webkit-flex /* NEW - Chrome */;
+  display: flex /* NEW, Spec - Opera 12.1, Firefox 20+ */;
+  display: flex;
+  align-items: stretch;
+}
+ul.nav-list-h>li {
+  position: relative;
+  justify-content: center;
+  -webkit-justify-content: center;
+  -khtml-justify-content: center;
+  -moz-justify-content: center;
+  -o-justify-content: center;
+  -ms-justify-content: center;
+  height: 100%;
+  line-height: 2.4;
+  border-radius: 4px;
+  -webkit-border-radius: 4px;
+}
+ul.nav-list-h>li >a {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-weight: 600;
+}
+ul.list-v {
+  z-index: 1;
+  display: -webkit-box /* OLD - iOS 6-, Safari 3.1-6 */;
+  display: -moz-box /* OLD - Firefox 19- (buggy but mostly works) */;
+  display: none;
+  position: absolute;
+  background: var(--color-card);
+  box-shadow: 0 2px 4px 0px rgba(0,0,0,0.08), 0 4px 8px 0px rgba(0,0,0,0.08), 0 8px 16px 0px rgba(0,0,0,0.08);
+  -webkit-box-shadow: 0 2px 4px 0px rgba(0,0,0,0.08), 0 4px 8px 0px rgba(0,0,0,0.08), 0 8px 16px 0px rgba(0,0,0,0.08);
+  margin-top: -6px;
+  border-radius: 4px;
+  -webkit-border-radius: 4px;
+  padding: 8px 0;
+}
+ul.list-v.show {
+  display: -webkit-box /* OLD - iOS 6-, Safari 3.1-6 */;
+  display: -moz-box /* OLD - Firefox 19- (buggy but mostly works) */;
+  display: block;
+}
+ul.list-v hr {
+  margin-top: 8px;
+  margin-bottom: 8px;
+}
+ul.list-v >li {
+  white-space: nowrap;
+  word-break: keep-all;
+}
+ul.list-v >li.header {
+  font-size: 0.78125rem;
+  font-weight: bold;
+  line-height: 2em;
+  color: var(--color-meta);
+  margin: 8px 16px 4px;
+}
+ul.list-v >li.header i {
+  margin-right: 8px;
+}
+ul.list-v >li ul {
+  margin-left: 0;
+  display: -webkit-box /* OLD - iOS 6-, Safari 3.1-6 */;
+  display: -moz-box /* OLD - Firefox 19- (buggy but mostly works) */;
+  display: none;
+  margin-top: -40px;
+}
+ul.list-v .aplayer-container {
+  min-height: 64px;
+  padding: 6px 16px;
+}
+ul.list-v >li>a {
+  transition: all 0.28s ease;
+  -webkit-transition: all 0.28s ease;
+  -khtml-transition: all 0.28s ease;
+  -moz-transition: all 0.28s ease;
+  -o-transition: all 0.28s ease;
+  -ms-transition: all 0.28s ease;
+  display: -webkit-box /* OLD - iOS 6-, Safari 3.1-6 */;
+  display: -moz-box /* OLD - Firefox 19- (buggy but mostly works) */;
+  display: block;
+  color: var(--color-list);
+  font-size: 0.875rem;
+  font-weight: bold;
+  line-height: 36px;
+  padding: 0 20px 0 16px;
+  text-overflow: ellipsis;
+  margin: 0 4px;
+  border-radius: 4px;
+  -webkit-border-radius: 4px;
+}
+@media screen and (max-width: 1024px) {
+  ul.list-v >li>a {
+    line-height: 40px;
+  }
+}
+ul.list-v >li>a >i {
+  margin-right: 8px;
+}
+ul.list-v >li>a:active,
+ul.list-v >li>a.active {
+  color: var(--color-list-hl);
+}
+ul.list-v >li>a:hover {
+  color: var(--color-list-hl);
+  background: var(--color-site-bg);
+}
+.l_header .menu >ul>li>a {
+  display: -webkit-box /* OLD - iOS 6-, Safari 3.1-6 */;
+  display: -moz-box /* OLD - Firefox 19- (buggy but mostly works) */;
+  display: block;
+  padding: 0 8px;
+}
+.l_header .menu >ul>li>a >i {
+  margin-right: 4px;
+}
+.l_header ul.nav-list-h>li {
+  color: var(--color-list);
+  line-height: 64px;
+}
+.l_header ul.nav-list-h>li >a {
+  max-height: 64px;
+  overflow: hidden;
+  color: inherit;
+}
+.l_header ul.nav-list-h>li >a:active,
+.l_header ul.nav-list-h>li >a.active {
+  color: #3dd9b6;
+}
+.l_header ul.nav-list-h>li:hover>a {
+  color: var(--color-list-hl);
+}
+.l_header ul.nav-list-h>li i.music {
+  animation: rotate-effect 1.5s linear infinite;
+  -webkit-animation: rotate-effect 1.5s linear infinite;
+  -khtml-animation: rotate-effect 1.5s linear infinite;
+  -moz-animation: rotate-effect 1.5s linear infinite;
+  -o-animation: rotate-effect 1.5s linear infinite;
+  -ms-animation: rotate-effect 1.5s linear infinite;
+}
+@-moz-keyframes rotate-effect {
+  0% {
+    transform: rotate(0);
+    -webkit-transform: rotate(0);
+    -khtml-transform: rotate(0);
+    -moz-transform: rotate(0);
+    -o-transform: rotate(0);
+    -ms-transform: rotate(0);
+  }
+  25% {
+    transform: rotate(90deg);
+    -webkit-transform: rotate(90deg);
+    -khtml-transform: rotate(90deg);
+    -moz-transform: rotate(90deg);
+    -o-transform: rotate(90deg);
+    -ms-transform: rotate(90deg);
+  }
+  50% {
+    transform: rotate(180deg);
+    -webkit-transform: rotate(180deg);
+    -khtml-transform: rotate(180deg);
+    -moz-transform: rotate(180deg);
+    -o-transform: rotate(180deg);
+    -ms-transform: rotate(180deg);
+  }
+  75% {
+    transform: rotate(270deg);
+    -webkit-transform: rotate(270deg);
+    -khtml-transform: rotate(270deg);
+    -moz-transform: rotate(270deg);
+    -o-transform: rotate(270deg);
+    -ms-transform: rotate(270deg);
+  }
+  100% {
+    transform: rotate(360deg);
+    -webkit-transform: rotate(360deg);
+    -khtml-transform: rotate(360deg);
+    -moz-transform: rotate(360deg);
+    -o-transform: rotate(360deg);
+    -ms-transform: rotate(360deg);
+  }
+}
+@-webkit-keyframes rotate-effect {
+  0% {
+    transform: rotate(0);
+    -webkit-transform: rotate(0);
+    -khtml-transform: rotate(0);
+    -moz-transform: rotate(0);
+    -o-transform: rotate(0);
+    -ms-transform: rotate(0);
+  }
+  25% {
+    transform: rotate(90deg);
+    -webkit-transform: rotate(90deg);
+    -khtml-transform: rotate(90deg);
+    -moz-transform: rotate(90deg);
+    -o-transform: rotate(90deg);
+    -ms-transform: rotate(90deg);
+  }
+  50% {
+    transform: rotate(180deg);
+    -webkit-transform: rotate(180deg);
+    -khtml-transform: rotate(180deg);
+    -moz-transform: rotate(180deg);
+    -o-transform: rotate(180deg);
+    -ms-transform: rotate(180deg);
+  }
+  75% {
+    transform: rotate(270deg);
+    -webkit-transform: rotate(270deg);
+    -khtml-transform: rotate(270deg);
+    -moz-transform: rotate(270deg);
+    -o-transform: rotate(270deg);
+    -ms-transform: rotate(270deg);
+  }
+  100% {
+    transform: rotate(360deg);
+    -webkit-transform: rotate(360deg);
+    -khtml-transform: rotate(360deg);
+    -moz-transform: rotate(360deg);
+    -o-transform: rotate(360deg);
+    -ms-transform: rotate(360deg);
+  }
+}
+@-o-keyframes rotate-effect {
+  0% {
+    transform: rotate(0);
+    -webkit-transform: rotate(0);
+    -khtml-transform: rotate(0);
+    -moz-transform: rotate(0);
+    -o-transform: rotate(0);
+    -ms-transform: rotate(0);
+  }
+  25% {
+    transform: rotate(90deg);
+    -webkit-transform: rotate(90deg);
+    -khtml-transform: rotate(90deg);
+    -moz-transform: rotate(90deg);
+    -o-transform: rotate(90deg);
+    -ms-transform: rotate(90deg);
+  }
+  50% {
+    transform: rotate(180deg);
+    -webkit-transform: rotate(180deg);
+    -khtml-transform: rotate(180deg);
+    -moz-transform: rotate(180deg);
+    -o-transform: rotate(180deg);
+    -ms-transform: rotate(180deg);
+  }
+  75% {
+    transform: rotate(270deg);
+    -webkit-transform: rotate(270deg);
+    -khtml-transform: rotate(270deg);
+    -moz-transform: rotate(270deg);
+    -o-transform: rotate(270deg);
+    -ms-transform: rotate(270deg);
+  }
+  100% {
+    transform: rotate(360deg);
+    -webkit-transform: rotate(360deg);
+    -khtml-transform: rotate(360deg);
+    -moz-transform: rotate(360deg);
+    -o-transform: rotate(360deg);
+    -ms-transform: rotate(360deg);
+  }
+}
+@keyframes rotate-effect {
+  0% {
+    transform: rotate(0);
+    -webkit-transform: rotate(0);
+    -khtml-transform: rotate(0);
+    -moz-transform: rotate(0);
+    -o-transform: rotate(0);
+    -ms-transform: rotate(0);
+  }
+  25% {
+    transform: rotate(90deg);
+    -webkit-transform: rotate(90deg);
+    -khtml-transform: rotate(90deg);
+    -moz-transform: rotate(90deg);
+    -o-transform: rotate(90deg);
+    -ms-transform: rotate(90deg);
+  }
+  50% {
+    transform: rotate(180deg);
+    -webkit-transform: rotate(180deg);
+    -khtml-transform: rotate(180deg);
+    -moz-transform: rotate(180deg);
+    -o-transform: rotate(180deg);
+    -ms-transform: rotate(180deg);
+  }
+  75% {
+    transform: rotate(270deg);
+    -webkit-transform: rotate(270deg);
+    -khtml-transform: rotate(270deg);
+    -moz-transform: rotate(270deg);
+    -o-transform: rotate(270deg);
+    -ms-transform: rotate(270deg);
+  }
+  100% {
+    transform: rotate(360deg);
+    -webkit-transform: rotate(360deg);
+    -khtml-transform: rotate(360deg);
+    -moz-transform: rotate(360deg);
+    -o-transform: rotate(360deg);
+    -ms-transform: rotate(360deg);
+  }
+}
+.menu-phone li ul.list-v {
+  right: calc(100% - 0.5 * 16px);
+}
+.menu-phone li ul.list-v ul {
+  right: calc(100% - 0.5 * 16px);
+}
+#wrapper {
+  max-width: 1080px;
+  margin: auto;
+}
+@media screen and (min-width: 2048px) {
+  #wrapper {
+    max-width: 55vw;
+  }
+}
+#wrapper .menu {
+  -webkit-box-flex: 1;
+  -moz-box-flex: 1;
+  -webkit-flex: 1 1;
+  -ms-flex: 1 1;
+  flex: 1 1;
+  margin: 0 16px 0 0;
+}
+#wrapper .menu .list-v ul {
+  left: calc(100% - 0.5 * 16px);
+}
+.menu-phone {
+  display: -webkit-box /* OLD - iOS 6-, Safari 3.1-6 */;
+  display: -moz-box /* OLD - Firefox 19- (buggy but mostly works) */;
+  display: none;
+  margin-top: 16px;
+  right: 8px;
+  transition: all 0.28s ease;
+  -webkit-transition: all 0.28s ease;
+  -khtml-transition: all 0.28s ease;
+  -moz-transition: all 0.28s ease;
+  -o-transition: all 0.28s ease;
+  -ms-transition: all 0.28s ease;
+}
+.menu-phone ul {
+  right: calc(100% - 0.5 * 16px);
+}
+@media screen and (max-width: 500px) {
+  .menu-phone {
+    display: -webkit-box /* OLD - iOS 6-, Safari 3.1-6 */;
+    display: -moz-box /* OLD - Firefox 19- (buggy but mostly works) */;
+    display: block;
+  }
+}
+.l_header {
+  max-width: 65vw;
+  left: calc((100% - 65vw) * 0.5);
+  border-bottom-left-radius: 8px;
+  border-bottom-right-radius: 8px;
+}
+@media screen and (max-width: 2048px) {
+  .l_header {
+    max-width: 1112px;
+    left: calc((100% - 1112px) * 0.5);
+  }
+}
+@media screen and (max-width: 1112px) {
+  .l_header {
+    left: 0;
+    border-radius: 0;
+    -webkit-border-radius: 0;
+    max-width: 100%;
+  }
+}
+@media screen and (max-width: 500px) {
+  .l_header .container {
+    margin-left: 0;
+    margin-right: 0;
+  }
+  .l_header #wrapper .nav-main .title {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+  .l_header #wrapper .nav-sub {
+    width: 100%;
+  }
+  .l_header #wrapper .nav-sub .title {
+    overflow-y: scroll;
+    margin-top: 2px;
+    padding: 8px 16px;
+  }
+  .l_header #wrapper .switcher {
+    display: -webkit-box /* OLD - iOS 6-, Safari 3.1-6 */;
+    display: -moz-box /* OLD - Firefox 19- (buggy but mostly works) */;
+    display: -ms-flexbox /* TWEENER - IE 10 */;
+    display: -webkit-flex /* NEW - Chrome */;
+    display: flex /* NEW, Spec - Opera 12.1, Firefox 20+ */;
+    display: flex;
+    margin-right: 8px;
+  }
+  .l_header .menu {
+    display: -webkit-box /* OLD - iOS 6-, Safari 3.1-6 */;
+    display: -moz-box /* OLD - Firefox 19- (buggy but mostly works) */;
+    display: none;
+  }
+}
+@media screen and (max-width: 500px) {
+  .list-v li {
+    max-width: 270px;
+  }
+}
+#u-search {
+  display: -webkit-box /* OLD - iOS 6-, Safari 3.1-6 */;
+  display: -moz-box /* OLD - Firefox 19- (buggy but mostly works) */;
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  padding: 60px 20px;
+  z-index: 1001;
+}
+@media screen and (max-width: 680px) {
+  #u-search {
+    padding: 0px;
+  }
+}
+
+  </style>
+  <link rel="stylesheet" href="/css/style.css" media="print" onload="this.media='all';this.onload=null">
+  <noscript><link rel="stylesheet" href="/css/style.css"></noscript>
+  
+<script>
+if (/*@cc_on!@*/false || (!!window.MSInputMethodContext && !!document.documentMode))
+    document.write(
+	'<style>'+
+		'html{'+
+			'overflow-x: hidden !important;'+
+			'overflow-y: hidden !important;'+
+		'}'+
+		'.kill-ie{'+
+			'text-align:center;'+
+			'height: 100%;'+
+			'margin-top: 15%;'+
+			'margin-bottom: 5500%;'+
+		'}'+
+    '.kill-t{'+
+      'font-size: 2rem;'+
+    '}'+
+    '.kill-c{'+
+      'font-size: 1.2rem;'+
+    '}'+
+		'#l_header,#l_body{'+
+			'display: none;'+
+		'}'+
+	'</style>'+
+    '<div class="kill-ie">'+
+        `<span class="kill-t"><b>抱歉，您的浏览器无法访问本站</b></span><br/>`+
+        `<span class="kill-c">微软已经于2016年终止了对 Internet Explorer (IE) 10 及更早版本的支持，<br/>继续使用存在极大的安全隐患，请使用当代主流的浏览器进行访问。</span><br/>`+
+        `<a target="_blank" rel="noopener" href="https://blogs.windows.com/windowsexperience/2021/05/19/the-future-of-internet-explorer-on-windows-10-is-in-microsoft-edge/"><strong>了解详情 ></strong></a>`+
+    '</div>');
+</script>
+
+
+<noscript>
+	<style>
+		html{
+			overflow-x: hidden !important;
+			overflow-y: hidden !important;
+		}
+		.kill-noscript{
+			text-align:center;
+			height: 100%;
+			margin-top: 15%;
+			margin-bottom: 5500%;
+		}
+    .kill-t{
+      font-size: 2rem;
+    }
+    .kill-c{
+      font-size: 1.2rem;
+    }
+		#l_header,#l_body{
+			display: none;
+		}
+	</style>
+    <div class="kill-noscript">
+        <span class="kill-t"><b>抱歉，您的浏览器无法访问本站</b></span><br/>
+        <span class="kill-c">本页面需要浏览器支持（启用）JavaScript</span><br/>
+        <a target="_blank" rel="noopener" href="https://www.baidu.com/s?wd=启用JavaScript"><strong>了解详情 ></strong></a>
+    </div>
+</noscript>
+
+
+  <script>
+  /************这个文件存放不需要重载的全局变量和全局函数*********/
+  window.volantis = {}; // volantis 全局变量
+  volantis.debug = "env"; // 调试模式
+  volantis.dom = {}; // 页面Dom see: /source/js/app.js etc.
+
+  volantis.GLOBAL_CONFIG ={
+    debug: "env",
+    cdn: {"js":{"app":"/js/app.js","parallax":"/js/plugins/parallax.js","rightMenu":"/js/plugins/rightMenu.js","rightMenus":"/js/plugins/rightMenus.js","sites":"/js/plugins/tags/sites.js","friends":"/js/plugins/tags/friends.js","contributors":"/js/plugins/tags/contributors.js","search":"/js/search/hexo.js"},"css":{"style":"/css/style.css"}},
+    default: {"avatar":"https://unpkg.com/volantis-static@0.0.1654736714924/media/placeholder/avatar/round/3442075.svg","link":"https://unpkg.com/volantis-static@0.0.1654736714924/media/placeholder/link/8f277b4ee0ecd.svg","cover":"https://unpkg.com/volantis-static@0.0.1654736714924/media/placeholder/cover/76b86c0226ffd.svg","image":"https://unpkg.com/volantis-static@0.0.1654736714924/media/placeholder/image/2659360.svg"},
+    lastupdate: new Date(1689650034313),
+    sidebar: {
+      for_page: ["blogger","category","tagcloud","donate"],
+      for_post: ["toc"],
+      webinfo: {
+        lastupd: {
+          enable: true,
+          friendlyShow: true
+        },
+        runtime: {
+          data: "2020/01/01",
+          unit: "天"
+        }
+      }
+    },
+    plugins: {
+      message: {"enable":true,"css":"https://unpkg.com/volantis-static@0.0.1654736714924/libs/izitoast/dist/css/iziToast.min.css","js":"https://unpkg.com/volantis-static@0.0.1654736714924/libs/izitoast/dist/js/iziToast.min.js","icon":{"default":"fa-solid fa-info-circle light-blue","quection":"fa-solid fa-question-circle light-blue"},"time":{"default":5000,"quection":20000},"position":"topRight","transitionIn":"bounceInLeft","transitionOut":"fadeOutRight","titleColor":"var(--color-text)","messageColor":"var(--color-text)","backgroundColor":"var(--color-card)","zindex":2147483647,"copyright":{"enable":true,"title":"知识共享许可协议","message":"请遵守 CC BY-NC-SA 4.0 协议。","icon":"far fa-copyright light-blue"},"aplayer":{"enable":true,"play":"fa-solid fa-play","pause":"fa-solid fa-pause"},"rightmenu":{"enable":true,"notice":true}},
+      fancybox: {"css":"https://unpkg.com/volantis-static@0.0.1654736714924/libs/@fancyapps/ui/dist/fancybox.css","js":"https://unpkg.com/volantis-static@0.0.1654736714924/libs/@fancyapps/ui/dist/fancybox.umd.js"},
+      
+      
+      
+    }
+  }
+
+  /******************** volantis.EventListener ********************************/
+  // 事件监听器 see: /source/js/app.js
+  volantis.EventListener = {}
+  // 这里存放pjax切换页面时将被移除的事件监听器
+  volantis.EventListener.list = []
+  //构造方法
+  function volantisEventListener(type, f, ele) {
+    this.type = type
+    this.f = f
+    this.ele = ele
+  }
+  // 移除事件监听器
+  volantis.EventListener.remove = () => {
+    volantis.EventListener.list.forEach(function (i) {
+      i.ele.removeEventListener(i.type, i.f, false)
+    })
+    volantis.EventListener.list = []
+  }
+  /******************** volantis.dom.$ ********************************/
+  // 注：这里没有选择器，也没有forEach一次只处理一个dom，这里重新封装主题常用的dom方法，返回的是dom对象，对象包含了以下方法，同时保留dom的原生API
+  function volantisDom(ele) {
+    if (!ele) ele = document.createElement("div")
+    this.ele = ele;
+    // ==============================================================
+    this.ele.find = (c) => {
+      let q = this.ele.querySelector(c)
+      if (q)
+        return new volantisDom(q)
+    }
+    // ==============================================================
+    this.ele.hasClass = (c) => {
+      return this.ele.className.match(new RegExp('(\\s|^)' + c + '(\\s|$)'));
+    }
+    this.ele.addClass = (c) => {
+      this.ele.classList.add(c);
+      return this.ele
+    }
+    this.ele.removeClass = (c) => {
+      this.ele.classList.remove(c);
+      return this.ele
+    }
+    this.ele.toggleClass = (c) => {
+      if (this.ele.hasClass(c)) {
+        this.ele.removeClass(c)
+      } else {
+        this.ele.addClass(c)
+      }
+      return this.ele
+    }
+    // ==============================================================
+    // 参数 r 为 true 表示pjax切换页面时事件监听器将被移除，false不移除
+    this.ele.on = (c, f, r = 1) => {
+      this.ele.addEventListener(c, f, false)
+      if (r) {
+        volantis.EventListener.list.push(new volantisEventListener(c, f, this.ele))
+      }
+      return this.ele
+    }
+    this.ele.click = (f, r) => {
+      this.ele.on("click", f, r)
+      return this.ele
+    }
+    this.ele.scroll = (f, r) => {
+      this.ele.on("scroll", f, r)
+      return this.ele
+    }
+    // ==============================================================
+    this.ele.html = (c) => {
+      // if(c=== undefined){
+      //   return this.ele.innerHTML
+      // }else{
+      this.ele.innerHTML = c
+      return this.ele
+      // }
+    }
+    // ==============================================================
+    this.ele.hide = (c) => {
+      this.ele.style.display = "none"
+      return this.ele
+    }
+    this.ele.show = (c) => {
+      this.ele.style.display = "block"
+      return this.ele
+    }
+    // ==============================================================
+    return this.ele
+  }
+  volantis.dom.$ = (ele) => {
+    return !!ele ? new volantisDom(ele) : null;
+  }
+  /******************** RunItem ********************************/
+  function RunItem() {
+    this.list = []; // 存放回调函数
+    this.start = () => {
+      for (var i = 0; i < this.list.length; i++) {
+        this.list[i].run();
+      }
+    };
+    this.push = (fn, name, setRequestAnimationFrame = true) => {
+      let myfn = fn
+      if (setRequestAnimationFrame) {
+        myfn = ()=>{
+          volantis.requestAnimationFrame(fn)
+        }
+      }
+      var f = new Item(myfn, name);
+      this.list.push(f);
+    };
+    this.remove = (name) =>{
+      for (let index = 0; index < this.list.length; index++) {
+        const e = this.list[index];
+        if (e.name == name) {
+          this.list.splice(index,1);
+        }
+      }
+    }
+    // 构造一个可以run的对象
+    function Item(fn, name) {
+      // 函数名称
+      this.name = name || fn.name;
+      // run方法
+      this.run = () => {
+        try {
+          fn()
+        } catch (error) {
+          console.log(error);
+        }
+      };
+    }
+  }
+  /******************** Pjax ********************************/
+  // /layout/_plugins/pjax/index.ejs
+  // volantis.pjax.send(callBack[,"callBackName"]) 传入pjax:send回调函数
+  // volantis.pjax.push(callBack[,"callBackName"]) 传入pjax:complete回调函数
+  // volantis.pjax.error(callBack[,"callBackName"]) 传入pjax:error回调函数
+  volantis.pjax = {};
+  volantis.pjax.method = {
+    complete: new RunItem(),
+    error: new RunItem(),
+    send: new RunItem(),
+  };
+  volantis.pjax = Object.assign(volantis.pjax, {
+    push: volantis.pjax.method.complete.push,
+    error: volantis.pjax.method.error.push,
+    send: volantis.pjax.method.send.push,
+  });
+  /******************** RightMenu ********************************/
+  // volantis.rightmenu.handle(callBack[,"callBackName"]) 外部菜单项控制
+  // 可在 volantis.mouseEvent 处获取右键事件
+  volantis.rightmenu = {};
+  volantis.rightmenu.method = {
+    handle: new RunItem(),
+  }
+  volantis.rightmenu = Object.assign(volantis.rightmenu, {
+    handle: volantis.rightmenu.method.handle.push,
+  });
+  /********************  Dark Mode  ********************************/
+  // /layout/_partial/scripts/darkmode.ejs
+  // volantis.dark.mode 当前模式 dark or light
+  // volantis.dark.toggle() 暗黑模式触发器
+  // volantis.dark.push(callBack[,"callBackName"]) 传入触发器回调函数
+  volantis.dark = {};
+  volantis.dark.method = {
+    toggle: new RunItem(),
+  };
+  volantis.dark = Object.assign(volantis.dark, {
+    push: volantis.dark.method.toggle.push,
+  });
+  /********************  Message  ********************************/
+  // VolantisApp.message
+  /********************  isMobile  ********************************/
+  // /source/js/app.js
+  // volantis.isMobile
+  // volantis.isMobileOld
+  /********************脚本动态加载函数********************************/
+  // volantis.js(src, cb)  cb 可以传入onload回调函数 或者 JSON对象 例如: volantis.js("src", ()=>{}) 或 volantis.js("src", {defer:true,onload:()=>{}})
+  // volantis.css(src)
+
+  // 返回Promise对象，如下方法同步加载资源，这利于处理文件资源之间的依赖关系，例如：APlayer 需要在 MetingJS 之前加载
+  // (async () => {
+  //     await volantis.js("...theme.plugins.aplayer.js.aplayer...")
+  //     await volantis.js("...theme.plugins.aplayer.js.meting...")
+  // })();
+
+  // 已经加入了setTimeout
+  volantis.js = (src, cb) => {
+    return new Promise(resolve => {
+      setTimeout(function () {
+        var HEAD = document.getElementsByTagName("head")[0] || document.documentElement;
+        var script = document.createElement("script");
+        script.setAttribute("type", "text/javascript");
+        if (cb) {
+          if (JSON.stringify(cb)) {
+            for (let p in cb) {
+              if (p == "onload") {
+                script[p] = () => {
+                  cb[p]()
+                  resolve()
+                }
+              } else {
+                script[p] = cb[p]
+                script.onload = resolve
+              }
+            }
+          } else {
+            script.onload = () => {
+              cb()
+              resolve()
+            };
+          }
+        } else {
+          script.onload = resolve
+        }
+        script.setAttribute("src", src);
+        HEAD.appendChild(script);
+      });
+    });
+  }
+  volantis.css = (src) => {
+    return new Promise(resolve => {
+      setTimeout(function () {
+        var link = document.createElement('link');
+        link.rel = "stylesheet";
+        link.href = src;
+        link.onload = resolve;
+        document.getElementsByTagName("head")[0].appendChild(link);
+      });
+    });
+  }
+  /********************按需加载的插件********************************/
+  // volantis.import.jQuery().then(()=>{})
+  volantis.import = {
+    jQuery: () => {
+      if (typeof jQuery == "undefined") {
+        return volantis.js("https://unpkg.com/volantis-static@0.0.1654736714924/libs/jquery/dist/jquery.min.js")
+      } else {
+        return new Promise(resolve => {
+          resolve()
+        });
+      }
+    }
+  }
+  /********************** requestAnimationFrame ********************************/
+  // 1、requestAnimationFrame 会把每一帧中的所有 DOM 操作集中起来，在一次重绘或回流中就完成，并且重绘或回流的时间间隔紧紧跟随浏览器的刷新频率，一般来说，这个频率为每秒60帧。
+  // 2、在隐藏或不可见的元素中，requestAnimationFrame 将不会进行重绘或回流，这当然就意味着更少的的 cpu，gpu 和内存使用量。
+  volantis.requestAnimationFrame = (fn)=>{
+    if (!window.requestAnimationFrame) {
+      window.requestAnimationFrame = window.requestAnimationFrame || window.mozRequestAnimationFrame || window.webkitRequestAnimationFrame;
+    }
+    window.requestAnimationFrame(fn)
+  }
+  /************************ layoutHelper *****************************************/
+  volantis.layoutHelper = (helper, html, opt)=>{
+    opt = Object.assign({clean:false, pjax:true}, opt)
+    function myhelper(helper, html, clean) {
+      volantis.tempDiv = document.createElement("div");
+      volantis.tempDiv.innerHTML = html;
+      let layoutHelper = document.querySelector("#layoutHelper-"+helper)
+      if (layoutHelper) {
+        if (clean) {
+          layoutHelper.innerHTML = ""
+        }
+        layoutHelper.append(volantis.tempDiv);
+      }
+    }
+    myhelper(helper, html, opt.clean)
+    if (opt.pjax) {
+      volantis.pjax.push(()=>{
+        myhelper(helper, html, opt.clean)
+      },"layoutHelper-"+helper)
+    }
+  }
+  /****************************** 滚动事件处理 ****************************************/
+  volantis.scroll = {
+    engine: new RunItem(),
+    unengine: new RunItem(),
+  };
+  volantis.scroll = Object.assign(volantis.scroll, {
+    push: volantis.scroll.engine.push,
+  });
+  // 滚动条距离顶部的距离
+  volantis.scroll.getScrollTop = () =>{
+    let scrollPos;
+    if (window.pageYOffset) {
+      scrollPos = window.pageYOffset;
+    } else if (document.compatMode && document.compatMode != 'BackCompat') {
+      scrollPos = document.documentElement.scrollTop;
+    } else if (document.body) {
+      scrollPos = document.body.scrollTop;
+    }
+    return scrollPos;
+  }
+  // 使用 requestAnimationFrame 处理滚动事件
+  // `volantis.scroll.del` 中存储了一个数值, 该数值检测一定时间间隔内滚动条滚动的位移, 数值的检测频率是浏览器的刷新频率. 数值为正数时, 表示向下滚动. 数值为负数时, 表示向上滚动.
+  volantis.scroll.handleScrollEvents = () => {
+    volantis.scroll.lastScrollTop = volantis.scroll.getScrollTop()
+    function loop() {
+      const scrollTop = volantis.scroll.getScrollTop();
+      if (volantis.scroll.lastScrollTop !== scrollTop) {
+        volantis.scroll.del = scrollTop - volantis.scroll.lastScrollTop;
+        volantis.scroll.lastScrollTop = scrollTop;
+        // if (volantis.scroll.del > 0) {
+        //   console.log("向下滚动");
+        // } else {
+        //   console.log("向上滚动");
+        // }
+        // 注销过期的unengine未滚动事件
+        volantis.scroll.unengine.list=[]
+        volantis.scroll.engine.start();
+      }else{
+        volantis.scroll.unengine.start();
+      }
+      volantis.requestAnimationFrame(loop)
+    }
+    volantis.requestAnimationFrame(loop)
+  }
+  volantis.scroll.handleScrollEvents()
+  volantis.scroll.ele = null;
+  // 触发页面滚动至目标元素位置
+  volantis.scroll.to = (ele, option = {}) => {
+    if (!ele) return;
+    volantis.scroll.ele = ele;
+    // 默认配置
+    opt = {
+      top: ele.getBoundingClientRect().top + document.documentElement.scrollTop,
+      behavior: "smooth"
+    }
+    // 定义配置
+    if ("top" in option) {
+      opt.top = option.top
+    }
+    if ("behavior" in option) {
+      opt.behavior = option.behavior
+    }
+    if ("addTop" in option) {
+      opt.top += option.addTop
+    }
+    if (!("observerDic" in option)) {
+      option.observerDic = 100
+    }
+    // 滚动
+    window.scrollTo(opt);
+    // 监视器
+    // 监视并矫正元素滚动到指定位置
+    // 用于处理 lazyload 引起的 cls 导致的定位失败问题
+    // option.observer = false
+    if (option.observer) {
+      setTimeout(() => {
+        if (volantis.scroll.ele != ele) {
+          return
+        }
+        volantis.scroll.unengine.push(() => {
+          let me = ele.getBoundingClientRect().top
+          if(!(me >= -option.observerDic && me <= option.observerDic)){
+            volantis.scroll.to(ele, option)
+          }
+          volantis.scroll.unengine.remove("unengineObserver")
+        },"unengineObserver")
+      },1000)
+    }
+  }
+  /********************** Content Visibility ********************************/
+  // 见 source/css/first.styl 如果遇到任何问题 删除 .post-story 即可
+  // 一个元素被声明 content-visibility 属性后 如果元素不在 viewport 中 浏览器不会计算其后代元素样式和属性 从而节省 Style & Layout 耗时
+  // content-visibility 的副作用: 锚点失效 等等(实验初期 暂不明确), 使用此方法清除样式
+  volantis.cleanContentVisibility = ()=>{
+    if (document.querySelector(".post-story")) {
+      console.log("cleanContentVisibility");
+      document.querySelectorAll(".post-story").forEach(e=>{
+        e.classList.remove("post-story")
+      })
+    }
+  }
+  /******************************************************************************/
+  /******************************************************************************/
+  /******************************************************************************/
+  //图像加载出错时的处理
+  function errorImgAvatar(img) {
+    img.src = "https://unpkg.com/volantis-static@0.0.1654736714924/media/placeholder/avatar/round/3442075.svg";
+    img.onerror = null;
+  }
+  function errorImgCover(img) {
+    img.src = "https://unpkg.com/volantis-static@0.0.1654736714924/media/placeholder/cover/76b86c0226ffd.svg";
+    img.onerror = null;
+  }
+  /******************************************************************************/
+</script>
+
+  <!-- import head_end begin -->
+  <!-- import head_end end -->
+  <!-- Custom Files headEnd begin-->
+  
+  <!-- Custom Files headEnd end-->
+  <!-- front-matter head_end begin -->
+  <!-- front-matter head_end end -->
+</head>
+  <body itemscope itemtype="http://schema.org/WebPage">
+    <!-- import body_begin begin-->
+    <!-- import body_begin end-->
+    <!-- Custom Files bodyBegin begin-->
+    
+    <!-- Custom Files bodyBegin end-->
+    <!-- front-matter body_begin begin -->
+    <!-- front-matter body_begin end -->
+    <header itemscope itemtype="http://schema.org/WPHeader" id="l_header" class="l_header auto shadow floatable blur show" style='opacity: 0' >
+  <div class='container'>
+  <div id='wrapper'>
+    <div class='nav-sub'>
+      <p class="title"></p>
+      <ul class='switcher nav-list-h m-phone' id="pjax-header-nav-list">
+        <li><a id="s-comment" class="fa-solid fa-comments fa-fw" target="_self"  href="/" onclick="return false;" title="comment"></a></li>
+        
+          <li><a id="s-toc" class="s-toc fa-solid fa-list fa-fw" target="_self"  href="/" onclick="return false;" title="toc"></a></li>
+        
+      </ul>
+    </div>
+		<div class="nav-main">
+      
+        
+        <a class="title flat-box" target="_self" href='/'>
+          
+            <img no-lazy class='logo' src='https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/Logo-NavBar@3x.png'/>
+          
+          
+          
+        </a>
+      
+
+			<div class='menu navigation'>
+				<ul class='nav-list-h m-pc'>
+          
+          
+          
+            
+            
+              <li>
+                <a class="menuitem flat-box faa-parent animated-hover"
+                href="/" title="博客"
+                  
+                  
+                  
+                    active-action="action-home"
+                  >
+                  <i class='fa-solid fa-rss fa-fw'></i>博客
+                </a>
+                
+              </li>
+            
+          
+          
+            
+            
+              <li>
+                <a class="menuitem flat-box faa-parent animated-hover"
+                href="/categories/" title="分类"
+                  
+                  
+                  
+                    active-action="action-categories"
+                  >
+                  <i class='fa-solid fa-folder-open fa-fw'></i>分类
+                </a>
+                
+              </li>
+            
+          
+          
+            
+            
+              <li>
+                <a class="menuitem flat-box faa-parent animated-hover"
+                href="/tags/" title="标签"
+                  
+                  
+                  
+                    active-action="action-tags"
+                  >
+                  <i class='fa-solid fa-tags fa-fw'></i>标签
+                </a>
+                
+              </li>
+            
+          
+          
+            
+            
+              <li>
+                <a class="menuitem flat-box faa-parent animated-hover"
+                href="/archives/" title="归档"
+                  
+                  
+                  
+                    active-action="action-archives"
+                  >
+                  <i class='fa-solid fa-archive fa-fw'></i>归档
+                </a>
+                
+              </li>
+            
+          
+          
+            
+            
+              <li>
+                <a class="menuitem flat-box faa-parent animated-hover"
+                href="/friends/" title="友链"
+                  
+                  
+                  
+                    active-action="action-friends"
+                  >
+                  <i class='fa-solid fa-link fa-fw'></i>友链
+                </a>
+                
+              </li>
+            
+          
+          
+            
+            
+              <li>
+                <a class="menuitem flat-box faa-parent animated-hover"
+                href="/about/" title="关于"
+                  
+                  
+                  
+                    active-action="action-about"
+                  >
+                  <i class='fa-solid fa-info-circle fa-fw'></i>关于
+                </a>
+                
+              </li>
+            
+          
+          
+				</ul>
+			</div>
+      
+      <div class="m_search">
+        <form name="searchform" class="form u-search-form">
+          <i class="icon fa-solid fa-search fa-fw"></i>
+          <input type="text" class="input u-search-input" placeholder="Search..." />
+        </form>
+      </div>
+      
+
+			<ul class='switcher nav-list-h m-phone'>
+				
+					<li><a class="s-search fa-solid fa-search fa-fw" target="_self" href="/" onclick="return false;" title="search"></a></li>
+				
+				<li>
+          <a class="s-menu fa-solid fa-bars fa-fw" target="_self" href="/" onclick="return false;" title="menu"></a>
+          <ul class="menu-phone list-v navigation white-box">
+            
+              
+            
+              <li>
+                <a class="menuitem flat-box faa-parent animated-hover"
+                href="/" title="博客"
+                  
+                  
+                  
+                    active-action="action-home"
+                  >
+                  <i class='fa-solid fa-rss fa-fw'></i>博客
+                </a>
+                
+              </li>
+            
+          
+            
+              
+            
+              <li>
+                <a class="menuitem flat-box faa-parent animated-hover"
+                href="/categories/" title="分类"
+                  
+                  
+                  
+                    active-action="action-categories"
+                  >
+                  <i class='fa-solid fa-folder-open fa-fw'></i>分类
+                </a>
+                
+              </li>
+            
+          
+            
+              
+            
+              <li>
+                <a class="menuitem flat-box faa-parent animated-hover"
+                href="/tags/" title="标签"
+                  
+                  
+                  
+                    active-action="action-tags"
+                  >
+                  <i class='fa-solid fa-tags fa-fw'></i>标签
+                </a>
+                
+              </li>
+            
+          
+            
+              
+            
+              <li>
+                <a class="menuitem flat-box faa-parent animated-hover"
+                href="/archives/" title="归档"
+                  
+                  
+                  
+                    active-action="action-archives"
+                  >
+                  <i class='fa-solid fa-archive fa-fw'></i>归档
+                </a>
+                
+              </li>
+            
+          
+            
+              
+            
+              <li>
+                <a class="menuitem flat-box faa-parent animated-hover"
+                href="/friends/" title="友链"
+                  
+                  
+                  
+                    active-action="action-friends"
+                  >
+                  <i class='fa-solid fa-link fa-fw'></i>友链
+                </a>
+                
+              </li>
+            
+          
+            
+              
+            
+              <li>
+                <a class="menuitem flat-box faa-parent animated-hover"
+                href="/about/" title="关于"
+                  
+                  
+                  
+                    active-action="action-about"
+                  >
+                  <i class='fa-solid fa-info-circle fa-fw'></i>关于
+                </a>
+                
+              </li>
+            
+          
+            
+          </ul>
+        </li>
+			</ul>
+
+      <!-- Custom Files header begin -->
+      
+      <!-- Custom Files header end -->
+		</div>
+	</div>
+  </div>
+</header>
+
+    <div id="l_body">
+      <div id="l_cover">
+  
+    
+      <!-- see: /layout/_partial/scripts/_ctrl/coverCtrl.ejs -->
+      <div id="none" class='cover-wrapper post dock' style="display: none;">
+        
+  <div class='cover-bg lazyload placeholder' data-bg="https://gcore.jsdelivr.net/gh/MHG-LAB/cron@gh-pages/bing/bing.jpg"></div>
+
+<div class='cover-body'>
+  <div class='top'>
+    
+    
+      <p class="title">Volantis</p>
+    
+    
+  </div>
+  <div class='bottom'>
+    <div class='menu navigation'>
+      <div class='list-h'>
+        
+          
+            <a href="/v4/getting-started/"
+              
+              
+              active-action="action-v4getting-started">
+              <img src='https://unpkg.com/volantis-static@0.0.1654736714924/media/twemoji/assets/svg/1f5c3.svg'><p>文档</p>
+            </a>
+          
+            <a href="/faqs/"
+              
+              
+              active-action="action-faqs">
+              <img src='https://unpkg.com/volantis-static@0.0.1654736714924/media/twemoji/assets/svg/1f516.svg'><p>帮助</p>
+            </a>
+          
+            <a href="/examples/"
+              
+              
+              active-action="action-examples">
+              <img src='https://unpkg.com/volantis-static@0.0.1654736714924/media/twemoji/assets/svg/1f396.svg'><p>示例</p>
+            </a>
+          
+            <a href="/contributors/"
+              
+              
+              active-action="action-contributors">
+              <img src='https://unpkg.com/volantis-static@0.0.1654736714924/media/twemoji/assets/svg/1f389.svg'><p>社区</p>
+            </a>
+          
+            <a href="/archives/"
+              
+              
+              active-action="action-archives">
+              <img src='https://unpkg.com/volantis-static@0.0.1654736714924/media/twemoji/assets/svg/1f4f0.svg'><p>博客</p>
+            </a>
+          
+            <a target="_blank" rel="noopener" href="https://github.com/volantis-x/hexo-theme-volantis/"
+              
+              
+              active-action="action-https:githubcomvolantis-xhexo-theme-volantis">
+              <img src='https://unpkg.com/volantis-static@0.0.1654736714924/media/twemoji/assets/svg/1f9ec.svg'><p>源码</p>
+            </a>
+          
+        
+      </div>
+    </div>
+  </div>
+</div>
+
+        <div id="scroll-down" style="display: none;"><i class="fa fa-chevron-down scroll-down-effects"></i></div>
+      </div>
+    
+  
+</div>
+
+      <div id="safearea">
+        <div class="body-wrapper">
+          
+<div id="l_main" class=''>
+  <article itemscope itemtype="http://schema.org/Article" class="article post white-box reveal md shadow floatable blur article-type-post" id="post" itemscope itemprop="blogPost">
+  <link itemprop="mainEntityOfPage" href="https://azxkenzo.github.io/2023/04/14/Android-Build-System/">
+  <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+    <meta itemprop="name" content="SonGoKu の Blog">
+  </span>
+  <span hidden itemprop="post" itemscope itemtype="http://schema.org/Post">
+    <meta itemprop="name" content="SonGoKu の Blog">
+    <meta itemprop="description" content="勤练带来力量">
+  </span>
+  
+
+
+  
+    <span hidden>
+      <meta itemprop="image" content="https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png">
+    </span>
+  
+  <div class="article-meta" id="top">
+    
+    
+    
+      <h1 class="title" itemprop="name headline">
+        Android - Build System
+      </h1>
+      <div class='new-meta-box'>
+        
+          
+            
+<div class='new-meta-item author' itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <a itemprop="url" class='author' href="/" rel="nofollow">
+    <img itemprop="image" src="https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/apple-touch-icon.png" class="lazyload" data-srcset="https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/apple-touch-icon.png" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==">
+    <p itemprop="name">请设置文章作者</p>
+  </a>
+</div>
+
+          
+        
+          
+            
+
+          
+        
+          
+            <div class="new-meta-item date" itemprop="dateCreated datePublished" datetime="2023-04-14T11:53:38+08:00">
+  <a class='notlink'>
+    <i class="fa-solid fa-calendar-alt fa-fw" aria-hidden="true"></i>
+    <p>发布于：2023年4月14日</p>
+  </a>
+</div>
+
+          
+        
+          
+            
+
+
+
+          
+        
+        <!-- Custom Files topMeta begin-->
+        
+        <!-- Custom Files topMeta end-->
+      </div>
+    
+  </div>
+
+
+  <div id="layoutHelper-page-plugins"></div>
+  <div id="post-body" itemprop="articleBody">
+    <p>Android build system 编译应用资源和源代码并将它们打包成 APK 或 Android App Bundle，你可以测试、部署、签名和分发这些应用程序包。</p>
+<p>Android Studio 使用高级构建工具包 Gradle 来自动化和管理构建过程，同时允许你定义灵活的自定义构建配置。 每个构建配置都可以定义自己的一组代码和资源，同时重用所有版本的应用程序通用的部分。 Android Gradle plugin 与构建工具包配合使用，提供特定于构建和测试 Android 应用程序的流程和可配置设置。</p>
+<p>Gradle 和 AGP 独立于 Android Studio 运行。 这意味着你可以从 Android Studio、你机器上的命令行或未安装 Android Studio 的机器（例如持续集成服务器）上构建你的 Android 应用程序。</p>
+<h2 id="The-build-process"><a href="#The-build-process" class="headerlink" title="The build process"></a>The build process</h2><p>构建过程涉及许多工具和过程，可将你的项目转换为 Android 应用程序包 (APK) 或 Android App Bundle (AAB)。</p>
+<p>AGP 为你完成大部分构建过程，但了解构建过程的某些方面可能很有用，这样你就可以调整构建以满足你的要求。</p>
+<p>不同的项目可能有不同的构建目标。 例如，第三方库的构建会生成 AAR 或 JAR 库。 但是，应用是最常见的项目类型，应用项目的构建会生成应用的 debug 或 release APK 或 AAB，你可以部署、测试或发布给外部用户。</p>
+<h2 id="Android-build-glossary-词汇表"><a href="#Android-build-glossary-词汇表" class="headerlink" title="Android build glossary(词汇表)"></a>Android build glossary(词汇表)</h2><p>Gradle 和 AGP 可帮助你配置构建的以下方面：</p>
+<h4 id="Build-types"><a href="#Build-types" class="headerlink" title="Build types"></a>Build types</h4><p>构建类型定义了 Gradle 在构建和打包你的应用程序时使用的某些属性。 构建类型通常针对开发生命周期的不同阶段进行配置。</p>
+<p>例如，debug 构建类型启用 debug 选项并使用 debug 密钥对应用程序进行签名，而 release 构建类型可能会收缩、混淆并使用 release 密钥对你的应用程序进行签名以进行分发。</p>
+<p>必须至少定义一种构建类型来构建你的应用程序。 Android Studio 默认创建 debug 和 release 构建类型。</p>
+<h4 id="Product-flavors"><a href="#Product-flavors" class="headerlink" title="Product flavors"></a>Product flavors</h4><p>Product flavors 代表你可以向用户发布的应用程序的不同版本，例如免费和付费版本。 可以自定义 Product flavor 以使用不同的代码和资源，同时共享和重用所有版本的应用程序通用的部分。 Product flavor 是可选的，你必须手动创建它们。</p>
+<h4 id="Build-variants"><a href="#Build-variants" class="headerlink" title="Build variants"></a>Build variants</h4><p>Build variants 是 build type 和 product flavor 的交叉产品，是 Gradle 用于构建你的应用程序的配置。 使用构建变体，可以在开发期间构建 product flavors 的 debug 版本，并签名 product flavors 的 release 版本用于分发。 虽然你不直接配置构建变体，但你可以配置构成它们的 build types 和 product flavors。 创建额外的 build types 或 product flavors 也会创建额外的构建变体。</p>
+<h4 id="Manifest-entries"><a href="#Manifest-entries" class="headerlink" title="Manifest entries"></a>Manifest entries</h4><p>可以在构建变体配置中为清单文件的某些属性指定值。 这些构建值会覆盖清单文件中的现有值。 如果你想使用不同的应用程序名称、最低 SDK 版本或目标 SDK 版本生成应用程序的多个变体，这将非常有用。 当存在多个清单时，清单合并工具合并清单设置。</p>
+<h4 id="Dependencies"><a href="#Dependencies" class="headerlink" title="Dependencies"></a>Dependencies</h4><p>构建系统管理来自本地文件系统和远程存储库的项目依赖项。 这意味着你不必手动搜索、下载依赖项的二进制包并将其复制到项目目录中。</p>
+<h4 id="Signing"><a href="#Signing" class="headerlink" title="Signing"></a>Signing</h4><p>构建系统允许你在构建配置中指定签名设置，并且它可以在构建过程中自动签署你的应用程序。 构建系统使用 使用已知凭证的默认密钥和证书对 debug 版本进行签名，以避免在构建时提示密码。 除非你为此构建明确定义签名配置，否则构建系统不会签署 release 版本。 如果你没有 release 密钥，你可以按照为你的应用程序签名中所述生成一个。 通过大多数应用程序商店分发应用程序需要签名的 release 版本。</p>
+<h4 id="Code-and-resource-shrinking"><a href="#Code-and-resource-shrinking" class="headerlink" title="Code and resource shrinking"></a>Code and resource shrinking</h4><p>构建系统允许你为每个构建变体指定不同的 ProGuard 规则文件。 在构建你的应用程序时，构建系统会应用一组适当的规则来使用其内置的缩减工具（例如 R8）缩减你的代码和资源。 压缩代码和资源有助于减小 APK 或 AAB 的大小。</p>
+<h4 id="Multiple-APK-support"><a href="#Multiple-APK-support" class="headerlink" title="Multiple APK support"></a>Multiple APK support</h4><p>构建系统可让你自动构建不同的 APK，每个 APK 仅包含特定屏幕密度或应用程序二进制接口 (ABI) 所需的代码和资源。 </p>
+<h2 id="Build-configuration"><a href="#Build-configuration" class="headerlink" title="Build configuration"></a>Build configuration</h2><p>创建自定义构建配置需要你更改一个或多个构建配置文件或 build.gradle.kts 文件。 这些纯文本文件使用领域特定语言 (DSL) 来描述和操作使用 Kotlin 脚本的构建逻辑，这是 Kotlin 语言的一种风格。 你还可以使用 Groovy（一种用于 Java 虚拟机 (JVM) 的动态语言）来配置你的构建。 用 Groovy 编写的构建脚本称为 build.gradle 文件。</p>
+<p>你无需了解 Kotlin 脚本或 Groovy 即可开始配置你的构建，因为 Android Gradle 插件引入了你需要的大部分 DSL 元素。 要了解有关 Android Gradle 插件 DSL 的更多信息，请阅读 DSL 参考文档。 Kotlin 脚本还依赖于底层的 Gradle Kotlin DSL。</p>
+<p>当开始一个新项目时，Android Studio 会自动为你创建其中一些文件并根据合理的默认值填充它们。 项目文件结构具有以下布局：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">└── MyApp/  # Project</span><br><span class="line">    ├── gradle/</span><br><span class="line">    │   └── wrapper/</span><br><span class="line">    │       └── gradle-wrapper.properties</span><br><span class="line">    ├── build.gradle(.kts)</span><br><span class="line">    ├── settings.gradle(.kts)</span><br><span class="line">    └── app/  # Module</span><br><span class="line">        ├── build.gradle(.kts)</span><br><span class="line">        └── build/</span><br><span class="line">            ├── libs/</span><br><span class="line">            └── src/</span><br><span class="line">                └── main/  # Source set</span><br><span class="line">                    ├── java/</span><br><span class="line">                    │   └── com.example.myapp</span><br><span class="line">                    ├── res/</span><br><span class="line">                    │   ├── drawable/</span><br><span class="line">                    │   ├── values/</span><br><span class="line">                    │   └── ...</span><br><span class="line">                    └── AndroidManifest.xml</span><br></pre></td></tr></table></figure>
+<p>有一些 Gradle 构建配置文件是 Android 应用程序的标准项目结构的一部分。 在开始配置构建之前，了解每个文件的范围和用途以及它们定义的基本 DSL 元素非常重要。</p>
+<h3 id="The-Gradle-Wrapper-file"><a href="#The-Gradle-Wrapper-file" class="headerlink" title="The Gradle Wrapper file"></a>The Gradle Wrapper file</h3><p>Gradle wrapper (<code>gradlew</code>) 是一个包含在源代码中的小型应用程序，用于下载并启动 Gradle 本身。 这将创建更加一致的构建执行。 开发人员下载应用程序源并运行 gradlew。 这将下载所需的 Gradle 发行版，并启动 Gradle 来构建你的应用程序。</p>
+<p><code>gradle/wrapper/gradle-wrapper.properties</code> 文件包含一个属性 <code>distributionUrl</code>，它描述了用于运行构建的 Gradle 版本。</p>
+<p>提示：如果同时处理多个项目，如果可能，请确保所有项目使用相同的 Gradle 版本。 否则，Gradle 会为每个 Gradle 版本创建 Gradle 守护进程的副本，此外还会为用于运行 Gradle 的每个 JDK 创建单独的副本。 这会增加内存和 CPU 使用率，可能会减慢构建速度或影响计算机上的其他工作。</p>
+<h3 id="The-Gradle-settings-file"><a href="#The-Gradle-settings-file" class="headerlink" title="The Gradle settings file"></a>The Gradle settings file</h3><p><code>settings.gradle.kts</code> 文件（对于 Kotlin DSL）或 <code>settings.gradle</code> 文件（对于 Groovy DSL）位于根项目目录中。 此设置文件定义项目级 repository 设置，并通知 Gradle 在构建你的应用程序时应包含哪些模块。 多模块项目需要指定应该进入最终构建的每个模块。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line">pluginManagement &#123;</span><br><span class="line"></span><br><span class="line">    /**</span><br><span class="line">      * The pluginManagement.repositories block configures the</span><br><span class="line">      * repositories Gradle uses to search or download the Gradle plugins and</span><br><span class="line">      * their transitive dependencies. Gradle pre-configures support for remote</span><br><span class="line">      * repositories such as JCenter, Maven Central, and Ivy. You can also use</span><br><span class="line">      * local repositories or define your own remote repositories. The code below</span><br><span class="line">      * defines the Gradle Plugin Portal, Google&#x27;s Maven repository,</span><br><span class="line">      * and the Maven Central Repository as the repositories Gradle should use to look for its</span><br><span class="line">      * dependencies.</span><br><span class="line">      */</span><br><span class="line"></span><br><span class="line">    repositories &#123;</span><br><span class="line">        gradlePluginPortal()</span><br><span class="line">        google()</span><br><span class="line">        mavenCentral()</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">dependencyResolutionManagement &#123;</span><br><span class="line"></span><br><span class="line">    /**</span><br><span class="line">      * The dependencyResolutionManagement.repositories</span><br><span class="line">      * block is where you configure the repositories and dependencies used by</span><br><span class="line">      * all modules in your project, such as libraries that you are using to</span><br><span class="line">      * create your application. However, you should configure module-specific</span><br><span class="line">      * dependencies in each module-level build.gradle file. For new projects,</span><br><span class="line">      * Android Studio includes Google&#x27;s Maven repository and the Maven Central</span><br><span class="line">      * Repository by default, but it does not configure any dependencies (unless</span><br><span class="line">      * you select a template that requires some).</span><br><span class="line">      */</span><br><span class="line"></span><br><span class="line">  repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)</span><br><span class="line">  repositories &#123;</span><br><span class="line">      google()</span><br><span class="line">      mavenCentral()</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line">rootProject.name = &quot;My Application&quot;</span><br><span class="line">include(&quot;:app&quot;)</span><br></pre></td></tr></table></figure>
+
+<h3 id="The-top-level-build-file"><a href="#The-top-level-build-file" class="headerlink" title="The top-level build file"></a>The top-level build file</h3><p>顶级 <code>build.gradle.kts</code> 文件（对于 Kotlin DSL）或 <code>build.gradle</code> 文件（对于 Groovy DSL）位于根项目目录中。 它定义了适用于项目中所有模块的依赖项。 默认情况下，顶级构建文件使用 <code>plugins</code> 块来定义项目中所有模块通用的 Gradle 依赖项。 此外，顶级构建文件包含用于清理构建目录的代码。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">plugins &#123;</span><br><span class="line"></span><br><span class="line">    /**</span><br><span class="line">     * Use `apply false` in the top-level build.gradle file to add a Gradle</span><br><span class="line">     * plugin as a build dependency but not apply it to the current (root)</span><br><span class="line">     * project. Don&#x27;t use `apply false` in sub-projects. For more information,</span><br><span class="line">     * see Applying external plugins with same version to subprojects.</span><br><span class="line">     */</span><br><span class="line"></span><br><span class="line">    id &#x27;com.android.application&#x27; version &#x27;8.0.0&#x27; apply false</span><br><span class="line">    id &#x27;com.android.library&#x27; version &#x27;8.0.0&#x27; apply false</span><br><span class="line">    id &#x27;org.jetbrains.kotlin.android&#x27; version &#x27;1.8.10&#x27; apply false</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h4 id="Configure-project-wide-properties"><a href="#Configure-project-wide-properties" class="headerlink" title="Configure project-wide properties"></a>Configure project-wide properties</h4><p>对于包含多个模块的 Android 项目，在项目级别定义某些属性并在所有模块之间共享它们可能很有用。 你可以通过向顶级 build.gradle.kts 文件（对于 Kotlin DSL）或 build.gradle 文件（对于 Groovy DSL）中的 ext 块添加额外的属性来做到这一点：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">// This block encapsulates custom properties and makes them available to all</span><br><span class="line">// modules in the project. The following are only a few examples of the types</span><br><span class="line">// of properties you can define.</span><br><span class="line">ext &#123;</span><br><span class="line">    sdkVersion = 33</span><br><span class="line">    // You can also create properties to specify versions for dependencies.</span><br><span class="line">    // Having consistent versions between modules can avoid conflicts with behavior.</span><br><span class="line">    appcompatVersion = &quot;1.6.1&quot;</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p>要从同一项目中的模块访问这些属性，请在模块级构建脚本中使用以下语法。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">android &#123;</span><br><span class="line">    // Use the following syntax to access properties you defined at the project level:</span><br><span class="line">    // rootProject.ext.property_name</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    compileSdk rootProject.ext.sdkVersion</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br><span class="line">...</span><br><span class="line">dependencies &#123;</span><br><span class="line">    implementation &quot;androidx.appcompat:appcompat:$&#123;rootProject.ext.appcompatVersion&#125;&quot;</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="The-module-level-build-file"><a href="#The-module-level-build-file" class="headerlink" title="The module-level build file"></a>The module-level build file</h3><p>模块级 <code>build.gradle.kts</code>（对于 Kotlin DSL）或 <code>build.gradle</code> 文件（对于 Groovy DSL）位于每个 <code>project/module/</code> 目录中。 它允许你为其所在的特定模块配置构建设置。配置这些构建设置可以让你提供自定义打包选项，例如其他 build types and product flavors，并覆盖 <code>main/</code> 应用程序清单或顶级构建脚本中的设置 .</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br></pre></td><td class="code"><pre><span class="line">/**</span><br><span class="line"> * 构建配置中的第一部分将 Android Gradle 插件应用于此构建，</span><br><span class="line"> * 并使 android 块可用于指定特定于 Android 的构建选项。</span><br><span class="line"> */</span><br><span class="line"></span><br><span class="line">plugins &#123;</span><br><span class="line">    id &#x27;com.android.application&#x27;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">/**</span><br><span class="line"> * 找到（并可能下载）用于构建 kotlin 源代码的 JDK。 这也作为 sourceCompatibility、targetCompatibility 和 jvmTarget 的默认值。</span><br><span class="line"> * 请注意，这不会影响使用哪个 JDK 来运行 Gradle 构建本身，并且不需要考虑 Gradle 插件（例如 Android Gradle Plugin）所需的 JDK 版本</span><br><span class="line"> */</span><br><span class="line">kotlin &#123;</span><br><span class="line">    jvmToolchain 11</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">/**</span><br><span class="line"> * android 块是你配置所有 Android 特定构建选项的地方。</span><br><span class="line"> */</span><br><span class="line"></span><br><span class="line">android &#123;</span><br><span class="line"></span><br><span class="line">    /**</span><br><span class="line">     * The app&#x27;s namespace. Used primarily to access app resources.</span><br><span class="line">     */</span><br><span class="line"></span><br><span class="line">    namespace &#x27;com.example.myapp&#x27;</span><br><span class="line"></span><br><span class="line">    /**</span><br><span class="line">     * compileSdk 指定 Gradle 应该用来编译你的应用程序的 Android API 级别。</span><br><span class="line">     * 这意味着你的应用程序可以使用此 API 级别及更低级别中包含的 API 功能。</span><br><span class="line">     */</span><br><span class="line"></span><br><span class="line">    compileSdk 33</span><br><span class="line"></span><br><span class="line">    /**</span><br><span class="line">     * defaultConfig 块封装了所有构建变体的默认设置和条目，</span><br><span class="line">     * 并且可以从构建系统动态覆盖 main/AndroidManifest.xml 中的一些属性。</span><br><span class="line">     * 你可以配置产品 flavor 来覆盖不同版本应用程序的这些值。</span><br><span class="line">     */</span><br><span class="line"></span><br><span class="line">    defaultConfig &#123;</span><br><span class="line"></span><br><span class="line">        // Uniquely identifies the package for publishing.</span><br><span class="line">        applicationId &#x27;com.example.myapp&#x27;</span><br><span class="line"></span><br><span class="line">        // Defines the minimum API level required to run the app.</span><br><span class="line">        minSdk 21</span><br><span class="line"></span><br><span class="line">        // Specifies the API level used to test the app.</span><br><span class="line">        targetSdk 33</span><br><span class="line"></span><br><span class="line">        // Defines the version number of your app.</span><br><span class="line">        versionCode 1</span><br><span class="line"></span><br><span class="line">        // Defines a user-friendly version name for your app.</span><br><span class="line">        versionName &quot;1.0&quot;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    /**</span><br><span class="line">     * The buildTypes block is where you can configure multiple build types.</span><br><span class="line">     * By default, the build system defines two build types: debug and release. The</span><br><span class="line">     * debug build type is not explicitly shown in the default build configuration,</span><br><span class="line">     * but it includes debugging tools and is signed with the debug key. The release</span><br><span class="line">     * build type applies ProGuard settings and is not signed by default.</span><br><span class="line">     */</span><br><span class="line"></span><br><span class="line">    buildTypes &#123;</span><br><span class="line"></span><br><span class="line">        /**</span><br><span class="line">         * By default, Android Studio configures the release build type to enable code</span><br><span class="line">         * shrinking, using minifyEnabled, and specifies the default ProGuard rules file.</span><br><span class="line">         */</span><br><span class="line"></span><br><span class="line">        release &#123;</span><br><span class="line">              minifyEnabled true // Enables code shrinking for the release build type.</span><br><span class="line">              proguardFiles getDefaultProguardFile(&#x27;proguard-android.txt&#x27;), &#x27;proguard-rules.pro&#x27;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    /**</span><br><span class="line">     * The productFlavors block is where you can configure multiple product flavors.</span><br><span class="line">     * This lets you create different versions of your app that can</span><br><span class="line">     * override the defaultConfig block with their own settings. Product flavors</span><br><span class="line">     * are optional, and the build system does not create them by default.</span><br><span class="line">     *</span><br><span class="line">     * This example creates a free and paid product flavor. Each product flavor</span><br><span class="line">     * then specifies its own application ID, so that they can exist on the Google</span><br><span class="line">     * Play Store, or an Android device, simultaneously.</span><br><span class="line">     *</span><br><span class="line">     * If you declare product flavors, you must also declare flavor dimensions</span><br><span class="line">     * and assign each flavor to a flavor dimension.</span><br><span class="line">     */</span><br><span class="line"></span><br><span class="line">    flavorDimensions &quot;tier&quot;</span><br><span class="line">    productFlavors &#123;</span><br><span class="line">        free &#123;</span><br><span class="line">            dimension &quot;tier&quot;</span><br><span class="line">            applicationId &#x27;com.example.myapp.free&#x27;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        paid &#123;</span><br><span class="line">            dimension &quot;tier&quot;</span><br><span class="line">            applicationId &#x27;com.example.myapp.paid&#x27;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    </span><br><span class="line">    /**</span><br><span class="line">     * 要覆盖源和目标兼容性（如果与toolchain JDK 版本不同），请添加以下内容。</span><br><span class="line">     * 所有这些默认值与 kotlin.jvmToolchain 相同。 如果你对这些值和 kotlin.jvmToolchain 使用相同的版本，则可以删除这些块。</span><br><span class="line">     */</span><br><span class="line">    //compileOptions &#123;</span><br><span class="line">    //    sourceCompatibility JavaVersion.VERSION_11</span><br><span class="line">    //    targetCompatibility JavaVersion.VERSION_11</span><br><span class="line">    //&#125;</span><br><span class="line">    //kotlinOptions &#123;</span><br><span class="line">    //    jvmTarget = &#x27;11&#x27;</span><br><span class="line">    //&#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">/**</span><br><span class="line"> * The dependencies block in the module-level build configuration file</span><br><span class="line"> * specifies dependencies required to build only the module itself.</span><br><span class="line"> * To learn more, go to Add build dependencies.</span><br><span class="line"> */</span><br><span class="line"></span><br><span class="line">dependencies &#123;</span><br><span class="line">    implementation project(&quot;:lib&quot;)</span><br><span class="line">    implementation &#x27;androidx.appcompat:appcompat:1.6.1&#x27;</span><br><span class="line">    implementation fileTree(dir: &#x27;libs&#x27;, include: [&#x27;*.jar&#x27;])</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h3 id="Gradle-properties-files"><a href="#Gradle-properties-files" class="headerlink" title="Gradle properties files"></a>Gradle properties files</h3><p>Gradle 还包含两个属性文件，位于你的根项目目录中，你可以使用它们来指定 Gradle 构建工具包本身的设置：</p>
+<p><code>gradle.properties</code></p>
+<p>你可以在此处配置项目范围的 Gradle 设置，例如 Gradle 守护程序的最大堆大小。</p>
+<p><code>local.properties</code></p>
+<p>为构建系统配置本地环境属性，包括以下内容：</p>
+<ul>
+<li><code>ndk.dir</code> - NDK 的路径。 此属性已被弃用。 NDK 的任何下载版本都安装在 Android SDK 目录中的 ndk 目录中。</li>
+<li><code>sdk.dir</code> - SDK 的路径。</li>
+<li><code>cmake.dir</code> - CMake 的路径。</li>
+<li><code>ndk.symlinkdir</code> - 在 Android Studio 3.5 及更高版本中，创建指向 NDK 的符号链接，该链接可以比安装的 NDK 路径更短。</li>
+</ul>
+<h3 id="Source-sets"><a href="#Source-sets" class="headerlink" title="Source sets"></a>Source sets</h3><p>Android Studio 在逻辑上将每个模块的源代码和资源分组到 source sets 中。 当你创建一个新模块时，Android Studio 会在该模块中创建一个 <code>main/</code> source 集。 模块的 <code>main/</code> 源集包括其所有构建变体使用的代码和资源。</p>
+<p>其他源集目录是可选的，Android Studio 不会在你配置新的构建变体时自动为你创建它们。 但是，与 <code>main/</code> 类似，创建源集有助于组织 Gradle 仅在构建特定版本的应用程序时才应使用的文件和资源：</p>
+<p><code>src/main/</code>  此源集包括所有构建变体通用的代码和资源。</p>
+<p><code>src/buildType/</code>  创建此源集以仅包含特定构建类型的代码和资源。</p>
+<p><code>src/productFlavor/</code>  创建此源集以仅包含特定产品风格的代码和资源。</p>
+<p><code>src/productFlavorBuildType/</code>  创建此源集以仅包含特定构建变体的代码和资源。</p>
+<p>例如，要生成应用程序的“fullDebug”版本，构建系统会合并来自以下源集中的代码、设置和资源：</p>
+<ul>
+<li><code>src/fullDebug/</code> (the build variant source set)</li>
+<li><code>src/debug/</code> (the build type source set)</li>
+<li><code>src/full/</code> (the product flavor source set)</li>
+<li><code>src/main/</code> (the main source set)</li>
+</ul>
+<p>注意：当你在 Android Studio 中创建新文件或目录时，请使用 File &gt; New 菜单选项为特定源集创建它。 你可以选择的源集基于你的构建配置，Android Studio 会自动创建所需的目录（如果它们尚不存在）。</p>
+<p>如果不同的源集包含同一文件的不同版本，Gradle 在决定使用哪个文件时会使用以下优先级顺序。 左侧的源集覆盖右侧源集的文件和设置：</p>
+<p><code>build variant &gt; build type &gt; product flavor &gt; main source set &gt; library dependencies </code></p>
+<h2 id="Java-versions-in-Android-builds"><a href="#Java-versions-in-Android-builds" class="headerlink" title="Java versions in Android builds"></a>Java versions in Android builds</h2><p>无论你的源代码是用 Java、Kotlin 还是两者编写的，你都必须在多个地方为你的构建选择 JDK 或 Java 语言版本。</p>
+<h3 id="词汇表"><a href="#词汇表" class="headerlink" title="词汇表"></a>词汇表</h3><h4 id="Java-Development-Kit-JDK"><a href="#Java-Development-Kit-JDK" class="headerlink" title="Java Development Kit (JDK)"></a>Java Development Kit (JDK)</h4><p>JDK 包含：</p>
+<ul>
+<li>工具，例如编译器、分析器和存档创建器。 这些在构建过程中在幕后用于创建应用程序。</li>
+<li>包含可从 Kotlin 或 Java 源代码调用的 API 的库。 请注意，并非所有功能均可在 Android 上使用。</li>
+<li>Java 虚拟机 (JVM)，执行 Java 应用程序的解释器。 你使用 JVM 来运行 Android Studio IDE 和 Gradle 构建工具。 Android 设备或模拟器上不使用 JVM。</li>
+</ul>
+<h4 id="JetBrains-Runtime-JBR"><a href="#JetBrains-Runtime-JBR" class="headerlink" title="JetBrains Runtime (JBR)"></a>JetBrains Runtime (JBR)</h4><p>JetBrains Runtime (JBR) 是一个增强的 JDK，随 Android Studio 一起分发。 它包括在 Studio 和相关 JetBrains 产品中使用的多项优化，但也可用于运行其他 Java 应用程序。</p>
+<h3 id="如何选择-JDK-来运行-Android-Studio？"><a href="#如何选择-JDK-来运行-Android-Studio？" class="headerlink" title="如何选择 JDK 来运行 Android Studio？"></a>如何选择 JDK 来运行 Android Studio？</h3><p>我们建议你使用 JBR 来运行 Android Studio。 它与 Android Studio 一起部署并用于测试 Android Studio，并包含优化 Android Studio 使用的增强功能。 为确保这一点，请勿设置 STUDIO_JDK 环境变量。</p>
+<p>Android Studio 的启动脚本按以下顺序查找 JVM：</p>
+<ol>
+<li><code>STUDIO_JDK</code> environment variable</li>
+<li><code>studio.jdk</code> directory (in the Android Studio distribution)</li>
+<li><code>jbr</code> directory (JetBrains Runtime), in the Android Studio distribution. Recommended.</li>
+<li><code>JDK_HOME</code> environment variable</li>
+<li><code>JAVA_HOME</code> environment variable</li>
+<li>java executable in the <code>PATH</code> environment variable</li>
+</ol>
+<h3 id="如何选择运行我的-Gradle-构建的-JDK？"><a href="#如何选择运行我的-Gradle-构建的-JDK？" class="headerlink" title="如何选择运行我的 Gradle 构建的 JDK？"></a>如何选择运行我的 Gradle 构建的 JDK？</h3><p>如果你使用 Android Studio 中的按钮运行 Gradle，则将使用 Android Studio 设置中设置的 JDK 来运行 Gradle。 如果你在 Android Studio 内部或外部的终端中运行 Gradle，JAVA_HOME 环境变量（如果设置）将确定哪个 JDK 运行 Gradle 脚本。 如果未设置 JAVA_HOME，它将使用 PATH 环境变量中的 java 命令。</p>
+<p>为了获得最一致的结果，请确保设置 JAVA_HOME 环境变量，并将 Android Studio 中的 Gradle JDK 设置为相同的 JDK。</p>
+<p>注意：如果你通过右键单击并选择使用 IDE 运行突出显示的命令来在 Android Studio 终端中运行 Gradle 命令，那么它将使用 Android Studio 设置中的 JDK，而不是 JAVA_HOME。</p>
+<p>运行构建时，Gradle 会创建一个称为 daemon 的进程来执行实际构建。 只要构建使用相同的 JDK 和 Gradle 版本，就可以重用此过程。 重用 daemon 可以减少启动新 JVM 和初始化构建系统的时间。</p>
+<p>如果你使用不同的 JDK 或 Gradle 版本开始构建，则会创建额外的 daemon，从而消耗更多的 CPU 和内存。</p>
+<p>提示：同时处理多个项目时，如果可能，请在其 gradle-wrapper.properties 文件中指定相同的 Gradle 版本，以减少创建的 Gradle daemon 的数量。</p>
+<h4 id="Set-the-Gradle-JDK-in-Android-Studio"><a href="#Set-the-Gradle-JDK-in-Android-Studio" class="headerlink" title="Set the Gradle JDK in Android Studio"></a>Set the Gradle JDK in Android Studio</h4><p>要设置并选择下载 Android Studio 用于运行 Gradle 的 JDK，请转至 Settings &gt; Build, Execution, Deployment &gt; Build Tools &gt; Gradle and edit the Gradle JDK field.</p>
+<p>确保选择的 JDK 版本高于或等于你在 Gradle 构建中使用的插件所使用的 JDK 版本。 要确定 Android Gradle 插件 (AGP) 所需的最低 JDK 版本，请参阅发行说明中的兼容性表。</p>
+<p>例如，Android Gradle 插件版本 8.x 需要 JDK 17。</p>
+<h3 id="我可以在-Java-或-Kotlin-源代码中使用哪些-Java-API？"><a href="#我可以在-Java-或-Kotlin-源代码中使用哪些-Java-API？" class="headerlink" title="我可以在 Java 或 Kotlin 源代码中使用哪些 Java API？"></a>我可以在 Java 或 Kotlin 源代码中使用哪些 Java API？</h3><p>Android 应用程序可以使用 JDK 中定义的部分 API，但不是全部。 Android SDK 定义了许多 Java 库函数的实现作为其可用 API 的一部分。 <code>compileSdk</code> 属性指定编译 Kotlin 或 Java 源代码时要使用的 Android SDK 版本。</p>
+<p>每个版本的 Android 都支持特定版本的 JDK 及其可用 Java API 的子集。 如果你使用的 Java API 在 <code>compileSdk</code> 中可用，而在指定的 <code>minSdk</code> 中不可用，则你可以通过称为脱糖的过程在早期版本的 Android 中使用该 API。 请参阅通过脱糖提供的 Java 11+ API，了解受支持的 API。</p>
+<p>使用下表确定每个 Android API 支持哪个 Java 版本，以及在哪里可以找到有关可用 Java API 的详细信息。</p>
+<p>Android 	Java 	API and language features supported<br>14 (API 34) 	17 	Core libraries<br>13 (API 33) 	11 	Core libraries<br>12 (API 32) 	11 	Java API<br>11 and lower 		Android versions  </p>
+<h3 id="哪个-JDK-编译我的-Java-源代码？"><a href="#哪个-JDK-编译我的-Java-源代码？" class="headerlink" title="哪个 JDK 编译我的 Java 源代码？"></a>哪个 JDK 编译我的 Java 源代码？</h3><p>Java toolchain JDK 包含用于构建任何 Java 源代码的 Java 编译器。 该 JDK 还运行 Kotlin 编译器（在 JVM 上运行）。</p>
+<p>toolchain默认为用于运行 Gradle 的 JDK。 如果你使用默认值并在不同的计算机（例如，本地计算机和单独的持续集成服务器）上运行构建，则使用不同的 JDK 版本时，构建的结果可能会有所不同。</p>
+<p>要创建更一致的构建，你可以显式指定 Java toolchain版本。 指定这一点：</p>
+<ul>
+<li>在运行构建的系统上找到兼容的 JDK。<ul>
+<li>如果不存在兼容的 JDK（并且定义了toolchain解析器），则下载一个。</li>
+</ul>
+</li>
+<li>公开toolchain Java API 以供源代码调用。</li>
+<li>使用 Java 语言版本编译 Java 源代码。</li>
+<li>提供 <code>sourceCompatibility</code> 和 <code>targetCompatibility</code> 的默认值。</li>
+</ul>
+<p>我们建议你始终指定 Java toolchain，并确保安装了指定的 JDK，或者将toolchain解析器添加到你的构建中。</p>
+<p>无论你的源代码是用 Java、Kotlin 还是两者编写的，你都可以指定toolchain。 在模块的 <code>build.gradle(.kts)</code> 文件的顶层指定toolchain。</p>
+<p>如果你的源代码仅用 Java 编写，请指定 Java toolchain版本，如下所示：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">java &#123;</span><br><span class="line">    toolchain &#123;</span><br><span class="line">        languageVersion = JavaLanguageVersion.of(17)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>如果你的源仅是 Kotlin 或 Kotlin 和 Java 的混合，请指定 Java toolchain版本，如下所示：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">kotlin &#123;</span><br><span class="line">    jvmToolchain 17</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>toolchain JDK 版本可以与用于运行 Gradle 的 JDK 相同，但请记住它们有不同的用途。</p>
+<h3 id="我可以在-Java-源代码中使用哪些-Java-语言源功能？"><a href="#我可以在-Java-源代码中使用哪些-Java-语言源功能？" class="headerlink" title="我可以在 Java 源代码中使用哪些 Java 语言源功能？"></a>我可以在 Java 源代码中使用哪些 Java 语言源功能？</h3><p><code>sourceCompatibility</code> 属性确定在编译 Java 源代码期间哪些 Java 语言功能可用。 它不影响 Kotlin 源。</p>
+<p>如果未指定，则默认为用于运行 Gradle 的 Java toolchain或 JDK。 我们建议你始终显式指定toolchain（首选）或 <code>sourceCompatibility</code>。</p>
+<p>在模块的 build.gradle(.kts) 文件中指定 <code>sourceCompatibility</code>。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">android &#123;</span><br><span class="line">    compileOptions &#123;</span><br><span class="line">        sourceCompatibility JavaVersion.VERSION_17</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>注意：从 Android Studio Giraffe 开始，导入项目时，<code>sourceCompatibility</code> 选项也用作编写 Java 源代码时 IDE 代码辅助和 linting 的默认选项。 某些 Java 语言功能需要库支持，并且在 Android 上不可用。 compileSdk 选项确定哪些库可用。 其他功能（例如 switch 表达式）仅需要 Java 编译器并可在 Android 上运行。</p>
+<h3 id="编译-Kotlin-或-Java-源代码时可以使用哪些-Java-二进制功能？"><a href="#编译-Kotlin-或-Java-源代码时可以使用哪些-Java-二进制功能？" class="headerlink" title="编译 Kotlin 或 Java 源代码时可以使用哪些 Java 二进制功能？"></a>编译 Kotlin 或 Java 源代码时可以使用哪些 Java 二进制功能？</h3><p>指定 <code>targetCompatibility</code> 和 <code>jvmTarget</code> 分别确定为编译的 Java 和 Kotlin 源生成字节码时使用的 Java 类格式版本。</p>
+<p>一些 Kotlin 功能在添加等效的 Java 功能之前就已存在。 早期的 Kotlin 编译器必须创建自己的方式来表示这些 Kotlin 功能。 其中一些功能后来被添加到 Java 中。 在更高的 jvmTarget 级别中，Kotlin 编译器可能会直接使用 Java 功能，这可能会带来更好的性能。</p>
+<p><code>targetCompatibility</code> 默认与 <code>sourceCompatibility</code> 的值相同，但如果指定，则必须大于或等于 <code>sourceCompatibility</code>。</p>
+<p><code>jvmTarget</code> 默认为toolchain版本。</p>
+<p>不同版本的Android支持不同版本的Java。 你可以通过增加 <code>targetCompatibility</code> 和 <code>jvmTarget</code> 来利用其他 Java 功能，但这可能会迫使你还增加最低 Android SDK 版本以确保该功能可用。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">android &#123;</span><br><span class="line">    compileOptions &#123;</span><br><span class="line">        targetCompatibility JavaVersion.VERSION_17</span><br><span class="line">    &#125;</span><br><span class="line">    kotlinOptions &#123;</span><br><span class="line">        jvmTarget &#x27;17&#x27;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<h2 id="Configure-the-app-module"><a href="#Configure-the-app-module" class="headerlink" title="Configure the app module"></a>Configure the app module</h2><h3 id="Set-the-application-ID"><a href="#Set-the-application-ID" class="headerlink" title="Set the application ID"></a>Set the application ID</h3><p>每个 Android 应用程序都有一个唯一的应用程序 ID，看起来像 Java 或 Kotlin 包名称，例如 com.example.myapp。 此 ID 在设备上和 Google Play 商店中唯一标识你的应用程序。</p>
+<p>重要提示：一旦你发布了你的应用程序，你就永远不应更改应用程序 ID。 如果你更改应用程序 ID，Google Play 商店会将上传视为完全不同的应用程序。 如果你想上传应用的新版本，你必须使用与最初发布时相同的应用程序 ID 和签名证书。</p>
+<p>应用程序 ID 由模块的 build.gradle.kts 文件中的 applicationId 属性定义，如下所示：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">android &#123;</span><br><span class="line">    defaultConfig &#123;</span><br><span class="line">        applicationId &quot;com.example.myapp&quot;</span><br><span class="line">        minSdkVersion 15</span><br><span class="line">        targetSdkVersion 24</span><br><span class="line">        versionCode 1</span><br><span class="line">        versionName &quot;1.0&quot;</span><br><span class="line">    &#125;</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>尽管应用程序 ID 看起来像传统的 Kotlin 或 Java 包名称，但应用程序 ID 的命名规则更加严格：</p>
+<ul>
+<li>它必须至少有两个段（一个或多个点）。</li>
+<li>每个段必须以字母开头。</li>
+<li>所有字符都必须是字母数字或下划线 [a-zA-Z0-9_]。</li>
+</ul>
+<p>当你在 Android Studio 中创建新项目时，applicationId 会自动分配你在设置期间选择的包名称。 从那时起，你可以在技术上独立切换这两个属性，但不建议这样做。</p>
+<p>建议你在设置应用程序 ID 时执行以下操作：</p>
+<ul>
+<li>保持应用程序 ID 与命名空间相同。 这两个属性之间的区别可能有点令人困惑，但如果保持它们相同，就没有什么可担心的。</li>
+<li>发布应用程序后，请勿更改应用程序 ID。 如果你更改它，Google Play 商店会将后续上传的内容视为新应用。</li>
+<li>显式定义应用程序 ID。 如果未使用 applicationId 属性显式定义应用程序 ID，它会自动采用与命名空间相同的值。 这意味着更改命名空间会更改应用程序 ID，这通常不是你想要的。</li>
+</ul>
+<p>注意：应用程序 ID 过去直接与代码的包名称相关联，因此某些 Android API 在其方法名称和参数名称中使用术语“包名称”。 这实际上是你的应用程序 ID。 例如，Context.getPackageName() 方法返回你的应用程序 ID。 永远不需要在应用程序代码之外共享代码的真实包名称。</p>
+<h3 id="Set-the-namespace"><a href="#Set-the-namespace" class="headerlink" title="Set the namespace"></a>Set the namespace</h3><p>每个 Android 模块都有一个命名空间，用作其生成的 <code>R</code> 和 <code>BuildConfig</code> 类的 Kotlin 或 Java 包名称。</p>
+<p>你的命名空间由模块的 build.gradle.kts 文件中的命名空间属性定义，如以下代码片段所示。 命名空间最初设置为你在创建项目时选择的包名称。</p>
+<p>在将你的应用程序构建到最终应用程序包 (APK) 中时，Android 构建工具使用该命名空间作为你应用程序生成的 <code>R</code> 类的命名空间，该类用于访问你的应用程序资源。 例如，在前面的构建文件中，<code>R</code> 类是在 <code>com.example.myapp.R</code> 中创建的。</p>
+<p>你为 build.gradle.kts 文件的命名空间属性设置的名称应始终与项目的基本包名称相匹配，你可以在其中保存活动和其他应用程序代码。 你的项目中可以有其他子包，但这些文件必须使用 <code>namespace</code> 属性中的命名空间导入 <code>R</code> 类。</p>
+<h2 id="Add-build-dependencies"><a href="#Add-build-dependencies" class="headerlink" title="Add build dependencies"></a>Add build dependencies</h2><h3 id="Dependency-types"><a href="#Dependency-types" class="headerlink" title="Dependency types"></a>Dependency types</h3><p>要向项目添加依赖项，请在模块的 build.gradle.kts 文件的依赖项块中指定依赖项配置，例如 <code>implementation</code>。</p>
+<p>例如，应用模块的以下 build.gradle.kts 文件包含三种不同类型的依赖项：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">plugins &#123;</span><br><span class="line">    id &#x27;com.android.application&#x27;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">android &#123; ... &#125;</span><br><span class="line"></span><br><span class="line">dependencies &#123;</span><br><span class="line">    // Dependency on a local library module</span><br><span class="line">    implementation project(&#x27;:mylibrary&#x27;)</span><br><span class="line"></span><br><span class="line">    // Dependency on local binaries</span><br><span class="line">    implementation fileTree(dir: &#x27;libs&#x27;, include: [&#x27;*.jar&#x27;])</span><br><span class="line"></span><br><span class="line">    // Dependency on a remote binary</span><br><span class="line">    implementation &#x27;com.example.android:app-magic:12.3&#x27;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这些中的每一个都请求不同类型的库依赖性，如下所示：</p>
+<h4 id="Local-library-module-dependency"><a href="#Local-library-module-dependency" class="headerlink" title="Local library module dependency"></a>Local library module dependency</h4><p><code>implementation project(&#39;:mylibrary&#39;)</code></p>
+<p>这声明了对名为“mylibrary”的 Android 库模块的依赖（此名称必须与使用 include: 在你的 settings.gradle.kts 文件中定义的库名称相匹配）。 当你构建应用程序时，构建系统会编译库模块并将生成的编译内容打包到应用程序中。</p>
+<h4 id="Local-binary-dependency"><a href="#Local-binary-dependency" class="headerlink" title="Local binary dependency"></a>Local binary dependency</h4><p><code>implementation fileTree(dir: &#39;libs&#39;, include: [&#39;*.jar&#39;])</code></p>
+<p>Gradle 在项目的 <code>module_name/libs/</code> 目录中声明对 JAR 文件的依赖项（因为 Gradle 读取相对于 build.gradle.kts 文件的路径）。</p>
+<p>或者，你可以指定单个文件，如下所示：</p>
+<p><code>implementation files(&#39;libs/foo.jar&#39;, &#39;libs/bar.jar&#39;)</code></p>
+<h4 id="Remote-binary-dependency"><a href="#Remote-binary-dependency" class="headerlink" title="Remote binary dependency"></a>Remote binary dependency</h4><p><code>implementation &#39;com.example.android:app-magic:12.3&#39;</code></p>
+<h4 id="Native-dependencies"><a href="#Native-dependencies" class="headerlink" title="Native dependencies"></a>Native dependencies</h4><p>从 Android Gradle 插件 4.0 开始，本机依赖项也可以按照本页所述的方式导入。</p>
+<p>依赖公开本机库的 AAR 将自动使它们可用于 <code>externalNativeBuild</code> 使用的构建系统。 要从你的代码访问这些库，你必须在你的本机构建脚本中链接到它们。 在此页面上，请参阅使用本机依赖项。</p>
+<h3 id="Dependency-configurations"><a href="#Dependency-configurations" class="headerlink" title="Dependency configurations"></a>Dependency configurations</h3><p>在 dependencies 块中，你可以使用几种不同的依赖配置之一来声明库依赖。 每个依赖项配置都为 Gradle 提供了有关如何使用依赖项的不同说明。 下表描述了你可以在 Android 项目中用于依赖项的每个配置。 该表还将这些配置与从 Android Gradle 插件 3.0.0 开始弃用的配置进行了比较。</p>
+<p><code>implementation</code>  Gradle 将依赖项添加到编译类路径并将依赖项打包到构建输出。 但是，当你的模块配置 <strong>implementation</strong> 依赖项时，它会让 Gradle 知道你不希望模块在编译时将依赖项泄露给其他模块。 也就是说，依赖项仅在运行时对其他模块可用。</p>
+<p>使用此依赖项配置而不是 <strong>api</strong> 或 <strong>compile</strong>（已弃用）可以显着缩短构建时间，因为它减少了构建系统需要重新编译的模块数量。 例如，如果一个 <strong>implementation</strong> 依赖项更改了它的 API，Gradle 只会重新编译该依赖项和直接依赖它的模块。 大多数应用程序和测试模块应使用此配置。</p>
+<p><code>api</code>  Gradle 将依赖项添加到编译类路径和构建输出。 当一个模块包含一个 <strong>api</strong> 依赖项时，它会让 Gradle 知道该模块想要将该依赖项传递给其他模块，以便它们在运行时和编译时都可用。</p>
+<p>此配置的行为就像 <strong>compile</strong>（现已弃用）一样，但你应该谨慎使用它，并且仅在需要传递到其他上游消费者的依赖项中使用。 这是因为，如果 <strong>api</strong> 依赖项更改了其外部 API，Gradle 会在编译时重新编译有权访问该依赖项的所有模块。 因此，拥有大量的 <strong>api</strong> 依赖项会显着增加构建时间。 除非你想将依赖项的 API 公开给单独的模块，否则库模块应该使用 <strong>implementation</strong> 依赖项。</p>
+<p><code>compileOnly</code>  Gradle 仅将依赖项添加到编译类路径（即，它不会添加到构建输出）。 这在你创建 Android 模块并且在编译期间需要依赖项时很有用，但在运行时是否存在它是可选的。</p>
+<p>如果你使用此配置，那么你的库模块必须包含一个运行时条件以检查依赖项是否可用，然后优雅地更改其行为，以便在未提供时它仍然可以运行。 这有助于通过不添加不重要的临时依赖项来减小最终应用程序的大小。 此配置的行为与提供的一样（现已弃用）。</p>
+<p><code>runtimeOnly</code>  Gradle 仅将依赖项添加到构建输出，以供在运行时使用。 也就是说，它不会添加到编译类路径中。 此配置的行为就像 <strong>apk</strong>（现已弃用）。</p>
+<p><code>annotationProcessor</code>  要添加对注解处理器库的依赖，你必须使用 <strong>annotationProcessor</strong> 配置将其添加到注解处理器类路径中。 这是因为使用此配置通过将编译类路径与注释处理器类路径分开来提高构建性能。 如果 Gradle 在编译类路径上找到注解处理器，它会停用避免编译，这会对构建时间产生负面影响（Gradle 5.0 及更高版本会忽略在编译类路径上找到的注解处理器）。</p>
+<p>如果 Android Gradle 插件的 JAR 文件包含以下文件，则它假定依赖项是注解处理器： META-INF&#x2F;services&#x2F;javax.annotation.processing.Processor</p>
+<p>如果插件检测到编译类路径上的注解处理器，它会产生构建错误。</p>
+<p>注意：Kotlin 项目应该使用 kapt 来声明注释处理器依赖项。</p>
+<p>以上所有配置都将依赖项应用于所有构建变体。 如果你只想为特定构建变体源集或测试源集声明依赖项，则必须将配置名称大写，并在其前面加上构建变体或测试源集的名称。</p>
+<p>例如，要仅将 <code>implementation</code> 依赖项添加到你的“free” product flavor（使用远程二进制依赖项），它看起来像这样：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">dependencies &#123;</span><br><span class="line">    freeImplementation &#x27;com.google.firebase:firebase-ads:9.8.0&#x27;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>但是，如果要为结合了 product flavor and a build type 的变体添加依赖项，则必须在 <code>configurations</code> 块中初始化配置名称。 以下示例将 <code>runtimeOnly</code> 依赖项添加到你的“freeDebug”构建变体（使用本地二进制依赖项）。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">configurations &#123;</span><br><span class="line">    // Initializes a placeholder for the freeDebugRuntimeOnly dependency configuration.</span><br><span class="line">    freeDebugRuntimeOnly &#123;&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">dependencies &#123;</span><br><span class="line">    freeDebugRuntimeOnly fileTree(dir: &#x27;libs&#x27;, include: [&#x27;*.jar&#x27;])</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<h1 id="Migrate-build-configuration-from-Groovy-to-Kotlin"><a href="#Migrate-build-configuration-from-Groovy-to-Kotlin" class="headerlink" title="Migrate build configuration from Groovy to Kotlin"></a>Migrate build configuration from Groovy to Kotlin</h1><p>注意：Kotlin 是从 Android Studio Giraffe 开始的构建配置的默认语言。</p>
+<h2 id="Convert-the-syntax"><a href="#Convert-the-syntax" class="headerlink" title="Convert the syntax"></a>Convert the syntax</h2><h3 id="在方法调用中添加括号"><a href="#在方法调用中添加括号" class="headerlink" title="在方法调用中添加括号"></a>在方法调用中添加括号</h3><p>Groovy 允许在方法调用中省略括号，而 Kotlin 需要它们。 要迁移你的配置，请为这些类型的方法调用添加括号。 此代码显示如何在 Groovy 中配置设置：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">compileSdkVersion 30</span><br></pre></td></tr></table></figure>
+<p>这是用 Kotlin 编写的相同代码：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">compileSdkVersion(30)</span><br></pre></td></tr></table></figure>
+
+<h3 id="添加-x3D-到赋值调用"><a href="#添加-x3D-到赋值调用" class="headerlink" title="添加 &#x3D; 到赋值调用"></a>添加 &#x3D; 到赋值调用</h3><p>Groovy DSL 允许在分配属性时省略赋值运算符 &#x3D;，而 Kotlin 需要它。 此代码显示如何在 Groovy 中分配属性：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">java &#123;</span><br><span class="line">    sourceCompatibility JavaVersion.VERSION_17</span><br><span class="line">    targetCompatibility JavaVersion.VERSION_17</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>此代码显示如何在 Kotlin 中分配属性：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">java &#123;</span><br><span class="line">    sourceCompatibility = JavaVersion.VERSION_17</span><br><span class="line">    targetCompatibility = JavaVersion.VERSION_17</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="Convert-strings"><a href="#Convert-strings" class="headerlink" title="Convert strings"></a>Convert strings</h3><p>以下是 Groovy 和 Kotlin 之间的字符串差异：</p>
+<ul>
+<li><strong>字符串的双引号</strong>：虽然 Groovy 允许使用单引号定义字符串，但 Kotlin 需要双引号。</li>
+<li><strong>点分表达式上的字符串插值</strong>：在 Groovy 中，可以仅使用 <code>$</code> 前缀对点分表达式进行字符串插值，但 Kotlin 要求用大括号括起点分表达式。 例如，在 Groovy 中，可以使用 <code>$project.rootDir</code>，如以下代码片段所示：<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">myRootDirectory = &quot;$project.rootDir/tools/proguard-rules-debug.pro&quot;</span><br></pre></td></tr></table></figure>
+然而，在 Kotlin 中，前面的 <code>project</code> 在项目上调用 <code>toString()</code>，而不是在 <code>project.rootDir</code> 上。 要获取根目录的值，请将 <code>$&#123;project.rootDir&#125;</code> 表达式用花括号括起来：<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">myRootDirectory = &quot;$&#123;project.rootDir&#125;/tools/proguard-rules-debug.pro&quot;</span><br></pre></td></tr></table></figure></li>
+</ul>
+<h3 id="Rename-file-extensions"><a href="#Rename-file-extensions" class="headerlink" title="Rename file extensions"></a>Rename file extensions</h3><p>在迁移其内容时将 <code>.kts</code> 附加到每个构建文件。 例如，选择一个构建文件，如 <code>settings.gradle</code> 文件。 将文件重命名为 <code>settings.gradle.kts</code> 并将文件的内容转换为 Kotlin。 确保项目在每个构建文件迁移后仍然可以编译。</p>
+<p>先迁移最小的文件，积累经验，然后继续。 你可以在一个项目中混合使用 Kotlin 和 Groovy 构建文件，因此请花点时间谨慎地进行迁移。</p>
+<h3 id="Replace-def-with-val-or-var"><a href="#Replace-def-with-val-or-var" class="headerlink" title="Replace def with val or var"></a>Replace def with val or var</h3><p>这是 Groovy 中的变量声明：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">def building64Bit = false</span><br></pre></td></tr></table></figure>
+<p>这是用 Kotlin 编写的相同代码：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">val building64Bit = false</span><br></pre></td></tr></table></figure>
+
+<h3 id="布尔属性前缀为-is"><a href="#布尔属性前缀为-is" class="headerlink" title="布尔属性前缀为 is"></a>布尔属性前缀为 is</h3><p>Groovy 使用基于属性名称的属性推导逻辑。 对于布尔属性 <code>foo</code>，其推导方法可以是 <code>getFoo</code>、<code>setFoo</code> 或 <code>isFoo</code>。 因此，一旦转换为 Kotlin，需要将属性名称更改为 Kotlin 不支持的推导方法。 例如，对于 <code>buildTypes</code> DSL 布尔元素，你需要在它们前面加上 <code>is</code>。 此代码显示如何在 Groovy 中设置布尔属性：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">android &#123;</span><br><span class="line">    buildTypes &#123;</span><br><span class="line">        release &#123;</span><br><span class="line">            minifyEnabled true</span><br><span class="line">            shrinkResources true</span><br><span class="line">            ...</span><br><span class="line">        &#125;</span><br><span class="line">        debug &#123;</span><br><span class="line">            debuggable true</span><br><span class="line">            ...</span><br><span class="line">        &#125;</span><br><span class="line">    ...</span><br></pre></td></tr></table></figure>
+<p>以下是 Kotlin 中的相同代码。 请注意，属性以 is 为前缀。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">android &#123;</span><br><span class="line">    buildTypes &#123;</span><br><span class="line">        getByName(&quot;release&quot;) &#123;</span><br><span class="line">            isMinifyEnabled = true</span><br><span class="line">            isShrinkResources = true</span><br><span class="line">            ...</span><br><span class="line">        &#125;</span><br><span class="line">        getByName(&quot;debug&quot;) &#123;</span><br><span class="line">            isDebuggable = true</span><br><span class="line">            ...</span><br><span class="line">        &#125;</span><br><span class="line">    ...</span><br></pre></td></tr></table></figure>
+
+<h3 id="Convert-lists-and-maps"><a href="#Convert-lists-and-maps" class="headerlink" title="Convert lists and maps"></a>Convert lists and maps</h3><p>Groovy 和 Kotlin 中的列表和映射是使用不同的语法定义的。 Groovy 使用 <code>[]</code>，而 Kotlin 使用 <code>listOf</code> 或 <code>mapOf</code> 显式调用集合创建方法。 确保在迁移时将 <code>[]</code> 替换为 <code>listOf</code> 或 <code>mapOf</code>。</p>
+<p>下面是在 Groovy 和 Kotlin 中定义列表的方法：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">jvmOptions += [&quot;-Xms4000m&quot;, &quot;-Xmx4000m&quot;, &quot;-XX:+HeapDumpOnOutOfMemoryError&lt;/code&gt;&quot;]</span><br></pre></td></tr></table></figure>
+<p>这是用 Kotlin 编写的相同代码：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">jvmOptions += listOf(&quot;-Xms4000m&quot;, &quot;-Xmx4000m&quot;, &quot;-XX:+HeapDumpOnOutOfMemoryError&quot;)</span><br></pre></td></tr></table></figure>
+<p>下面是在 Groovy 和 Kotlin 中定义映射的方法：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">def myMap = [key1: &#x27;value1&#x27;, key2: &#x27;value2&#x27;]</span><br></pre></td></tr></table></figure>
+<p>这是用 Kotlin 编写的相同代码：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">val myMap = mapOf(&quot;key1&quot; to &quot;value1&quot;, &quot;key2&quot; to &quot;value2&quot;)</span><br></pre></td></tr></table></figure>
+
+<h3 id="Configure-build-types"><a href="#Configure-build-types" class="headerlink" title="Configure build types"></a>Configure build types</h3><p>在 Kotlin DSL 中，只有 debug and release 构建类型是隐式可用的。 所有其他自定义构建类型必须手动创建。</p>
+<p>在 Groovy 中，可以使用 debug, release 和某些其他构建类型，而无需先创建它们。 以下代码片段显示了 Groovy 中 <code>debug</code>, <code>release</code>, and <code>benchmark</code> 构建类型的配置。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">buildTypes &#123;</span><br><span class="line"> debug &#123;</span><br><span class="line">   ...</span><br><span class="line"> &#125;</span><br><span class="line"> release &#123;</span><br><span class="line">   ...</span><br><span class="line"> &#125;</span><br><span class="line"> benchmark &#123;</span><br><span class="line">   ...</span><br><span class="line"> &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>要在 Kotlin 中创建等效配置，必须显式创建 <code>benchmark</code> 构建类型。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">buildTypes &#123;</span><br><span class="line"> debug &#123;</span><br><span class="line">   ...</span><br><span class="line"> &#125;</span><br><span class="line"></span><br><span class="line"> release &#123;</span><br><span class="line">   ...</span><br><span class="line"> &#125;</span><br><span class="line"> register(&quot;benchmark&quot;) &#123;</span><br><span class="line">    ...</span><br><span class="line"> &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="从构建脚本迁移到插件块"><a href="#从构建脚本迁移到插件块" class="headerlink" title="从构建脚本迁移到插件块"></a>从构建脚本迁移到插件块</h2><p>如果你的构建使用 <code>buildscript &#123;&#125;</code> 块向项目添加插件，你应该重构为使用 <code>plugins &#123;&#125;</code> 块。 <code>plugins &#123;&#125;</code> 块使应用插件变得更容易，并且它与 <strong>version catalogs</strong> 配合得很好。</p>
+<p>此外，当在构建文件中使用 <code>plugins &#123;&#125;</code> 块时，即使构建失败，Android Studio 也会知道上下文。 此上下文有助于修复你的 Kotlin DSL 文件，因为它允许 Studio IDE 执行代码完成并提供其他有用的建议。</p>
+<h3 id="Find-the-plugin-IDs"><a href="#Find-the-plugin-IDs" class="headerlink" title="Find the plugin IDs"></a>Find the plugin IDs</h3><p>虽然 <code>buildscript &#123;&#125;</code> 块使用插件的 Maven 坐标将插件添加到构建类路径，例如 <code>com.android.tools.build:gradle:7.4.0</code>，但 <code>plugins &#123;&#125;</code> 块使用插件 ID。</p>
+<p>对于大多数插件，插件 ID 是你使用 apply plugin 应用它们时使用的字符串。 例如，以下插件 ID 是 Android Gradle 插件的一部分：</p>
+<ul>
+<li>com.android.application</li>
+<li>com.android.library</li>
+<li>com.android.lint</li>
+<li>com.android.test</li>
+</ul>
+<p>Kotlin 插件可以被多个插件 ID 引用。 我们建议使用带命名空间的插件 ID，并通过下表从速记重构为带命名空间的插件 ID：<br>Shorthand plugin IDs 	Namespaced plugin IDs<br>kotlin 	org.jetbrains.kotlin.jvm<br>kotlin-android 	org.jetbrains.kotlin.android<br>kotlin-kapt 	org.jetbrains.kotlin.kapt<br>kotlin-parcelize 	org.jetbrains.kotlin.plugin.parcelize</p>
+<h3 id="执行重构"><a href="#执行重构" class="headerlink" title="执行重构"></a>执行重构</h3><p>知道所用插件的 ID 后，请执行以下步骤：</p>
+<ol>
+<li>如果你仍有在 <code>buildscript &#123;&#125;</code> 块中声明的插件存储库，请将它们移至 <code>settings.gradle</code> 文件。</li>
+<li>将插件添加到顶层 <code>build.gradle</code> 文件中的 <code>plugins &#123;&#125;</code> 块中。 你需要在此处指定插件的 ID 和版本。 如果插件不需要应用于根项目，请使用 <code>apply false</code>。</li>
+<li>从顶层 <code>build.gradle.kts</code> 文件中删除 <code>classpath</code> 条目。</li>
+<li>通过将插件添加到模块级 <code>build.gradle</code> 文件中的 <code>plugins &#123;&#125;</code> 块来应用插件。 你只需要在这里指定插件的 ID，因为版本是从根项目继承的。</li>
+<li>从模块级 <code>build.gradle</code> 文件中删除对插件的 <code>apply plugin</code> 调用。</li>
+</ol>
+<p>例如，此设置使用 <code>buildscript &#123;&#125;</code> 块：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">// Top-level build.gradle file</span><br><span class="line">buildscript &#123;</span><br><span class="line">    repositories &#123;</span><br><span class="line">        google()</span><br><span class="line">        mavenCentral()</span><br><span class="line">        gradlePluginPortal()</span><br><span class="line">    &#125;</span><br><span class="line">    dependencies &#123;</span><br><span class="line">        classpath(&quot;com.android.tools.build:gradle:7.4.0&quot;)</span><br><span class="line">        classpath(&quot;org.jetbrains.kotlin:kotlin-gradle-plugin:1.8.0&quot;)</span><br><span class="line">        ...</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">// Module-level build.gradle file</span><br><span class="line">apply(plugin: &quot;com.android.application&quot;)</span><br><span class="line">apply(plugin: &quot;kotlin-android&quot;)</span><br></pre></td></tr></table></figure>
+<p>这是使用 <code>plugins &#123;&#125;</code> 块的等效设置：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">// Top-level build.gradle file</span><br><span class="line">plugins &#123;</span><br><span class="line">   id &#x27;com.android.application&#x27; version &#x27;7.4.0&#x27; apply false</span><br><span class="line">   id &#x27;org.jetbrains.kotlin.android&#x27; version &#x27;1.8.0&#x27; apply false</span><br><span class="line">   ...</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">// Module-level build.gradle file</span><br><span class="line">plugins &#123;</span><br><span class="line">   id &#x27;com.android.application&#x27;</span><br><span class="line">   id &#x27;org.jetbrains.kotlin.android&#x27;</span><br><span class="line">   ...</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">// settings.gradle</span><br><span class="line">pluginManagement &#123;</span><br><span class="line">    repositories &#123;</span><br><span class="line">        google()</span><br><span class="line">        mavenCentral()</span><br><span class="line">        gradlePluginPortal()</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="Convert-the-plugins-block"><a href="#Convert-the-plugins-block" class="headerlink" title="Convert the plugins block"></a>Convert the plugins block</h2><p>从 <code>plugins &#123;&#125;</code> 块应用插件在 Groovy 和 Kotlin 中是类似的。 以下代码展示了在使用 <strong>version catalogs</strong> 时如何在 Groovy 中应用插件：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">// Top-level build.gradle file</span><br><span class="line">plugins &#123;</span><br><span class="line">   alias libs.plugins.android.application apply false</span><br><span class="line">   ...</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">// Module-level build.gradle file</span><br><span class="line">plugins &#123;</span><br><span class="line">   alias libs.plugins.android.application</span><br><span class="line">   ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>以下代码显示了如何在 Kotlin 中执行相同的操作：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">// Top-level build.gradle.kts file</span><br><span class="line">plugins &#123;</span><br><span class="line">   alias(libs.plugins.android.application) apply false</span><br><span class="line">   ...</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">// Module-level build.gradle.kts file</span><br><span class="line">plugins &#123;</span><br><span class="line">   alias(libs.plugins.android.application)</span><br><span class="line">   ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>以下代码展示了在不使用 <strong>version catalogs</strong> 时如何在 Groovy 中应用插件：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">// Top-level build.gradle file</span><br><span class="line">plugins &#123;</span><br><span class="line">   id &#x27;com.android.application&#x27; version &#x27;7.3.0&#x27; apply false</span><br><span class="line">   ...</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">// Module-level build.gradle file</span><br><span class="line">plugins &#123;</span><br><span class="line">   id &#x27;com.android.application&#x27;</span><br><span class="line">   ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>以下代码显示了如何在 Kotlin 中执行相同的操作：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">// Top-level build.gradle.kts file</span><br><span class="line">plugins &#123;</span><br><span class="line">   id(&quot;com.android.application&quot;) version &#x27;7.3.0&#x27; apply false</span><br><span class="line">   ...</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">// Module-level build.gradle.kts file</span><br><span class="line">plugins &#123;</span><br><span class="line">   id(&quot;com.android.application&quot;)</span><br><span class="line">   ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="其他"><a href="#其他" class="headerlink" title="其他"></a>其他</h2><p>有关其他功能的 Kotlin 代码示例，请参阅以下文档页面：</p>
+<ul>
+<li>If you have a ProGuard configuration, refer to <a target="_blank" rel="noopener" href="https://developer.android.com/build/shrink-code#enable">Enable shrinking, obfuscation, and optimization</a>.</li>
+<li>If you have a signingConfig {} block, refer to <a target="_blank" rel="noopener" href="https://developer.android.com/studio/publish/app-signing#secure-shared-keystore">Remove signing information from your build files</a>.</li>
+<li>If you use project-wide properties, refer to <a target="_blank" rel="noopener" href="https://developer.android.com/build#project_wide_properties">Configure project-wide properties</a>.</li>
+</ul>
+
+  </div>
+  
+  
+    
+    <div class='footer'>
+       <!-- 参考资料、相关资料等 -->
+      
+       <!-- 相关文章 -->
+      
+      <!-- 版权声明组件 -->
+      
+      <!-- 打赏组件 -->
+      
+    </div>
+  
+  
+    
+
+
+  <div class='article-meta' id="bottom">
+    <div class='new-meta-box'>
+      
+        
+          <div class="new-meta-item date" itemprop="dateModified" datetime="2023-07-17T22:38:22+08:00">
+  <a class='notlink'>
+    <i class="fa-solid fa-edit fa-fw" aria-hidden="true"></i>
+    <p>更新于：2023年7月17日</p>
+  </a>
+</div>
+
+        
+      
+        
+          
+  
+  <div class="new-meta-item meta-tags"><a class="tag" href="/tags/Android/" rel="nofollow"><i class="fa-solid fa-hashtag fa-fw" aria-hidden="true"></i><p>Android</p></a></div>
+  <span hidden itemprop="keywords">Android</span>
+
+
+        
+      
+        
+          
+  <div class="new-meta-item share -mob-share-list">
+  <div class="-mob-share-list share-body">
+    
+      
+        <a class="-mob-share-qq" title="" rel="external nofollow noopener noreferrer noopener"
+          
+          target="_blank" href="http://connect.qq.com/widget/shareqq/index.html?url=https://azxkenzo.github.io/2023/04/14/Android-Build-System/&title=Android - Build System - SonGoKu の Blog&summary="
+          
+          >
+          
+            <img src="https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/logo/128/qq.png" class="lazyload" data-srcset="https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/logo/128/qq.png" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==">
+          
+        </a>
+      
+    
+      
+        <a class="-mob-share-qzone" title="" rel="external nofollow noopener noreferrer noopener"
+          
+          target="_blank" href="https://sns.qzone.qq.com/cgi-bin/qzshare/cgi_qzshare_onekey?url=https://azxkenzo.github.io/2023/04/14/Android-Build-System/&title=Android - Build System - SonGoKu の Blog&summary="
+          
+          >
+          
+            <img src="https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/logo/128/qzone.png" class="lazyload" data-srcset="https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/logo/128/qzone.png" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==">
+          
+        </a>
+      
+    
+      
+        <a class="-mob-share-weibo" title="" rel="external nofollow noopener noreferrer noopener"
+          
+          target="_blank" href="http://service.weibo.com/share/share.php?url=https://azxkenzo.github.io/2023/04/14/Android-Build-System/&title=Android - Build System - SonGoKu の Blog&summary="
+          
+          >
+          
+            <img src="https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/logo/128/weibo.png" class="lazyload" data-srcset="https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/logo/128/weibo.png" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==">
+          
+        </a>
+      
+    
+      
+    
+      
+    
+  </div>
+</div>
+
+
+
+        
+      
+    </div>
+    <!-- Custom Files bottomMeta begin -->
+    
+    <!-- Custom Files bottomMeta end -->
+  </div>
+
+
+  
+  
+
+  
+    <div class="prev-next">
+      
+        <a class='prev' href='/2023/04/18/Android-%E9%9D%A2%E8%AF%95/'>
+          <p class='title'><i class="fa-solid fa-chevron-left" aria-hidden="true"></i>Android 面试</p>
+          <p class='content'>JVMJVM的结构volatile内存模型GCAndroid绘制流程同步消息屏障ViewRootImpl 将遍历view树包装成一个Runnable并抛到Choreographer， 在抛之前会...</p>
+        </a>
+      
+      
+        <a class='next' href='/2023/04/11/Android-Animation/'>
+          <p class='title'>Android - Animation<i class="fa-solid fa-chevron-right" aria-hidden="true"></i></p>
+          <p class='content'>关于 Android 中的 animation为 bitmap 设置动画要对 bitmap 图形（例如 icon 或插图）进行动画处理，请使用 drawable animation API。 通...</p>
+        </a>
+      
+    </div>
+  
+  <!-- Custom Files postEnd begin-->
+  
+  <!-- Custom Files postEnd end-->
+</article>
+
+
+  
+
+
+  <article class="post white-box shadow floatable blur" id="comments">
+    <span hidden>
+      <meta itemprop="discussionUrl" content="/2023/04/14/Android-Build-System/#comments">
+    </span>
+    <p ct><i class='fa-solid fa-comments'></i> 评论</p>
+    
+
+    <div id="layoutHelper-comments"></div>
+
+  </article>
+
+
+
+
+
+
+</div>
+<aside id='l_side' itemscope itemtype="http://schema.org/WPSideBar">
+  
+
+  
+    
+    
+      
+    
+  
+
+
+<div class="widget-sticky pjax">
+
+  
+  
+
+
+  <section class="widget toc-wrapper desktop mobile " id="toc-div" >
+    
+  <header>
+    
+      <i class="fa-solid fa-list fa-fw" aria-hidden="true"></i><span class='name'>本文目录</span>
+    
+  </header>
+
+
+    <div class='content'>
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#The-build-process"><span class="toc-text">The build process</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Android-build-glossary-%E8%AF%8D%E6%B1%87%E8%A1%A8"><span class="toc-text">Android build glossary(词汇表)</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#Build-types"><span class="toc-text">Build types</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Product-flavors"><span class="toc-text">Product flavors</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Build-variants"><span class="toc-text">Build variants</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Manifest-entries"><span class="toc-text">Manifest entries</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Dependencies"><span class="toc-text">Dependencies</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Signing"><span class="toc-text">Signing</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Code-and-resource-shrinking"><span class="toc-text">Code and resource shrinking</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Multiple-APK-support"><span class="toc-text">Multiple APK support</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Build-configuration"><span class="toc-text">Build configuration</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#The-Gradle-Wrapper-file"><span class="toc-text">The Gradle Wrapper file</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#The-Gradle-settings-file"><span class="toc-text">The Gradle settings file</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#The-top-level-build-file"><span class="toc-text">The top-level build file</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#Configure-project-wide-properties"><span class="toc-text">Configure project-wide properties</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#The-module-level-build-file"><span class="toc-text">The module-level build file</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Gradle-properties-files"><span class="toc-text">Gradle properties files</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Source-sets"><span class="toc-text">Source sets</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Java-versions-in-Android-builds"><span class="toc-text">Java versions in Android builds</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%AF%8D%E6%B1%87%E8%A1%A8"><span class="toc-text">词汇表</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#Java-Development-Kit-JDK"><span class="toc-text">Java Development Kit (JDK)</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#JetBrains-Runtime-JBR"><span class="toc-text">JetBrains Runtime (JBR)</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%A6%82%E4%BD%95%E9%80%89%E6%8B%A9-JDK-%E6%9D%A5%E8%BF%90%E8%A1%8C-Android-Studio%EF%BC%9F"><span class="toc-text">如何选择 JDK 来运行 Android Studio？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%A6%82%E4%BD%95%E9%80%89%E6%8B%A9%E8%BF%90%E8%A1%8C%E6%88%91%E7%9A%84-Gradle-%E6%9E%84%E5%BB%BA%E7%9A%84-JDK%EF%BC%9F"><span class="toc-text">如何选择运行我的 Gradle 构建的 JDK？</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#Set-the-Gradle-JDK-in-Android-Studio"><span class="toc-text">Set the Gradle JDK in Android Studio</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%88%91%E5%8F%AF%E4%BB%A5%E5%9C%A8-Java-%E6%88%96-Kotlin-%E6%BA%90%E4%BB%A3%E7%A0%81%E4%B8%AD%E4%BD%BF%E7%94%A8%E5%93%AA%E4%BA%9B-Java-API%EF%BC%9F"><span class="toc-text">我可以在 Java 或 Kotlin 源代码中使用哪些 Java API？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%93%AA%E4%B8%AA-JDK-%E7%BC%96%E8%AF%91%E6%88%91%E7%9A%84-Java-%E6%BA%90%E4%BB%A3%E7%A0%81%EF%BC%9F"><span class="toc-text">哪个 JDK 编译我的 Java 源代码？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%88%91%E5%8F%AF%E4%BB%A5%E5%9C%A8-Java-%E6%BA%90%E4%BB%A3%E7%A0%81%E4%B8%AD%E4%BD%BF%E7%94%A8%E5%93%AA%E4%BA%9B-Java-%E8%AF%AD%E8%A8%80%E6%BA%90%E5%8A%9F%E8%83%BD%EF%BC%9F"><span class="toc-text">我可以在 Java 源代码中使用哪些 Java 语言源功能？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BC%96%E8%AF%91-Kotlin-%E6%88%96-Java-%E6%BA%90%E4%BB%A3%E7%A0%81%E6%97%B6%E5%8F%AF%E4%BB%A5%E4%BD%BF%E7%94%A8%E5%93%AA%E4%BA%9B-Java-%E4%BA%8C%E8%BF%9B%E5%88%B6%E5%8A%9F%E8%83%BD%EF%BC%9F"><span class="toc-text">编译 Kotlin 或 Java 源代码时可以使用哪些 Java 二进制功能？</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Configure-the-app-module"><span class="toc-text">Configure the app module</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Set-the-application-ID"><span class="toc-text">Set the application ID</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Set-the-namespace"><span class="toc-text">Set the namespace</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Add-build-dependencies"><span class="toc-text">Add build dependencies</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Dependency-types"><span class="toc-text">Dependency types</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#Local-library-module-dependency"><span class="toc-text">Local library module dependency</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Local-binary-dependency"><span class="toc-text">Local binary dependency</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Remote-binary-dependency"><span class="toc-text">Remote binary dependency</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Native-dependencies"><span class="toc-text">Native dependencies</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Dependency-configurations"><span class="toc-text">Dependency configurations</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Convert-the-syntax"><span class="toc-text">Convert the syntax</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%9C%A8%E6%96%B9%E6%B3%95%E8%B0%83%E7%94%A8%E4%B8%AD%E6%B7%BB%E5%8A%A0%E6%8B%AC%E5%8F%B7"><span class="toc-text">在方法调用中添加括号</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%B7%BB%E5%8A%A0-x3D-%E5%88%B0%E8%B5%8B%E5%80%BC%E8%B0%83%E7%94%A8"><span class="toc-text">添加 &#x3D; 到赋值调用</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Convert-strings"><span class="toc-text">Convert strings</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Rename-file-extensions"><span class="toc-text">Rename file extensions</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Replace-def-with-val-or-var"><span class="toc-text">Replace def with val or var</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%B8%83%E5%B0%94%E5%B1%9E%E6%80%A7%E5%89%8D%E7%BC%80%E4%B8%BA-is"><span class="toc-text">布尔属性前缀为 is</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Convert-lists-and-maps"><span class="toc-text">Convert lists and maps</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Configure-build-types"><span class="toc-text">Configure build types</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BB%8E%E6%9E%84%E5%BB%BA%E8%84%9A%E6%9C%AC%E8%BF%81%E7%A7%BB%E5%88%B0%E6%8F%92%E4%BB%B6%E5%9D%97"><span class="toc-text">从构建脚本迁移到插件块</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Find-the-plugin-IDs"><span class="toc-text">Find the plugin IDs</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%89%A7%E8%A1%8C%E9%87%8D%E6%9E%84"><span class="toc-text">执行重构</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Convert-the-plugins-block"><span class="toc-text">Convert the plugins block</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%B6%E4%BB%96"><span class="toc-text">其他</span></a></li></ol>
+    </div>
+  </section>
+
+  
+
+</div>
+
+
+<!-- 没有 pjax 占位会报错 万恶的 pjax -->
+
+  <div class="pjax">
+    <!-- pjax占位 -->
+  </div>
+
+  <div class="pjax">
+    <!-- pjax占位 -->
+  </div>
+
+  <div class="pjax">
+    <!-- pjax占位 -->
+  </div>
+
+  <div class="pjax">
+    <!-- pjax占位 -->
+  </div>
+
+  <div class="pjax">
+    <!-- pjax占位 -->
+  </div>
+
+  <div class="pjax">
+    <!-- pjax占位 -->
+  </div>
+
+  <div class="pjax">
+    <!-- pjax占位 -->
+  </div>
+
+  <div class="pjax">
+    <!-- pjax占位 -->
+  </div>
+
+  <!-- Custom Files side begin -->
+  
+  <!-- Custom Files side end -->
+</aside>
+
+
+
+          <!--此文件用来存放一些不方便取值的变量-->
+<!--思路大概是将值藏到重加载的区域内-->
+
+<pjax>
+<script>
+  window.pdata={}
+  pdata.ispage=true;
+  pdata.commentPath="";
+  pdata.commentPlaceholder="";
+  pdata.commentConfig={};
+  //  see: /layout/_partial/scripts/_ctrl/coverCtrl.ejs
+  
+    // header
+    var l_header=document.getElementById("l_header");
+    
+    l_header.classList.add("show");
+    
+    
+      // cover
+      var cover_wrapper=document.querySelector('#l_cover .cover-wrapper');
+      var scroll_down=document.getElementById('scroll-down');
+      cover_wrapper.id="none";
+      cover_wrapper.style.display="none";
+      scroll_down.style.display="none";
+    
+  
+</script>
+</pjax>
+        </div>
+        
+  
+  <footer class="footer clearfix"  itemscope itemtype="http://schema.org/WPFooter">
+    <br><br>
+    
+      
+        <div class="aplayer-container">
+          
+
+
+        </div>
+      
+    
+      
+        <br>
+        <div class="social-wrapper" itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          
+            
+          
+            
+          
+            
+          
+        </div>
+      
+    
+      
+        <div><p>博客内容遵循 <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh">署名-非商业性使用-相同方式共享 4.0 国际 (CC BY-NC-SA 4.0) 协议</a></p>
+</div>
+      
+    
+      
+        
+          <div><p><span id="lc-sv">本站总访问量为 <span id='number'><i class="fa-solid fa-loader fa-spin fa-fw" aria-hidden="true"></i></span> 次</span> <span id="lc-uv">访客数为 <span id='number'><i class="fa-solid fa-loader fa-spin fa-fw" aria-hidden="true"></i></span> 人</span></p>
+</div>
+        
+      
+    
+      
+        本站使用
+        <a href="https://github.com/volantis-x/hexo-theme-volantis/#5.8.0" target="_blank" class="codename">Volantis</a>
+        作为主题
+      
+    
+      
+        <div class='copyright'>
+        <p><a href="/">Copyright © since 2017 XXX</a></p>
+
+        </div>
+      
+    
+    <!-- Custom Files footer begin-->
+    
+    <!-- Custom Files footer end-->
+  </footer>
+
+
+        <a id="s-top" class="fa-solid fa-arrow-up fa-fw" href="/" onclick="return false;" title="top"></a>
+      </div>
+    </div>
+    <div>
+      <script>
+  /******************** volantis.dom ********************************/
+  // 页面选择器 将dom对象缓存起来 see: /source/js/app.js etc.
+  volantis.dom.bodyAnchor = volantis.dom.$(document.getElementById("safearea")); // 页面主体
+  volantis.dom.topBtn = volantis.dom.$(document.getElementById('s-top')); // 向上
+  volantis.dom.wrapper = volantis.dom.$(document.getElementById('wrapper')); // 整个导航栏
+  volantis.dom.coverAnchor = volantis.dom.$(document.querySelector('#l_cover .cover-wrapper')); // 1个
+  volantis.dom.switcher = volantis.dom.$(document.querySelector('#l_header .switcher .s-search')); // 搜索按钮   移动端 1个
+  volantis.dom.header = volantis.dom.$(document.getElementById('l_header')); // 移动端导航栏
+  volantis.dom.search = volantis.dom.$(document.querySelector('#l_header .m_search')); // 搜索框 桌面端 移动端 1个
+  volantis.dom.mPhoneList = volantis.dom.$(document.querySelectorAll('#l_header .m-phone .list-v')); //  手机端 子菜单 多个
+</script>
+
+<script>
+  
+  volantis.css("https://unpkg.com/volantis-static@0.0.1654736714924/libs/@fortawesome/fontawesome-free/css/all.min.css");
+  
+  
+  
+</script>
+
+<!-- required -->
+
+
+<!-- internal -->
+
+<script src="/js/app.js"></script>
+
+
+
+
+
+
+<!-- rightmenu要在darkmode之前（ToggleButton） darkmode要在comments之前（volantis.dark.push）-->
+
+
+
+<script>
+  function loadIssuesJS() {
+    
+      const sites_api = document.getElementById('sites-api');
+      if (sites_api != undefined && typeof SitesJS === 'undefined') {
+        volantis.js("/js/plugins/tags/sites.js")
+      }
+    
+    
+      const friends_api = document.getElementById('friends-api');
+      if (friends_api != undefined && typeof FriendsJS === 'undefined') {
+        volantis.js("/js/plugins/tags/friends.js")
+      }
+    
+    
+      const contributors_api = document.getElementById('contributors-api');
+      if (contributors_api != undefined && typeof ContributorsJS === 'undefined') {
+        volantis.js("/js/plugins/tags/contributors.js")
+      }
+    
+  };
+  loadIssuesJS()
+  volantis.pjax.push(()=>{
+    loadIssuesJS();
+  })
+
+</script>
+
+
+
+
+  <script defer src="https://unpkg.com/volantis-static@0.0.1654736714924/libs/vanilla-lazyload/dist/lazyload.min.js"></script>
+<script>
+  // https://www.npmjs.com/package/vanilla-lazyload
+  // Set the options globally
+  // to make LazyLoad self-initialize
+  window.lazyLoadOptions = {
+    elements_selector: ".lazyload",
+    threshold: 0
+  };
+  // Listen to the initialization event
+  // and get the instance of LazyLoad
+  window.addEventListener(
+    "LazyLoad::Initialized",
+    function (event) {
+      window.lazyLoadInstance = event.detail.instance;
+    },
+    false
+  );
+  document.addEventListener('DOMContentLoaded', function () {
+    lazyLoadInstance.update();
+  });
+  document.addEventListener('pjax:complete', function () {
+    lazyLoadInstance.update();
+  });
+</script>
+
+
+
+
+  
+
+<script>
+  window.FPConfig = {
+	delay: 0,
+	ignoreKeywords: ["#"],
+	maxRPS: 6,
+	hoverDelay: 0
+  };
+</script>
+<script defer src="https://unpkg.com/volantis-static@0.0.1654736714924/libs/flying-pages/flying-pages.min.js"></script>
+
+
+
+
+
+
+
+
+
+      <script>
+  volantis.layoutHelper("comments",`<div id="giscus_container"></div>`)
+
+  volantis.giscus = {};
+
+  function check_giscus() {
+    if (volantis.dark.mode === "dark") {
+      volantis.giscus.Theme = 'dark';
+    } else {
+      volantis.giscus.Theme = 'light';
+    }
+
+    return document.getElementById("giscus_container");
+  }
+
+  function pjax_giscus() {
+    const HEAD = check_giscus();
+    if (!HEAD) return;
+    let cfg = Object.assign({"theme":{"light":"light","dark":"dark"}},pdata.commentConfig)
+    const script = document.createElement('script');
+    script.setAttribute('src', 'https://giscus.app/client.js');
+    Object.keys(cfg).forEach(k=>{
+      if (k != "theme") {
+        script.setAttribute('data-'+k, cfg[k]);
+      }
+    })
+    script.setAttribute('data-theme', volantis.giscus.Theme);
+    script.setAttribute('crossorigin', "anonymous");
+    HEAD.appendChild(script);
+  }
+
+  function dark_giscus() {
+    const HEAD = check_giscus();
+    if (!HEAD) return;
+
+    const message = {
+      setConfig: {
+        theme: volantis.giscus.Theme
+      }
+    };
+    const giscusIframe = document.querySelector('iframe.giscus-frame');
+    giscusIframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app');
+  }
+  pjax_giscus();
+  volantis.pjax.push(pjax_giscus);
+  volantis.dark.push(dark_giscus);
+</script>
+
+    
+
+
+
+
+
+<!-- optional -->
+
+  <script>
+  const SearchServiceDataPathRoot = ("/" || "/").endsWith("/") ?
+    "/" || "/" :
+    "//" || "/";
+  const SearchServiceDataPath = SearchServiceDataPathRoot + "content.json";
+
+  function loadSearchScript() {
+    // see: layout/_partial/scripts/_ctrl/cdnCtrl.ejs
+    return volantis.js("/js/search/hexo.js");
+  }
+
+  function loadSearchService() {
+    loadSearchScript();
+    document.querySelectorAll(".input.u-search-input").forEach((e) => {
+      e.removeEventListener("focus", loadSearchService, false);
+    });
+
+    document.querySelectorAll(".u-search-form").forEach((e) => {
+      e.addEventListener("submit", (event) => {
+        event.preventDefault();
+      }, false);
+    });
+  }
+
+  // 打开并搜索 字符串 s
+  function OpenSearch(s) {
+    if (typeof SearchService === 'undefined')
+      loadSearchScript().then(() => {
+        SearchService.setQueryText(s);
+        SearchService.search();
+      });
+    else {
+      SearchService.setQueryText(s);
+      SearchService.search();
+    }
+  }
+
+  // 访问含有 ?s=xxx  的链接时打开搜索 // 与搜索引擎 structured data 相关: /scripts/helpers/structured-data/lib/config.js
+  if (window.location.search && /^\?s=/g.test(window.location.search)) {
+    let queryText = decodeURI(window.location.search)
+      .replace(/\ /g, "-")
+      .replace(/^\?s=/g, "");
+    OpenSearch(queryText);
+  }
+
+  // 搜索输入框获取焦点时加载搜索
+  document.querySelectorAll(".input.u-search-input").forEach((e) => {
+    e.addEventListener("focus", loadSearchService, false);
+  });
+</script>
+
+
+
+
+
+
+
+  <script>
+
+
+
+  function pjax_highlightjs_copyCode(){
+    if (!(document.querySelector(".highlight .code pre") ||
+      document.querySelector(".article pre code"))) {
+      return;
+    }
+    VolantisApp.utilCopyCode(".highlight .code pre, .article pre code")
+  }
+  volantis.requestAnimationFrame(pjax_highlightjs_copyCode)
+  volantis.pjax.push(pjax_highlightjs_copyCode)
+
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+  <script>
+  function load_swiper() {
+    if (!document.querySelectorAll(".swiper-container")[0]) return;
+    volantis.css("https://unpkg.com/volantis-static@0.0.1654736714924/libs/swiper/swiper-bundle.min.css");
+    volantis.js("https://unpkg.com/volantis-static@0.0.1654736714924/libs/swiper/swiper-bundle.min.js").then(() => {
+      pjax_swiper();
+    });
+  }
+
+  load_swiper();
+
+  function pjax_swiper() {
+    volantis.swiper = new Swiper('.swiper-container', {
+      slidesPerView: 'auto',
+      spaceBetween: 8,
+      centeredSlides: true,
+      loop: true,
+      pagination: {
+        el: '.swiper-pagination',
+        clickable: true,
+      },
+      navigation: {
+        nextEl: '.swiper-button-next',
+        prevEl: '.swiper-button-prev',
+      },
+    });
+  }
+
+  volantis.pjax.push(() => {
+    if (!document.querySelectorAll(".swiper-container")[0]) return;
+    if (typeof volantis.swiper === "undefined") {
+      load_swiper();
+    } else {
+      pjax_swiper();
+    }
+  });
+</script>
+
+
+<!-- pjax 标签必须存在于所有页面 否则 pjax error -->
+<pjax>
+
+</pjax>
+
+<script>
+  function listennSidebarTOC() {
+    const navItems = document.querySelectorAll(".toc li");
+    if (!navItems.length) return;
+    let targets = []
+    const sections = [...navItems].map((element) => {
+      const link = element.querySelector(".toc-link");
+      const target = document.getElementById(
+        decodeURI(link.getAttribute("href")).replace("#", "")
+      );
+      targets.push(target)
+      // 解除 a 标签 href 的 锚点定位, a 标签 href 的 锚点定位 会随机启用?? 产生错位???
+      link.setAttribute("onclick","return false;")
+      link.setAttribute("toc-action","toc-"+decodeURI(link.getAttribute("href")).replace("#", ""))
+      link.setAttribute("href","/")
+      // 配置 点击 触发新的锚点定位
+      link.addEventListener("click", (event) => {
+        event.preventDefault();
+        // 这里的 addTop 是通过错位使得 toc 自动展开.
+        volantis.scroll.to(target,{addTop: 5, observer:true})
+        // Anchor id
+        history.pushState(null, document.title, "#" + target.id);
+      });
+      return target;
+    });
+
+    function activateNavByIndex(target) {
+      if (target.classList.contains("active-current")) return;
+
+      document.querySelectorAll(".toc .active").forEach((element) => {
+        element.classList.remove("active", "active-current");
+      });
+      target.classList.add("active", "active-current");
+      let parent = target.parentNode;
+      while (!parent.matches(".toc")) {
+        if (parent.matches("li")) parent.classList.add("active");
+        parent = parent.parentNode;
+      }
+    }
+
+    // 方案一：
+    volantis.activateNavIndex=0
+    activateNavByIndex(navItems[volantis.activateNavIndex])
+    volantis.scroll.push(()=>{
+      if (targets[0].getBoundingClientRect().top >= 0) {
+        volantis.activateNavIndex = 0
+      }else if (targets[targets.length-1].getBoundingClientRect().top < 0) {
+        volantis.activateNavIndex = targets.length-1
+      } else {
+        for (let index = 0; index < targets.length; index++) {
+          const target0 = targets[index];
+          const target1 = targets[(index+1)%targets.length];
+          if (target0.getBoundingClientRect().top < 0&&target1.getBoundingClientRect().top >= 0) {
+            volantis.activateNavIndex=index
+            break;
+          }
+        }
+      }
+      activateNavByIndex(navItems[volantis.activateNavIndex])
+    })
+
+    // 方案二：
+    // IntersectionObserver 不是完美精确到像素级别 也不是低延时性的
+    // function findIndex(entries) {
+    //   let index = 0;
+    //   let entry = entries[index];
+    //   if (entry.boundingClientRect.top > 0) {
+    //     index = sections.indexOf(entry.target);
+    //     return index === 0 ? 0 : index - 1;
+    //   }
+    //   for (; index < entries.length; index++) {
+    //     if (entries[index].boundingClientRect.top <= 0) {
+    //       entry = entries[index];
+    //     } else {
+    //       return sections.indexOf(entry.target);
+    //     }
+    //   }
+    //   return sections.indexOf(entry.target);
+    // }
+    // function createIntersectionObserver(marginTop) {
+    //   marginTop = Math.floor(marginTop + 10000);
+    //   let intersectionObserver = new IntersectionObserver(
+    //     (entries, observe) => {
+    //       let scrollHeight = document.documentElement.scrollHeight;
+    //       if (scrollHeight > marginTop) {
+    //         observe.disconnect();
+    //         createIntersectionObserver(scrollHeight);
+    //         return;
+    //       }
+    //       let index = findIndex(entries);
+    //       activateNavByIndex(navItems[index]);
+    //     }, {
+    //       rootMargin: marginTop + "px 0px -100% 0px",
+    //       threshold: 0,
+    //     }
+    //   );
+    //   sections.forEach((element) => {
+    //     element && intersectionObserver.observe(element);
+    //   });
+    // }
+    // createIntersectionObserver(document.documentElement.scrollHeight);
+  }
+
+  document.addEventListener("DOMContentLoaded", ()=>{
+    volantis.requestAnimationFrame(listennSidebarTOC)
+  });
+  document.addEventListener("pjax:success", ()=>{
+    volantis.requestAnimationFrame(listennSidebarTOC)
+  });
+</script>
+
+
+
+<script>
+  document.onreadystatechange = function () {
+    if (document.readyState == 'complete') {
+      // 页面加载完毕 样式加载失败，或是当前网速慢，或是开启了省流模式
+      const { saveData, effectiveType } = navigator.connection || navigator.mozConnection || navigator.webkitConnection || {}
+      if (getComputedStyle(document.querySelector("#safearea"), null)["display"] == "none" || saveData || /2g/.test(effectiveType)) {
+        document.querySelectorAll(".reveal").forEach(function (e) {
+          e.style["opacity"] = "1";
+        });
+        document.querySelector("#safearea").style["display"] = "block";
+      }
+    }
+  }
+</script>
+
+
+  <script type="application/ld+json">[{"@context":"http://schema.org","@type":"Organization","name":"SonGoKu の Blog","url":"https://azxkenzo.github.io/","logo":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png","width":192,"height":192}},{"@context":"http://schema.org","@type":"Person","name":"Son GoKu","image":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png"},"url":"https://azxkenzo.github.io/","sameAs":["https://github.com/volantis-x"],"description":"勤练带来力量"},{"@context":"http://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"item":{"@id":"https://azxkenzo.github.io/","name":"SonGoKu の Blog"}},{"@type":"ListItem","position":3,"item":{"@id":"https://azxkenzo.github.io/2023/04/14/Android-Build-System/","name":"Android - Build System"}}]},{"@context":"http://schema.org","@type":"WebSite","name":"SonGoKu の Blog","url":"https://azxkenzo.github.io/","keywords":"Android,Kotlin,Linux","description":"勤练带来力量","author":{"@type":"Person","name":"Son GoKu","image":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png"},"url":"https://azxkenzo.github.io/","description":"勤练带来力量"},"publisher":{"@type":"Organization","name":"SonGoKu の Blog","url":"https://azxkenzo.github.io/","logo":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png","width":192,"height":192}},"potentialAction":{"@type":"SearchAction","name":"Site Search","target":{"@type":"EntryPoint","urlTemplate":"https://azxkenzo.github.io?s={search_term_string}"},"query-input":"required name=search_term_string"}},{"@context":"http://schema.org","@type":"BlogPosting","headline":"Android - Build System","description":"勤练带来力量","inLanguage":"zh-CN","mainEntityOfPage":{"@type":"WebPage","@id":"https://azxkenzo.github.io/2023/04/14/Android-Build-System/"},"author":{"@type":"Person","name":"Son GoKu","image":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png"},"url":"https://azxkenzo.github.io/"},"publisher":{"@type":"Organization","name":"SonGoKu の Blog","logo":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png","width":192,"height":192}},"url":"https://azxkenzo.github.io/2023/04/14/Android-Build-System/","wordCount":0,"datePublished":"2023-04-14T03:53:38.000Z","dateModified":"2023-07-17T14:38:22.413Z","keywords":"Android","image":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png","width":192,"height":192}}]</script>
+
+
+
+      
+        <!--
+  pjax重载区域接口：
+  1.  <pjax></pjax> 标签 pjax 标签必须存在于所有页面 否则 pjax error
+  2.  script[data-pjax]
+  3.  .pjax-reload script
+  4.  .pjax
+-->
+
+
+
+<script src="https://unpkg.com/volantis-static@0.0.1654736714924/libs/pjax/pjax.min.js"></script>
+
+
+<script>
+    var pjax;
+    document.addEventListener('DOMContentLoaded', function () {
+      pjax = new Pjax({
+        elements: 'a[href]:not([href^="#"]):not([href="javascript:void(0)"]):not([pjax-fancybox]):not([onclick="return false;"]):not([onclick="return!1"]):not([target="_blank"]):not([target="view_window"]):not([href$=".xml"])',
+        selectors: [
+          "head title",
+          "head meta[name=keywords]",
+          "head meta[name=description]",
+          
+          "#l_main",
+          "#pjax-header-nav-list",
+          ".pjax",
+          "pjax", // <pjax></pjax> 标签
+          "script[data-pjax], .pjax-reload script" // script标签添加data-pjax 或 script标签外层添加.pjax-reload 的script代码段重载
+        ],
+        cacheBust: false,   // url 地址追加时间戳，用以避免浏览器缓存
+        timeout: 5000,
+        
+      });
+    });
+
+    document.addEventListener('pjax:send', function (e) {
+      //window.stop(); // 相当于点击了浏览器的停止按钮
+
+      try {
+        var currentUrl = window.location.pathname;
+        var targetUrl = e.triggerElement.href;
+        var banUrl = [""];
+        if (banUrl[0] != "") {
+          banUrl.forEach(item => {
+            if(currentUrl.indexOf(item) != -1 || targetUrl.indexOf(item) != -1) {
+              window.location.href = targetUrl;
+            }
+          });
+        }
+      } catch (error) {}
+
+      // 使用 volantis.pjax.send 方法传入pjax:send回调函数 参见layout/_partial/scripts/global.ejs
+      volantis.pjax.method.send.start();
+    });
+
+    document.addEventListener('pjax:complete', function () {
+      // 使用 volantis.pjax.push 方法传入重载函数 参见layout/_partial/scripts/global.ejs
+      volantis.pjax.method.complete.start();
+    });
+
+    document.addEventListener('pjax:error', function (e) {
+      if(volantis.debug) {
+        console.error(e);
+        console.log('pjax error: \n' + JSON.stringify(e));
+      }else{
+        // 使用 volantis.pjax.error 方法传入pjax:error回调函数 参见layout/_partial/scripts/global.ejs
+        volantis.pjax.method.error.start();
+        window.location.href = e.triggerElement.href;
+      }
+    });
+</script>
+
+      
+    </div>
+    <!-- import body_end begin-->
+    <!-- import body_end end-->
+    <!-- Custom Files bodyEnd begin-->
+    
+    <!-- Custom Files bodyEnd end-->
+    <!-- front-matter body_end begin -->
+    <!-- front-matter body_end end -->
+  </body>
+</html>
