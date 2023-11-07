@@ -50,6 +50,12 @@
       
       
       
+        <tags>
+            
+            <tag> Android </tag>
+            
+        </tags>
+      
     </entry>
     
     
@@ -63,6 +69,12 @@
       
       
       
+        <tags>
+            
+            <tag> Android </tag>
+            
+        </tags>
+      
     </entry>
     
     
@@ -75,6 +87,12 @@
         <content type="html"><![CDATA[<p>实现 AOSP 的设备有两个级别的兼容性：AOSP 兼容性和 Android 兼容性。 AOSP 兼容设备必须符合兼容性定义文档 (CDD) 中的要求列表。 Android 兼容设备必须符合 CDD 和供应商软件要求 (VSR) 中的要求列表以及供应商测试套件 (VTS) 和兼容性测试套件 (CTS) 等测试。 有关 Android 兼容性的更多信息，请参阅 Android 兼容性计划。</p><p>AOSP 的软件堆栈包含以下层：</p><p><img src="https://source.android.com/static/images/android_stack.png" class="lazyload" data-srcset="https://source.android.com/static/images/android_stack.png" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="></p><p><strong>Android app</strong></p><p>仅使用 Android API 创建的应用程序。 Google Play 商店广泛用于查找和下载 Android 应用程序，但还有许多其他替代方案。 在某些情况下，设备制造商可能希望预安装 Android 应用程序以支持设备的核心功能。</p><p><strong>Privileged app</strong></p><p>使用 Android 和 system API 组合创建的应用程序。 这些应用程序必须作为特权应用程序预安装在设备上。</p><p><strong>Device manufacturer app</strong></p><p>使用 Android API、system API 和直接访问 Android framework 实现的组合创建的应用程序。 由于设备制造商可能会直接访问 Android framework 内不稳定的 API，因此这些应用程序必须预装在设备上，并且只有在设备的系统软件更新时才能更新。</p><p><strong>System API</strong></p><p>System API 代表仅可供合作伙伴和 OEM 包含在捆绑应用程序中的 Android API。 这些 API 在源代码中被标记为 <code>@SystemApi</code>。</p><p><strong>Android API</strong></p><p>Android API 是供第三方 Android 应用程序开发人员公开使用的 API。</p><p><strong>Android framework</strong></p><p>一组 Java 类、接口和其他构建应用程序的预编译代码。 该 framework 的部分内容可通过使用 Android API 公开访问。 该 framework 的其他部分仅可供 OEM 通过使用 system API 来使用。 Android framework 代码在应用程序的进程内运行。</p><p><strong>System services</strong></p><p>System service 是模块化的、集中的组件，例如 <code>system_server</code>、SurfaceFlinger 和 MediaService。 Android framework API 公开的功能与系统服务通信以访问底层硬件。</p><p><strong>Android runtime (ART)</strong></p><p>AOSP 提供的 Java 运行环境。 ART 将应用程序的字节码转换为由设备运行时环境执行的处理器特定指令。</p><p><strong>Hardware abstraction layer (HAL)</strong></p><p>HAL 是一个抽象层，具有供硬件供应商实现的标准接口。 HAL 允许 Android 不了解较低级别的驱动程序实现。 使用 HAL 可以让您在不影响或修改更高级别系统的情况下实现功能。</p><p><strong>Native daemons and libraries</strong></p><p>该层的 Native daemon 包括 <code>init</code>、<code>healthd</code>、<code>logd</code> 和 <code>storaged</code>。 这些 daemon 直接与内核或其他接口交互，不依赖于基于用户空间的 HAL 实现。</p><p>这一层的原生库包括 <code>libc</code>、<code>liblog</code>、<code>libutils</code>、<code>libbinder</code> 和 <code>libselinux</code>。 这些原生库直接与内核或其他接口交互，不依赖于基于用户空间的 HAL 实现。</p><p><strong>Kernel</strong></p><p>内核是任何操作系统的核心部分，并与设备上的底层硬件进行通信。 在可能的情况下，AOSP 内核分为与硬件无关的模块和特定于供应商的模块。</p><h2 id="Kernel"><a href="#Kernel" class="headerlink" title="Kernel"></a>Kernel</h2><p>Android 内核基于上游 _Linux 长期支持 (LTS) 内核_。 在 Google，LTS 内核与 Android 特定补丁相结合，形成所谓的 Android Common Kernels (ACK)。</p><p>较新的 ACK（版本 5.4 及更高版本）也称为 <em>GKI</em> 内核。 GKI 内核支持将与硬件无关的通用核心内核代码和 GKI 模块与特定于硬件的供应商模块分离。</p><p>GKI 内核与包含 system on a chip (SoC) 和主板特定代码的特定于硬件的供应商模块进行交互。 GKI 内核和供应商模块之间的交互是通过 Kernel Module Interface (KMI) 实现的，该接口由标识供应商模块所需的功能和全局数据的符号列表组成。 图 1 显示了 GKI 内核和供应商模块架构：</p><p><img src="https://source.android.com/static/docs/core/architecture/images/generic-kernel-image-architecture.png" class="lazyload" data-srcset="https://source.android.com/static/docs/core/architecture/images/generic-kernel-image-architecture.png" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="></p><h3 id="Kernel-术语表"><a href="#Kernel-术语表" class="headerlink" title="Kernel 术语表"></a>Kernel 术语表</h3><h4 id="Kernel-types"><a href="#Kernel-types" class="headerlink" title="Kernel types"></a>Kernel types</h4><p><strong>Android Common Kernel (ACK)</strong></p><p>LTS 内核下游的内核，包含 Android 社区感兴趣的补丁，但尚未合并到 Linux 主线或长期支持 (LTS) 内核中。 较新的 ACK（版本 5.4 及更高版本）也称为 GKI 内核，因为它们支持与硬件无关的通用内核代码和与硬件无关的 GKI 模块的分离。</p><p><strong>Android Open Source Project (AOSP) kernel</strong></p><p>参阅 Android Common Kernel.</p><p><strong>Feature Kernel</strong></p><p>保证实现平台发布功能的内核。 例如，在Android 12中，两个功能内核是 android12-5.4 和 android12-5.10。 Android 12 功能无法向后移植到 4.19 内核； 该功能集类似于在 R 上发布 4.19 并升级到 S 的设备。</p><p><strong>generic core kernel</strong></p><p>GKI 内核中所有设备通用的部分。</p><p><strong>Generic Kernel Image (GKI) kernel</strong></p><p>任何较新的（5.4 及更高版本）ACK 内核（当前仅限 aarch64）。 该内核由两部分组成：核心 GKI 内核，其代码在所有设备上通用，以及由 Google 开发的 GKI 模块，可以在适用的情况下动态加载到设备上。</p><p><strong>Kernel Module Interface (KMI) kernel</strong></p><p>See GKI kernel.</p><p><strong>Launch Kernel</strong></p><p>对于启动给定 Android 平台版本的设备有效的内核。 例如，在 Android 12 中，有效的启动内核为 4.19、5.4 和 5.10。</p><p><strong>Long Term Supported (LTS) kernel</strong></p><p>支持 2 到 6 年的 Linux 内核。 LTS 内核每年发布一次，是 Google 每个 ACK 的基础。</p><h4 id="Branch-types"><a href="#Branch-types" class="headerlink" title="Branch types"></a>Branch types</h4><p><strong>ACK KMI kernel branch</strong></p><p>构建 GKI 内核的分支。 例如，android12-5.10 和 android13-5.15。</p><p><strong>Android-mainline</strong></p><p>Android 功能的主要开发分支。 当上游声明新的 LTS 内核时，相应的新 GKI 内核将从 android-mainline 分支出来。</p><p><strong>Linux mainline</strong></p><p>上游 Linux 内核（包括 LTS 内核）的主要开发分支。</p><h4 id="Other-terms"><a href="#Other-terms" class="headerlink" title="Other terms"></a>Other terms</h4><p><strong>Certified boot image</strong></p><p>内核以二进制形式 (<code>boot.img</code>) 交付并 flash 到设备上。 该 image 经过认证，因为它包含嵌入式证书，因此 Google 可以验证该设备是否配备了经过 Google 认证的内核。</p><p><strong>Dynamically loadable kernel module (DLKM)</strong></p><p>可以根据设备的需要在设备启动期间动态加载的模块。 GKI 和供应商模块都是 DLKM 类型。 DLKM 以 <code>.ko</code> 形式发布，可以是驱动程序，也可以提供其他内核功能。</p><p><strong>GKI project</strong></p><p>Google 项目通过将通用核心内核功能与供应商特定的 SoC 和主板支持分离为可加载模块来解决内核碎片问题。</p><p><strong>Generic Kernel Image (GKI)</strong></p><p>经 Google 认证的 boot image，包含从 ACK 源树构建的 GKI 内核，适合 flash 到 Android 设备的 boot 分区。</p><p><strong>KMI</strong></p><p>GKI 内核和供应商模块之间的接口，允许供应商模块独立于 GKI 内核进行更新。 该接口由内核函数和全局数据组成，这些函数和全局数据已使用每个合作伙伴的符号列表识别为供应商&#x2F;OEM 依赖项。</p><p><strong>GKI modules</strong></p><p>由 Google 构建的内核模块，可以在适用的情况下动态加载到设备上。 这些模块作为 GKI 内核的工件构建，并作为 <code>system_dlkm_staging_archive.tar.gz</code> 存档与 GKI 一起交付。 GKI 模块由 Google 使用内核构建时密钥对进行签名，并且仅与构建它们的 GKI 内核兼容。</p><p><strong>Vendor module</strong></p><p>由合作伙伴开发的特定于硬件的模块，包含 SoC 和特定于设备的功能。 供应商模块是一种可动态加载的内核模块。</p>]]></content>
       
       
+      
+        <tags>
+            
+            <tag> AOSP </tag>
+            
+        </tags>
       
     </entry>
     
