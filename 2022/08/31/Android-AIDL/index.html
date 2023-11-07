@@ -41,11 +41,11 @@
 <meta property="og:title" content="Android - AIDL">
 <meta property="og:url" content="https://azxkenzo.github.io/2022/08/31/Android-AIDL/">
 <meta property="og:site_name" content="SonGoKu の Blog">
-<meta property="og:description" content="AIDL 是什么Android Interface Definition Language (AIDL) 允许定义客户端和服务都同意的编程接口，以便使用进程间通信 (IPC) 相互通信。在 Android 上，一个进程不能正常访问另一个进程的内存。 所以说，他们需要将他们的对象分解为操作系统可以理解的原语，并将对象编组跨越该边界。 注意：仅当允许来自不同应用程序的客户端访问您的 IPC 服务并希望">
+<meta property="og:description" content="AIDL 是什么Android Interface Definition Language (AIDL) 允许定义客户端和服务都同意的编程接口，以便使用进程间通信 (IPC) 相互通信。在 Android 上，一个进程不能正常访问另一个进程的内存。 所以说，他们需要将他们的对象分解为操作系统可以理解的原语，并将对象编组跨越该边界。 注意：仅当允许来自不同应用程序的客户端访问你的 IPC 服务并希望">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png">
 <meta property="article:published_time" content="2022-08-31T13:01:48.000Z">
-<meta property="article:modified_time" content="2023-07-14T04:40:17.261Z">
+<meta property="article:modified_time" content="2023-08-08T06:38:45.321Z">
 <meta property="article:author" content="Son GoKu">
 <meta property="article:tag" content="Android">
 <meta name="twitter:card" content="summary">
@@ -1745,7 +1745,7 @@ if (/*@cc_on!@*/false || (!!window.MSInputMethodContext && !!document.documentMo
     debug: "env",
     cdn: {"js":{"app":"/js/app.js","parallax":"/js/plugins/parallax.js","rightMenu":"/js/plugins/rightMenu.js","rightMenus":"/js/plugins/rightMenus.js","sites":"/js/plugins/tags/sites.js","friends":"/js/plugins/tags/friends.js","contributors":"/js/plugins/tags/contributors.js","search":"/js/search/hexo.js"},"css":{"style":"/css/style.css"}},
     default: {"avatar":"https://unpkg.com/volantis-static@0.0.1654736714924/media/placeholder/avatar/round/3442075.svg","link":"https://unpkg.com/volantis-static@0.0.1654736714924/media/placeholder/link/8f277b4ee0ecd.svg","cover":"https://unpkg.com/volantis-static@0.0.1654736714924/media/placeholder/cover/76b86c0226ffd.svg","image":"https://unpkg.com/volantis-static@0.0.1654736714924/media/placeholder/image/2659360.svg"},
-    lastupdate: new Date(1691320877399),
+    lastupdate: new Date(1699323674861),
     sidebar: {
       for_page: ["blogger","category","tagcloud","donate"],
       for_post: ["toc"],
@@ -2586,73 +2586,92 @@ if (/*@cc_on!@*/false || (!!window.MSInputMethodContext && !!document.documentMo
 
   <div id="layoutHelper-page-plugins"></div>
   <div id="post-body" itemprop="articleBody">
-    <h1 id="AIDL-是什么"><a href="#AIDL-是什么" class="headerlink" title="AIDL 是什么"></a>AIDL 是什么</h1><p>Android Interface Definition Language (AIDL) 允许定义客户端和服务都同意的编程接口，以便使用进程间通信 (IPC) 相互通信。<br>在 Android 上，一个进程不能正常访问另一个进程的内存。 所以说，他们需要将他们的对象分解为操作系统可以理解的原语，并将对象编组跨越该边界。</p>
-<p>注意：仅当允许来自不同应用程序的客户端访问您的 IPC 服务并希望在您的服务中处理多线程时，才需要使用 AIDL。<br>如果不需要跨不同应用程序执行并发 IPC，则应通过实现 Binder 创建接口，或者如果想执行 IPC 但不需要处理多线程，则使用 Messenger 实现接口。</p>
+    <h2 id="AIDL-是什么"><a href="#AIDL-是什么" class="headerlink" title="AIDL 是什么"></a>AIDL 是什么</h2><p>Android Interface Definition Language (AIDL) 允许定义客户端和服务都同意的编程接口，以便使用进程间通信 (IPC) 相互通信。<br>在 Android 上，一个进程不能正常访问另一个进程的内存。 所以说，他们需要将他们的对象分解为操作系统可以理解的原语，并将对象编组跨越该边界。</p>
+<p>注意：仅当允许来自不同应用程序的客户端访问你的 IPC 服务并希望在你的服务中处理多线程时，才需要使用 AIDL。<br>如果不需要跨不同应用程序执行并发 IPC，则应通过实现 <code>Binder</code> 创建接口，或者如果想执行 IPC 但不需要处理多线程，则使用 <code>Messenger</code> 实现接口。</p>
 <p>在开始设计 AIDL 接口之前，请注意对 AIDL 接口的调用是直接函数调用。 不应该对发生调用的线程做出假设。 根据调用是来自本地进程中的线程还是远程进程，发生的情况会有所不同。 具体来说：</p>
 <ul>
-<li><p>从本地进程进行的调用在进行调用的同一线程中执行。 如果这是主 UI 线程，则该线程将继续在 AIDL 接口中执行。<br>如果它是另一个线程，那就是在服务中执行代码的线程。 因此，如果只有本地线程正在访问服务，可以完全控制在其中执行哪些线程（但如果是这种情况，那么根本不应该使用 AIDL，而应该通过实现 Binder 创建接口 ）。</p>
+<li><p><strong>从本地进程进行的调用在进行调用的同一线程中执行</strong>。 如果这是主 UI 线程，则该线程将继续在 AIDL 接口中执行。<br>如果它是另一个线程，那就是在服务中执行代码的线程。 因此，如果只有本地线程正在访问服务，可以完全控制在其中执行哪些线程（但如果是这种情况，那么根本不应该使用 AIDL，而应该通过实现 Binder 创建接口 ）。</p>
 </li>
-<li><p>来自远程进程的调用是从平台在您自己的进程内部维护的线程池中分派的。 您必须为来自未知线程的传入呼叫做好准备，同时发生多个呼叫。<br>换句话说，AIDL 接口的实现必须是完全线程安全的。 从同一远程对象上的一个线程发出的调用按顺序到达接收端。</p>
+<li><p><strong>来自远程进程的调用是从平台在你自己的进程内部维护的线程池中分派的</strong>。 你必须为来自未知线程的传入呼叫做好准备，同时发生多个呼叫。<br>换句话说，AIDL 接口的实现必须是完全线程安全的。 从同一远程对象上的一个线程发出的调用按顺序到达接收端。</p>
 </li>
-<li><p>oneway 关键字修改远程调用的行为。 使用时，远程调用不会阻塞； 它只是发送交易数据并立即返回。 接口的实现最终从Binder线程池接收这个作为常规调用作为常规远程调用。<br>如果 oneway 与本地调用一起使用，则没有影响，调用仍然是同步的。</p>
+<li><p>oneway 关键字修改远程调用的行为。 使用时，远程调用不会阻塞； 它只是发送交易数据并立即返回。 接口的实现最终从 Binder 线程池接收这个作为常规调用作为常规远程调用。<br>如果 oneway 与本地调用一起使用，则没有影响，调用仍然是同步的。</p>
 </li>
 </ul>
-<h1 id="定义-AIDL-接口"><a href="#定义-AIDL-接口" class="headerlink" title="定义 AIDL 接口"></a>定义 AIDL 接口</h1><p>必须使用 Java 语法在 .aidl 文件中定义 AIDL 接口，然后将其保存在托管服务的应用程序和绑定到服务的任何其他应用程序的源代码中（在 src&#x2F; 目录中）。</p>
-<p>在构建每个包含 .aidl 文件的应用程序时，Android SDK 工具会根据 .aidl 文件生成一个 IBinder 接口，并将其保存在项目的 gen&#x2F; 目录中。 服务必须适当地实现 IBinder 接口。 然后客户端应用程序可以绑定到服务并从 IBinder 调用方法来执行 IPC。</p>
+<h2 id="定义-AIDL-接口"><a href="#定义-AIDL-接口" class="headerlink" title="定义 AIDL 接口"></a>定义 AIDL 接口</h2><p>必须使用 Java 语法在 <code>.aidl</code> 文件中定义 AIDL 接口，然后将其保存在托管服务的应用程序和绑定到服务的任何其他应用程序的源代码中（在 <code>src/</code> 目录中）。</p>
+<p>在构建每个包含 <code>.aidl</code> 文件的应用程序时，Android SDK 工具会根据 <code>.aidl</code> 文件生成一个 <code>IBinder</code> 接口，并将其保存在项目的 <code>gen/</code> 目录中。 服务必须适当地实现 <code>IBinder</code> 接口。 然后客户端应用程序可以绑定到服务并从 <code>IBinder</code> 调用方法来执行 IPC。</p>
 <p>要使用 AIDL 创建 bounded 服务，请执行以下步骤：</p>
 <ol>
-<li>创建 .aidl 文件。  该文件定义了带有方法签名的编程接口。</li>
-<li>实现接口。Android SDK 工具会根据您的 .aidl 文件以 Java 编程语言生成接口。 此接口有一个名为 Stub 的内部抽象类，它扩展 Binder 并实现 AIDL 接口中的方法。 您必须扩展 Stub 类并实现方法。</li>
-<li>向客户端公开接口。实现一个 Service 并覆盖 onBind() 以返回 Stub 类的实现。</li>
+<li>创建 <code>.aidl</code> 文件。  该文件定义了带有方法签名的编程接口。</li>
+<li>实现接口。Android SDK 工具会根据你的 <code>.aidl</code> 文件以 Java 编程语言生成接口。 此接口有一个名为 <code>Stub</code> 的内部抽象类，它扩展 <code>Binder</code> 并实现 AIDL 接口中的方法。 你必须扩展 <code>Stub</code> 类并实现方法。</li>
+<li>向客户端公开接口。实现一个 Service 并覆盖 <code>onBind()</code> 以返回 <code>Stub</code> 类的实现。</li>
 </ol>
 <h3 id="创建-aidl-文件"><a href="#创建-aidl-文件" class="headerlink" title="创建 .aidl 文件"></a>创建 .aidl 文件</h3><p>AIDL 使用一种简单的语法，允许使用一个或多个可以接受参数和返回值的方法来声明接口。 参数和返回值可以是任何类型，甚至是其他 AIDL 生成的接口。</p>
-<p>必须使用 Java 语言构建 .aidl 文件。 每个 .aidl 文件必须定义一个接口，并且只需要接口声明和方法签名。</p>
+<p>必须使用 Java 语言构建 <code>.aidl</code> 文件。 每个 <code>.aidl</code> 文件必须定义一个接口，并且只需要接口声明和方法签名。</p>
 <p>默认情况下，AIDL 支持以下数据类型：</p>
 <ul>
 <li>Java 中的所有基本类型（如 int、long、char、boolean 等）</li>
 <li>原始类型数组，例如 int[]</li>
 <li>String</li>
 <li>CharSequence</li>
-<li>List<br>  List 中的所有元素必须是此列表中受支持的数据类型之一，或者是您声明的其他 AIDL 生成的接口或 parcelables 之一。 List 可以选择用作参数化类型类（例如，List<String>）。 对方接收到的实际具体类始终是一个 ArrayList，尽管生成该方法是为了使用 List 接口。</li>
-<li>Map<br>  Map 中的所有元素必须是此列表中支持的数据类型之一，或者是您声明的其他 AIDL 生成的接口或 parcelables 之一。 不支持参数化类型映射（例如 Map&lt;String,Integer&gt; 形式的映射）。 对方接收到的实际具体类始终是HashMap，虽然生成方法是为了使用Map接口。 考虑使用 Bundle 作为 Map 的替代品。</li>
+<li>List<br>  List 中的所有元素必须是此列表中受支持的数据类型之一，或者是你声明的其他 AIDL 生成的接口或 parcelables 之一。 List 可以选择用作参数化类型类（例如，List<String>）。 对方接收到的实际具体类始终是一个 ArrayList，尽管生成该方法是为了使用 List 接口。</li>
+<li>Map<br>  Map 中的所有元素必须是此列表中支持的数据类型之一，或者是你声明的其他 AIDL 生成的接口或 parcelables 之一。 不支持参数化类型映射（例如 Map&lt;String,Integer&gt; 形式的映射）。 对方接收到的实际具体类始终是HashMap，虽然生成方法是为了使用Map接口。 考虑使用 Bundle 作为 Map 的替代品。</li>
 </ul>
-<p>必须为上面未列出的每个附加类型包含一个 import 语句，即使它们与您的接口在同一个包中定义。</p>
+<p>必须为上面未列出的每个附加类型包含一个 <code>import</code> 语句，即使它们与你的接口在同一个包中定义。</p>
 <p>定义服务接口时，请注意：</p>
 <ul>
 <li>方法可以接受零个或多个参数，并返回一个值或 void。</li>
 <li>所有非原始参数都需要一个方向标签来指示数据的走向。 in、out或inout。<br>警告：应该将方向限制为真正需要的方向，因为编组参数很昂贵。</li>
 <li>.aidl 文件中包含的所有代码注释都包含在生成的 IBinder 接口中（除了 import 和 package 语句之前的注释）。</li>
 <li>可以在 AIDL 接口中定义 String 和 int 常量。 例如：const int VERSION &#x3D; 1;。</li>
-<li>方法调用由 transact() 代码分派，该代码通常基于接口中的方法索引。 因为这使得版本控制变得困难，您可以手动将事务代码分配给一个方法：void method() &#x3D; 10;。</li>
+<li>方法调用由 transact() 代码分派，该代码通常基于接口中的方法索引。 因为这使得版本控制变得困难，你可以手动将事务代码分配给一个方法：void method() &#x3D; 10;。</li>
 <li>可以为 Null 的参数和返回类型必须使用 @nullable 进行注释。</li>
 </ul>
-<p>只需将 .aidl 文件保存在项目的 src&#x2F; 目录中，当构建应用程序时，SDK 工具会在项目的 gen&#x2F; 目录中生成 IBinder 接口文件。 生成的文件名与 .aidl 文件名匹配，但具有 .java 扩展名（例如，IRemoteService.aidl 生成 IRemoteService.java）。</p>
-<h3 id="实现接口"><a href="#实现接口" class="headerlink" title="实现接口"></a>实现接口</h3><p>当您构建应用程序时，Android SDK 工具会生成一个以您的 .aidl 文件命名的 .java 接口文件。 生成的接口包括一个名为 Stub 的子类，它是其父接口的抽象实现，并声明了 .aidl 文件中的所有方法。</p>
-<p>注意：Stub 还定义了一些辅助方法，最值得注意的是 asInterface()，它接受一个 IBinder（通常是传递给客户端的 onServiceConnected() 回调方法的那个）并返回一个 stub 接口的实例。</p>
-<p>在实现 AIDL 接口时，您应该注意一些规则：</p>
+<p>只需将 <code>.aidl</code> 文件保存在项目的 <code>src/</code> 目录中，当构建应用程序时，SDK 工具会在项目的 <code>gen/</code> 目录中生成 <code>IBinder</code> 接口文件。 生成的文件名与 <code>.aidl</code> 文件名匹配，但具有 .java 扩展名（例如，IRemoteService.aidl 生成 IRemoteService.java）。</p>
+<h3 id="实现接口"><a href="#实现接口" class="headerlink" title="实现接口"></a>实现接口</h3><p>当你构建应用程序时，Android SDK 工具会生成一个以你的 <code>.aidl</code> 文件命名的 .java 接口文件。 生成的接口包括一个名为 <code>Stub</code> 的子类，它是其父接口的抽象实现，并声明了 <code>.aidl</code> 文件中的所有方法。</p>
+<p>注意：<code>Stub</code> 还定义了一些辅助方法，最值得注意的是 <code>asInterface()</code>，它接受一个 <code>IBinder</code>（通常是传递给客户端的 <code>onServiceConnected()</code> 回调方法的那个）并返回一个 stub 接口的实例。</p>
+<p>在实现 AIDL 接口时，你应该注意一些规则：</p>
 <ul>
-<li>传入调用不能保证在主线程上执行，因此您需要从一开始就考虑多线程并正确构建您的服务以实现线程安全。</li>
-<li>默认情况下，RPC 调用是同步的。 如果您知道该服务需要多于几毫秒来完成一个请求，您不应该从 Activity 的主线程调用它，因为它可能会挂起应用程序（Android 可能会显示“应用程序未响应”对话框）——您应该 通常从客户端中的单独线程调用它们。</li>
+<li>传入调用不能保证在主线程上执行，因此你需要从一开始就考虑多线程并正确构建你的服务以实现线程安全。</li>
+<li>默认情况下，RPC 调用是同步的。 如果你知道该服务需要多于几毫秒来完成一个请求，你不应该从 Activity 的主线程调用它，因为它可能会挂起应用程序（Android 可能会显示“应用程序未响应”对话框）——你应该 通常从客户端中的单独线程调用它们。</li>
 <li>只有 Parcel.writeException() 的参考文档中列出的异常类型会被发送回调用者。</li>
 </ul>
-<p>客户端还必须能够访问接口类，因此如果客户端和服务位于不同的应用程序中，那么客户端的应用程序必须在其 src&#x2F; 目录中拥有 .aidl 文件的副本（生成 android.os.Binder 接口） — 提供客户端访问 AIDL 方法）。</p>
-<p>当客户端在 onServiceConnected() 回调中收到 IBinder 时，必须调用 YourServiceInterface.Stub.asInterface(service) 将返回的参数转换为 YourServiceInterface 类型。</p>
-<h3 id="通过-IPC-传递对象"><a href="#通过-IPC-传递对象" class="headerlink" title="通过 IPC 传递对象"></a>通过 IPC 传递对象</h3><p>在 Android 10（API 级别 29）中，可以直接在 AIDL 中定义 Parcelable 对象。 这里也支持作为 AIDL 接口参数和其他 parcelables 支持的类型。 这避免了手动编写编组代码和自定义类的额外工作。 但是，这也会创建一个裸结构。 如果需要自定义访问器或其他功能，则应实现 Parcelable。</p>
-<p>您还可以通过 IPC 接口将自定义类从一个进程发送到另一个进程。 但是，您必须确保您的类的代码可用于 IPC 通道的另一端，并且您的类必须支持 Parcelable 接口。 支持 Parcelable 接口很重要，因为它允许 Android 系统将对象分解为可以跨进程编组的基元。</p>
+<p>客户端还必须能够访问接口类，因此如果客户端和服务位于不同的应用程序中，那么客户端的应用程序必须在其 <code>src/</code> 目录中拥有 <code>.aidl</code> 文件的副本（生成 android.os.Binder 接口） — 提供客户端访问 AIDL 方法）。</p>
+<p>当客户端在 <code>onServiceConnected()</code> 回调中收到 <code>IBinder</code> 时，必须调用 <code>YourServiceInterface.Stub.asInterface(service)</code> 将返回的参数转换为 YourServiceInterface 类型。</p>
+<h3 id="通过-IPC-传递对象"><a href="#通过-IPC-传递对象" class="headerlink" title="通过 IPC 传递对象"></a>通过 IPC 传递对象</h3><p>在 Android 10（API 级别 29）中，可以直接在 AIDL 中定义 <code>Parcelable</code> 对象。 这里也支持作为 AIDL 接口参数和其他 parcelables 支持的类型。 这避免了手动编写编组代码和自定义类的额外工作。 但是，这也会创建一个裸结构。 如果需要自定义访问器或其他功能，则应实现 Parcelable。</p>
+<p>你还可以通过 IPC 接口将自定义类从一个进程发送到另一个进程。 但是，你必须确保你的类的代码可用于 IPC 通道的另一端，并且你的类必须支持 Parcelable 接口。 支持 Parcelable 接口很重要，因为它允许 Android 系统将对象分解为可以跨进程编组的基元。</p>
 <p>Stub类的声明：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">abstract</span> <span class="keyword">class</span> <span class="title class_">Stub</span> <span class="keyword">extends</span> <span class="title class_">Binder</span> <span class="keyword">implements</span> <span class="title class_">IRemoteService</span></span><br></pre></td></tr></table></figure>
 
-<p>Stub.asInterface() 的实现：</p>
+<p><code>Stub.asInterface()</code></p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> IRemoteService <span class="title function_">asInterface</span><span class="params">(IBinder obj)</span> &#123;</span><br><span class="line">  <span class="keyword">if</span> (obj==<span class="literal">null</span>) &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">null</span>;</span><br><span class="line">  &#125;</span><br><span class="line">  </span><br><span class="line">  <span class="type">IInterface</span> <span class="variable">iin</span> <span class="operator">=</span> obj.queryLocalInterface(DESCRIPTOR);</span><br><span class="line">  <span class="keyword">if</span> ((iin!=<span class="literal">null</span>) &amp;&amp; (iin <span class="keyword">instanceof</span> IRemoteService)) &#123;</span><br><span class="line">    <span class="keyword">return</span> ((IRemoteService)iin);</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="comment">// </span></span><br><span class="line">  <span class="keyword">return</span> <span class="keyword">new</span> <span class="title class_">IRemoteService</span>.Stub.Proxy(obj);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="meta">@Nullable</span> IInterface <span class="title function_">queryLocalInterface</span><span class="params">(<span class="meta">@NonNull</span> String descriptor)</span> &#123;</span><br><span class="line">    <span class="keyword">if</span> (mDescriptor != <span class="literal">null</span> &amp;&amp; mDescriptor.equals(descriptor)) &#123;</span><br><span class="line">        <span class="keyword">return</span> mOwner;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">null</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-<p>Stub.Proxy 中方法的实现：</p>
+<p><code>Stub.Proxy</code> 中方法的实现：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">android.os.<span class="type">Parcel</span> <span class="variable">_data</span> <span class="operator">=</span> android.os.Parcel.obtain();</span><br><span class="line">android.os.<span class="type">Parcel</span> <span class="variable">_reply</span> <span class="operator">=</span> android.os.Parcel.obtain();</span><br><span class="line"><span class="keyword">try</span> &#123;</span><br><span class="line">  _data.writeInterfaceToken(DESCRIPTOR);</span><br><span class="line">  _data.writeInt(anInt);</span><br><span class="line">  _data.writeLong(aLong);</span><br><span class="line">  _data.writeInt(((aBoolean)?(<span class="number">1</span>):(<span class="number">0</span>)));</span><br><span class="line">  _data.writeFloat(aFloat);</span><br><span class="line">  _data.writeDouble(aDouble);</span><br><span class="line">  _data.writeString(aString);</span><br><span class="line">  <span class="comment">// </span></span><br><span class="line">  <span class="type">boolean</span> <span class="variable">_status</span> <span class="operator">=</span> mRemote.transact(Stub.TRANSACTION_basicTypes, _data, _reply, <span class="number">0</span>);</span><br><span class="line">  <span class="keyword">if</span> (!_status &amp;&amp; getDefaultImpl() != <span class="literal">null</span>) &#123;</span><br><span class="line">    getDefaultImpl().basicTypes(anInt, aLong, aBoolean, aFloat, aDouble, aString);</span><br><span class="line">    <span class="keyword">return</span>;</span><br><span class="line">  &#125;</span><br><span class="line">  _reply.readException();</span><br><span class="line">&#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">  _reply.recycle();</span><br><span class="line">  _data.recycle();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-<p>Binder.transact() 的实现：</p>
+<p><code>Binder.transact()</code> 的实现：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">final</span> <span class="type">boolean</span> <span class="title function_">transact</span><span class="params">(<span class="type">int</span> code, <span class="meta">@NonNull</span> Parcel data, <span class="meta">@Nullable</span> Parcel reply,</span></span><br><span class="line"><span class="params">        <span class="type">int</span> flags)</span> <span class="keyword">throws</span> RemoteException &#123;</span><br><span class="line">    <span class="keyword">if</span> (<span class="literal">false</span>) Log.v(<span class="string">&quot;Binder&quot;</span>, <span class="string">&quot;Transact: &quot;</span> + code + <span class="string">&quot; to &quot;</span> + <span class="built_in">this</span>);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (data != <span class="literal">null</span>) &#123;</span><br><span class="line">        data.setDataPosition(<span class="number">0</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="type">boolean</span> <span class="variable">r</span> <span class="operator">=</span> onTransact(code, data, reply, flags);</span><br><span class="line">    <span class="keyword">if</span> (reply != <span class="literal">null</span>) &#123;</span><br><span class="line">        reply.setDataPosition(<span class="number">0</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> r;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-<p>Stub.onTransact() 的实现：</p>
+<p><code>Stub.onTransact()</code> 的实现：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">String</span> <span class="variable">descriptor</span> <span class="operator">=</span> DESCRIPTOR;</span><br><span class="line"><span class="keyword">switch</span> (code)</span><br><span class="line">&#123;</span><br><span class="line">  <span class="keyword">case</span> INTERFACE_TRANSACTION:</span><br><span class="line">  &#123;</span><br><span class="line">    reply.writeString(descriptor);</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">case</span> TRANSACTION_basicTypes:</span><br><span class="line">  &#123;</span><br><span class="line">    data.enforceInterface(descriptor);</span><br><span class="line">    <span class="type">int</span> _arg0;</span><br><span class="line">    _arg0 = data.readInt();</span><br><span class="line">    <span class="type">long</span> _arg1;</span><br><span class="line">    _arg1 = data.readLong();</span><br><span class="line">    <span class="type">boolean</span> _arg2;</span><br><span class="line">    _arg2 = (<span class="number">0</span>!=data.readInt());</span><br><span class="line">    <span class="type">float</span> _arg3;</span><br><span class="line">    _arg3 = data.readFloat();</span><br><span class="line">    <span class="type">double</span> _arg4;</span><br><span class="line">    _arg4 = data.readDouble();</span><br><span class="line">    String _arg5;</span><br><span class="line">    _arg5 = data.readString();</span><br><span class="line">    <span class="comment">// </span></span><br><span class="line">    <span class="built_in">this</span>.basicTypes(_arg0, _arg1, _arg2, _arg3, _arg4, _arg5);</span><br><span class="line">    reply.writeNoException();</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">default</span>:</span><br><span class="line">  &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="built_in">super</span>.onTransact(code, data, reply, flags);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="IBinder"><a href="#IBinder" class="headerlink" title="IBinder"></a>IBinder</h2><p><code>IBinder</code> 是远程对象的基本接口，轻量级远程过程调用机制的核心部分，专为执行进程内和跨进程调用时的高性能而设计。 该接口描述了与远程对象交互的抽象协议。 不要直接实现该接口，而是从 <code>Binder</code> 扩展。</p>
+<p>关键的 IBinder API 是与 <code>Binder.onTransact()</code> 相匹配的 <code>transact()</code>。 这些方法允许您分别发送对 <code>IBinder</code> 对象的调用和接收对 <code>Binder</code> 对象的调用。<br>该事务 API 是同步的，因此对 <code>transact()</code> 的调用不会返回，直到目标从 <code>Binder.onTransact()</code> 返回； 这是调用本地进程中存在的对象时的预期行为，并且底层进程间通信 (IPC) 机制确保在跨进程时应用这些相同的语义。</p>
+<p>通过 <code>transact()</code> 发送的数据是一个 <code>Parcel</code>，它是一个通用的数据缓冲区，还维护一些有关其内容的元数据。 元数据用于管理缓冲区中的 IBinder 对象引用，以便在缓冲区跨进程移动时可以维护这些引用。<br>此机制确保当 <code>IBinder</code> 写入 <code>Parcel</code> 并发送到另一个进程时，如果另一个进程将对同一 <code>IBinder</code> 的引用发送回原始进程，则原始进程将收到相同的 <code>IBinder</code> 对象。 这些语义允许将 IBinder&#x2F;Binder 对象用作可以跨进程管理的唯一标识（用作令牌或用于其他目的）。</p>
+<p>系统在其运行的每个进程中维护一个事务线程池。这些线程用于调度来自其他进程的所有 IPC。 例如，当从进程 A 到进程 B 进行 IPC 时，A 中的调用线程在将事务发送到进程 B 时会在 <code>transact()</code> 中阻塞。B 中的下一个可用池线程接收传入事务，调用 <code>Binder.onTransact()</code> 对目标对象进行处理，并回复结果 <code>Parcel</code>。 收到结果后，进程 A 中的线程返回以允许其继续执行。 实际上，其他进程似乎用作您未创建并在自己的进程中执行的附加线程。</p>
+<p>Binder系统还支持跨进程的递归。 例如，如果进程 A 执行一个事务来处理 B，并且进程 B 在处理该事务时调用 A 中实现的 <code>IBinder</code> 上的 <code>transact()</code>，则 A 中当前等待原始事务完成的线程将负责处理 在B调用的对象上调用 <code>Binder.onTransact()</code>。这确保了调用远程 binder 对象时的递归语义与调用本地对象时的递归语义相同。</p>
+<p>当使用远程对象时，您经常想知道它们何时不再有效。 可以通过三种方法来确定：</p>
+<ul>
+<li>如果尝试在进程不再存在的 <code>IBinder</code> 上调用 <code>transact()</code> 方法，则会抛出 <code>RemoteException</code> 异常。</li>
+<li>可以调用 <code>pingBinder()</code> 方法，如果远程进程不再存在，则返回 false。</li>
+<li><code>linkToDeath()</code> 方法可用于向 <code>IBinder</code> 注册 IBinder.DeathRecipient，当其包含进程消失时将调用该 IBinder.DeathRecipient。</li>
+</ul>
+<h3 id="transact"><a href="#transact" class="headerlink" title="transact()"></a>transact()</h3><p>返回 <code>Binder.onTransact</code> 的结果。 调用成功一般返回 true； false 通常表示 transaction 代码不被理解。 对于对不同进程的单向调用，永远不应返回 false。 如果对同一进程中的代码（通常是 C++ 或 Rust 实现）进行单向调用，则不存在单向语义，并且仍然可以返回 false。</p>
+<h2 id="Binder"><a href="#Binder" class="headerlink" title="Binder"></a>Binder</h2><p>Binder 是远程对象的基类，<code>IBinder</code> 定义的轻量级远程过程调用机制的核心部分。 此类是 <code>IBinder</code> 的实现，它提供此类对象的标准本地实现。</p>
+<p>大多数开发者不会直接实现这个类，而是使用 aidl 工具来描述所需的接口，让它生成适当的 <code>Binder</code> 子类。 但是，您可以直接从 <code>Binder</code> 派生来实现您自己的自定义 RPC 协议，或者直接实例化原始 Binder 对象以用作可以跨进程共享的令牌。</p>
+<p>这个类只是一个基本的 IPC 原语； 它对应用程序的生命周期没有影响，并且仅在创建它的进程继续运行时才有效。 要正确使用此功能，您必须在顶级应用程序组件（android.app.Service、android.app.Activity 或 android.content.ContentProvider）的上下文中执行此操作，让系统知道您的进程应该保持运行。</p>
+<p>您必须记住进程可能消失的情况，因此要求您稍后重新创建一个新的 <code>Binder</code>，并在进程再次启动时重新附加它。 例如，如果您在 android.app.Activity 中使用此功能，则您的 Activity 进程可能会在 Activity 未启动时随时被终止； 如果稍后重新创建该 Activity，您将需要创建一个新的 Binder 并将其再次交回正确的位置； 您需要注意，您的进程可能出于其他原因（例如接收广播）而启动，该原因不会涉及重新创建活动，从而运行其代码来创建新的 Binder。</p>
+<h3 id="onTransact"><a href="#onTransact" class="headerlink" title="onTransact()"></a>onTransact()</h3><p>默认实现是一个返回 false 的 stub。 您将需要覆盖它以对事务进行适当的解组。<br>如果你想调用它，请调用 <code>transact()</code>。<br>返回结果的实现通常应该使用 <code>Parcel.writeNoException</code> 和 <code>Parcel.writeException</code> 将异常传播回调用者。</p>
+
   </div>
   
   
@@ -2676,10 +2695,10 @@ if (/*@cc_on!@*/false || (!!window.MSInputMethodContext && !!document.documentMo
     <div class='new-meta-box'>
       
         
-          <div class="new-meta-item date" itemprop="dateModified" datetime="2023-07-14T12:40:17+08:00">
+          <div class="new-meta-item date" itemprop="dateModified" datetime="2023-08-08T14:38:45+08:00">
   <a class='notlink'>
     <i class="fa-solid fa-edit fa-fw" aria-hidden="true"></i>
-    <p>更新于：2023年7月14日</p>
+    <p>更新于：2023年8月8日</p>
   </a>
 </div>
 
@@ -2761,7 +2780,7 @@ if (/*@cc_on!@*/false || (!!window.MSInputMethodContext && !!document.documentMo
       
         <a class='prev' href='/2022/09/01/Android-Fragment/'>
           <p class='title'><i class="fa-solid fa-chevron-left" aria-hidden="true"></i>Android -  fragment</p>
-          <p class='content'>fragment  是什么 fragment  代表应用程序 UI 的可重用部分。  fragment  定义和管理自己的布局，有自己的生命周期，并且可以处理自己的输入事件。  fragment...</p>
+          <p class='content'>fragment  是什么fragment 代表 app UI 的可重用部分。  fragment 定义和管理自己的布局，有自己的生命周期，并且可以处理自己的输入事件。 fragment 不能独...</p>
         </a>
       
       
@@ -2825,7 +2844,7 @@ if (/*@cc_on!@*/false || (!!window.MSInputMethodContext && !!document.documentMo
 
 
     <div class='content'>
-        <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%88%9B%E5%BB%BA-aidl-%E6%96%87%E4%BB%B6"><span class="toc-text">创建 .aidl 文件</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AE%9E%E7%8E%B0%E6%8E%A5%E5%8F%A3"><span class="toc-text">实现接口</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%80%9A%E8%BF%87-IPC-%E4%BC%A0%E9%80%92%E5%AF%B9%E8%B1%A1"><span class="toc-text">通过 IPC 传递对象</span></a></li></ol>
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#AIDL-%E6%98%AF%E4%BB%80%E4%B9%88"><span class="toc-text">AIDL 是什么</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AE%9A%E4%B9%89-AIDL-%E6%8E%A5%E5%8F%A3"><span class="toc-text">定义 AIDL 接口</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%88%9B%E5%BB%BA-aidl-%E6%96%87%E4%BB%B6"><span class="toc-text">创建 .aidl 文件</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AE%9E%E7%8E%B0%E6%8E%A5%E5%8F%A3"><span class="toc-text">实现接口</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%80%9A%E8%BF%87-IPC-%E4%BC%A0%E9%80%92%E5%AF%B9%E8%B1%A1"><span class="toc-text">通过 IPC 传递对象</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#IBinder"><span class="toc-text">IBinder</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#transact"><span class="toc-text">transact()</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Binder"><span class="toc-text">Binder</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#onTransact"><span class="toc-text">onTransact()</span></a></li></ol></li></ol>
     </div>
   </section>
 
@@ -3395,7 +3414,7 @@ if (/*@cc_on!@*/false || (!!window.MSInputMethodContext && !!document.documentMo
 </script>
 
 
-  <script type="application/ld+json">[{"@context":"http://schema.org","@type":"Organization","name":"SonGoKu の Blog","url":"https://azxkenzo.github.io/","logo":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png","width":192,"height":192}},{"@context":"http://schema.org","@type":"Person","name":"Son GoKu","image":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png"},"url":"https://azxkenzo.github.io/","sameAs":["https://github.com/volantis-x"],"description":"勤练带来力量"},{"@context":"http://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"item":{"@id":"https://azxkenzo.github.io/","name":"SonGoKu の Blog"}},{"@type":"ListItem","position":3,"item":{"@id":"https://azxkenzo.github.io/2022/08/31/Android-AIDL/","name":"Android - AIDL"}}]},{"@context":"http://schema.org","@type":"WebSite","name":"SonGoKu の Blog","url":"https://azxkenzo.github.io/","keywords":"Android,Kotlin,Linux","description":"勤练带来力量","author":{"@type":"Person","name":"Son GoKu","image":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png"},"url":"https://azxkenzo.github.io/","description":"勤练带来力量"},"publisher":{"@type":"Organization","name":"SonGoKu の Blog","url":"https://azxkenzo.github.io/","logo":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png","width":192,"height":192}},"potentialAction":{"@type":"SearchAction","name":"Site Search","target":{"@type":"EntryPoint","urlTemplate":"https://azxkenzo.github.io?s={search_term_string}"},"query-input":"required name=search_term_string"}},{"@context":"http://schema.org","@type":"BlogPosting","headline":"Android - AIDL","description":"勤练带来力量","inLanguage":"zh-CN","mainEntityOfPage":{"@type":"WebPage","@id":"https://azxkenzo.github.io/2022/08/31/Android-AIDL/"},"author":{"@type":"Person","name":"Son GoKu","image":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png"},"url":"https://azxkenzo.github.io/"},"publisher":{"@type":"Organization","name":"SonGoKu の Blog","logo":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png","width":192,"height":192}},"url":"https://azxkenzo.github.io/2022/08/31/Android-AIDL/","wordCount":0,"datePublished":"2022-08-31T13:01:48.000Z","dateModified":"2023-07-14T04:40:17.261Z","keywords":"Android","image":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png","width":192,"height":192}}]</script>
+  <script type="application/ld+json">[{"@context":"http://schema.org","@type":"Organization","name":"SonGoKu の Blog","url":"https://azxkenzo.github.io/","logo":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png","width":192,"height":192}},{"@context":"http://schema.org","@type":"Person","name":"Son GoKu","image":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png"},"url":"https://azxkenzo.github.io/","sameAs":["https://github.com/volantis-x"],"description":"勤练带来力量"},{"@context":"http://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"item":{"@id":"https://azxkenzo.github.io/","name":"SonGoKu の Blog"}},{"@type":"ListItem","position":3,"item":{"@id":"https://azxkenzo.github.io/2022/08/31/Android-AIDL/","name":"Android - AIDL"}}]},{"@context":"http://schema.org","@type":"WebSite","name":"SonGoKu の Blog","url":"https://azxkenzo.github.io/","keywords":"Android,Kotlin,Linux","description":"勤练带来力量","author":{"@type":"Person","name":"Son GoKu","image":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png"},"url":"https://azxkenzo.github.io/","description":"勤练带来力量"},"publisher":{"@type":"Organization","name":"SonGoKu の Blog","url":"https://azxkenzo.github.io/","logo":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png","width":192,"height":192}},"potentialAction":{"@type":"SearchAction","name":"Site Search","target":{"@type":"EntryPoint","urlTemplate":"https://azxkenzo.github.io?s={search_term_string}"},"query-input":"required name=search_term_string"}},{"@context":"http://schema.org","@type":"BlogPosting","headline":"Android - AIDL","description":"勤练带来力量","inLanguage":"zh-CN","mainEntityOfPage":{"@type":"WebPage","@id":"https://azxkenzo.github.io/2022/08/31/Android-AIDL/"},"author":{"@type":"Person","name":"Son GoKu","image":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png"},"url":"https://azxkenzo.github.io/"},"publisher":{"@type":"Organization","name":"SonGoKu の Blog","logo":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png","width":192,"height":192}},"url":"https://azxkenzo.github.io/2022/08/31/Android-AIDL/","wordCount":0,"datePublished":"2022-08-31T13:01:48.000Z","dateModified":"2023-08-08T06:38:45.321Z","keywords":"Android","image":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png","width":192,"height":192}}]</script>
 
 
 

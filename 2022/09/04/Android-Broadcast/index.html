@@ -45,7 +45,7 @@
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png">
 <meta property="article:published_time" content="2022-09-04T03:50:49.000Z">
-<meta property="article:modified_time" content="2023-07-14T04:40:17.261Z">
+<meta property="article:modified_time" content="2023-11-07T02:20:58.192Z">
 <meta property="article:author" content="Son GoKu">
 <meta property="article:tag" content="Android">
 <meta name="twitter:card" content="summary">
@@ -1745,7 +1745,7 @@ if (/*@cc_on!@*/false || (!!window.MSInputMethodContext && !!document.documentMo
     debug: "env",
     cdn: {"js":{"app":"/js/app.js","parallax":"/js/plugins/parallax.js","rightMenu":"/js/plugins/rightMenu.js","rightMenus":"/js/plugins/rightMenus.js","sites":"/js/plugins/tags/sites.js","friends":"/js/plugins/tags/friends.js","contributors":"/js/plugins/tags/contributors.js","search":"/js/search/hexo.js"},"css":{"style":"/css/style.css"}},
     default: {"avatar":"https://unpkg.com/volantis-static@0.0.1654736714924/media/placeholder/avatar/round/3442075.svg","link":"https://unpkg.com/volantis-static@0.0.1654736714924/media/placeholder/link/8f277b4ee0ecd.svg","cover":"https://unpkg.com/volantis-static@0.0.1654736714924/media/placeholder/cover/76b86c0226ffd.svg","image":"https://unpkg.com/volantis-static@0.0.1654736714924/media/placeholder/image/2659360.svg"},
-    lastupdate: new Date(1691320877399),
+    lastupdate: new Date(1699323674861),
     sidebar: {
       for_page: ["blogger","category","tagcloud","donate"],
       for_post: ["toc"],
@@ -2590,48 +2590,48 @@ if (/*@cc_on!@*/false || (!!window.MSInputMethodContext && !!document.documentMo
 <p>应用程序可以注册以接收特定广播。发送广播时，系统会自动将广播路由到已订阅接收该特定类型广播的应用程序。</p>
 <p>一般来说，广播可以用作跨应用程序和正常用户流之外的消息传递系统。但是，必须小心不要滥用响应广播和在后台运行job的机会，这可能会导致系统性能下降。</p>
 <h1 id="关于系统广播"><a href="#关于系统广播" class="headerlink" title="关于系统广播"></a>关于系统广播</h1><p>当各种系统事件发生时，系统会自动发送广播，例如当系统切换到飞行模式时。系统广播被发送到所有订阅接收事件的应用程序。</p>
-<p>广播消息本身包装在一个 Intent 对象中，该对象的 action 字符串标识发生的事件（例如 <code>android.intent.action.AIRPLANE_MODE</code>）。intent还可能包括捆绑到其 extra 字段中的附加信息。例如，飞行模式intent包括一个布尔 extra，指示飞行模式是否打开。</p>
+<p>广播消息本身包装在一个 Intent 对象中，该对象的 <code>action</code> 字符串标识发生的事件（例如 <code>android.intent.action.AIRPLANE_MODE</code>）。intent 还可能包括捆绑到其 extra 字段中的附加信息。例如，飞行模式 intent 包括一个布尔 extra，指示飞行模式是否打开。</p>
 <p>有关系统广播操作的完整列表，请参阅 Android SDK 中的 <code>BROADCAST_ACTIONS.TXT</code> 文件。每个广播动作都有一个与之关联的常量字段。例如，常量 ACTION_AIRPLANE_MODE_CHANGED 的值为 android.intent.action.AIRPLANE_MODE。每个广播动作的文档都在其关联的常量字段中可用。</p>
 <h2 id="系统广播的变化"><a href="#系统广播的变化" class="headerlink" title="系统广播的变化"></a>系统广播的变化</h2><h4 id="Android-9"><a href="#Android-9" class="headerlink" title="Android 9"></a>Android 9</h4><p>从 Android 9（API 级别 28）开始，NETWORK_STATE_CHANGED_ACTION 广播不会接收有关用户位置或个人身份数据的信息。</p>
-<p>此外，如果您的应用安装在运行 Android 9 或更高版本的设备上，则来自 Wi-Fi 的系统广播不包含 SSID、BSSID、连接信息或扫描结果。 要获取此信息，请改为调用 getConnectionInfo()。</p>
+<p>此外，如果你的应用安装在运行 Android 9 或更高版本的设备上，则来自 Wi-Fi 的系统广播不包含 SSID、BSSID、连接信息或扫描结果。 要获取此信息，请改为调用 getConnectionInfo()。</p>
 <h4 id="Android-8-0"><a href="#Android-8-0" class="headerlink" title="Android 8.0"></a>Android 8.0</h4><p>从 Android 8.0（API 级别 26）开始，系统对清单声明的接收器施加了额外的限制。</p>
-<p>如果应用面向 Android 8.0 或更高版本，则不能使用清单为大多数隐式广播（不专门针对您的应用的广播）声明接收器。 当用户积极使用您的应用程序时，您仍然可以使用上下文注册的接收器。</p>
+<p><strong>如果应用面向 Android 8.0 或更高版本，则不能使用清单为大多数隐式广播（不专门针对你的应用的广播）声明接收器</strong>。 当用户积极使用你的应用程序时，你仍然可以使用上下文注册的接收器。</p>
 <h1 id="接收广播"><a href="#接收广播" class="headerlink" title="接收广播"></a>接收广播</h1><p>应用程序可以通过两种方式接收广播：通过清单声明的接收器和上下文注册的接收器。</p>
-<h3 id="Manifest-declared-receivers"><a href="#Manifest-declared-receivers" class="headerlink" title="Manifest-declared receivers"></a>Manifest-declared receivers</h3><p>如果在清单中声明broadcast receiver，则系统会在发送广播时启动应用程序（如果应用程序尚未运行）。<br>注意：如果应用以 API 级别 26 或更高级别为目标，则不能使用清单为隐式广播（不专门针对您的应用的广播）声明 receiver，但一些不受该限制的隐式广播除外。<br>在大多数情况下，可以改用 scheduled jobs。</p>
+<h3 id="Manifest-declared-receivers"><a href="#Manifest-declared-receivers" class="headerlink" title="Manifest-declared receivers"></a>Manifest-declared receivers</h3><p>如果在清单中声明broadcast receiver，则系统会在发送广播时启动应用程序（如果应用程序尚未运行）。<br>注意：如果应用以 API 级别 26 或更高级别为目标，则不能使用清单为隐式广播（不专门针对你的应用的广播）声明 receiver，但一些不受该限制的隐式广播除外。<br>在大多数情况下，可以改用 scheduled jobs。</p>
 <p>要在清单中声明broadcast receiver，执行以下步骤：</p>
 <ol>
 <li>在应用的清单中指定 <code>&lt;receiver&gt;</code> 元素。 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">&lt;receiver android:name=&quot;.MyBroadcastReceiver&quot;  android:exported=&quot;true&quot;&gt;</span><br><span class="line"> &lt;intent-filter&gt;</span><br><span class="line">     &lt;action android:name=&quot;android.intent.action.BOOT_COMPLETED&quot;/&gt;</span><br><span class="line">     &lt;action android:name=&quot;android.intent.action.INPUT_METHOD_CHANGED&quot; /&gt;</span><br><span class="line"> &lt;/intent-filter&gt;</span><br><span class="line"> &lt;/receiver&gt;</span><br></pre></td></tr></table></figure>
 intent filters 指定receiver订阅的广播action。</li>
 <li>继承 BroadcastReceiver 并实现 onReceive(Context, Intent)。</li>
 </ol>
-<p>系统package manager在安装应用程序时注册receiver。 然后receiver成为应用程序的单独入口点，这意味着如果应用程序当前未运行，系统可以启动应用程序并传送广播。</p>
+<p>系统 package manager 在安装应用程序时注册 receiver。 然后 receiver 成为应用程序的单独入口点，这意味着如果应用程序当前未运行，系统可以启动应用程序并传送广播。</p>
 <p>系统创建一个新的 <code>BroadcastReceiver</code> 组件对象来处理它接收到的每个广播。 此对象仅在调用 <code>onReceive(Context, Intent)</code> 期间有效。<br>一旦代码从此方法返回，系统就会认为该组件不再处于活动状态。</p>
 <h3 id="Context-registered-receivers"><a href="#Context-registered-receivers" class="headerlink" title="Context-registered receivers"></a>Context-registered receivers</h3><ol>
 <li><p>创建 BroadcastReceiver 对象</p>
 </li>
-<li><p>创建一个 <code>IntentFilter</code> 并通过调用 <code>registerReceiver(BroadcastReceiver, IntentFilter)</code> 注册receiver</p>
+<li><p>创建一个 <code>IntentFilter</code> 并通过调用 <code>registerReceiver(BroadcastReceiver, IntentFilter)</code> 注册 receiver</p>
 <p>注意：要注册本地广播，请改为调用 LocalBroadcastManager.registerReceiver(BroadcastReceiver, IntentFilter)。</p>
-<p>只要注册上下文有效，上下文注册的receiver就会接收广播。 例如，如果在 Activity 上下文中注册，只要该 Activity 未被销毁，就会收到广播。<br>如果在应用程序上下文中注册，只要应用程序正在运行，就会收到广播。</p>
+<p>只要注册上下文有效，上下文注册的 receiver 就会接收广播。 例如，如果在 Activity 上下文中注册，只要该 Activity 未被销毁，就会收到广播。<br>如果在应用程序上下文中注册，只要应用程序正在运行，就会收到广播。</p>
 </li>
-<li><p>要停止接收广播，请调用 <code>unregisterReceiver(android.content.BroadcastReceiver)</code>。 当不再需要receiver或上下文不再有效时，请务必取消注册receiver。<br>请注意注册和取消注册接收器的地方，例如，如果使用activity的上下文在 <code>onCreate(Bundle)</code> 中注册接收器，则应在 <code>onDestroy()</code> 中取消注册它以防止将receiver泄漏到activity上下文之外。<br>如果你在 <code>onResume()</code> 中注册了一个接收器，你应该在 <code>onPause()</code> 中取消注册它以防止它被多次注册（如果不想在暂停时接收广播，这可以减少不必要的系统开销）。<br>不要在 onSaveInstanceState(Bundle) 中取消注册，因为如果用户移回历史堆栈，则不会调用它。</p>
+<li><p>要停止接收广播，请调用 <code>unregisterReceiver(android.content.BroadcastReceiver)</code>。 当不再需要 receiver 或上下文不再有效时，请务必取消注册 receiver。<br>请注意注册和取消注册接收器的地方，例如，如果使用 activity 的上下文在 <code>onCreate(Bundle)</code> 中注册接收器，则应在 <code>onDestroy()</code> 中取消注册它以防止将 receiver 泄漏到 activity 上下文之外。<br>如果你在 <code>onResume()</code> 中注册了一个接收器，你应该在 <code>onPause()</code> 中取消注册它以防止它被多次注册（如果不想在暂停时接收广播，这可以减少不必要的系统开销）。<br>不要在 onSaveInstanceState(Bundle) 中取消注册，因为如果用户移回历史堆栈，则不会调用它。</p>
 </li>
 </ol>
-<h3 id="对进程状态的影响"><a href="#对进程状态的影响" class="headerlink" title="对进程状态的影响"></a>对进程状态的影响</h3><p><code>BroadcastReceiver</code> 的状态（无论它是否正在运行）会影响其包含进程的状态，这反过来又会影响其被系统杀死的可能性。<br>例如，当一个进程执行一个receiver（即当前正在运行其 onReceive() 方法中的代码）时，它被认为是一个前台进程。系统保持进程运行，除非在内存压力很大的情况下。</p>
-<p>但是，一旦您的代码从 <code>onReceive()</code> 返回，BroadcastReceiver 就不再处于活动状态。receiver的宿主进程变得与运行在其中的其他应用程序组件一样重要。<br>如果该进程仅托管一个清单声明的receiver（用户从未或最近未与之交互的应用程序的常见情况），则在从 <code>onReceive()</code> 返回时，系统将其进程视为低优先级进程，并且可能杀死它以使资源可用于其他更重要的进程。</p>
-<p>因此，不应从广播receiver启动长时间运行的后台线程。在 <code>onReceive()</code> 之后，系统可以随时终止进程以回收内存，并在此过程中终止进程中运行的衍生线程。<br>为避免这种情况，应该调用 <code>goAsync()</code>（如果想要更多时间在后台线程中处理广播）或使用 <code>JobScheduler</code> 从receiver调度 <code>JobService</code>，以便系统知道该进程继续执行活动工作。</p>
-<p>以下代码片段显示了一个 BroadcastReceiver，它使用 goAsync() 来标记它在 onReceive() 完成后需要更多时间来完成。如果您要在 onReceive() 中完成的工作足够长以导致 UI 线程错过一帧（&gt;16 毫秒），这将特别有用，使其更适合后台线程。</p>
+<h3 id="对进程状态的影响"><a href="#对进程状态的影响" class="headerlink" title="对进程状态的影响"></a>对进程状态的影响</h3><p><code>BroadcastReceiver</code> 的状态（无论它是否正在运行）会影响其包含进程的状态，这反过来又会影响其被系统杀死的可能性。<br>例如，当一个进程执行一个 receiver（即当前正在运行其 onReceive() 方法中的代码）时，它被认为是一个前台进程。系统保持进程运行，除非在内存压力很大的情况下。</p>
+<p>但是，一旦你的代码从 <code>onReceive()</code> 返回，BroadcastReceiver 就不再处于活动状态。receiver 的宿主进程变得与运行在其中的其他应用程序组件一样重要。<br>如果该进程仅托管一个清单声明的 receiver（用户从未或最近未与之交互的应用程序的常见情况），则在从 <code>onReceive()</code> 返回时，系统将其进程视为低优先级进程，并且可能杀死它以使资源可用于其他更重要的进程。</p>
+<p>因此，不应从广播 receiver 启动长时间运行的后台线程。在 <code>onReceive()</code> 之后，系统可以随时终止进程以回收内存，并在此过程中终止进程中运行的衍生线程。<br>为避免这种情况，应该调用 <code>goAsync()</code>（如果想要更多时间在后台线程中处理广播）或使用 <code>JobScheduler</code> 从 receiver 调度 <code>JobService</code>，以便系统知道该进程继续执行活动工作。</p>
+<p>以下代码片段显示了一个 BroadcastReceiver，它使用 goAsync() 来标记它在 onReceive() 完成后需要更多时间来完成。如果你要在 onReceive() 中完成的工作足够长以导致 UI 线程错过一帧（&gt;16 毫秒），这将特别有用，使其更适合后台线程。</p>
 <figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">MyBroadcastReceiver</span> : <span class="type">BroadcastReceiver</span></span>() &#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">val</span> scope = CoroutineScope(SupervisorJob())</span><br><span class="line"></span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">onReceive</span><span class="params">(context: <span class="type">Context</span>, intent: <span class="type">Intent</span>)</span></span> &#123;</span><br><span class="line">        <span class="keyword">val</span> pendingResult: PendingResult = goAsync()</span><br><span class="line"></span><br><span class="line">        scope.launch(Dispatchers.Default) &#123;</span><br><span class="line">            <span class="keyword">try</span> &#123;</span><br><span class="line">                <span class="comment">// Do some background work</span></span><br><span class="line">                buildString &#123;</span><br><span class="line">                    append(<span class="string">&quot;Action: &quot;</span>).append(intent.action).append(<span class="string">&quot;\n&quot;</span>)</span><br><span class="line">                    append(<span class="string">&quot;URI: &quot;</span>).append(intent.toUri(Intent.URI_INTENT_SCHEME)).append(<span class="string">&quot;\n&quot;</span>)</span><br><span class="line">                &#125;.also &#123; log -&gt;</span><br><span class="line">                    Log.d(TAG, log)</span><br><span class="line">                &#125;</span><br><span class="line">            &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">                <span class="comment">// Must call finish() so the BroadcastReceiver can be recycled</span></span><br><span class="line">                pendingResult.finish()</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">companion</span> <span class="keyword">object</span> &#123;</span><br><span class="line">        <span class="keyword">private</span> <span class="keyword">const</span> <span class="keyword">val</span> TAG = <span class="string">&quot;MyBroadcastReceiver&quot;</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 
 <h1 id="发送广播"><a href="#发送广播" class="headerlink" title="发送广播"></a>发送广播</h1><p>Android 提供了三种应用发送广播的方式：</p>
 <ul>
-<li><code>sendOrderedBroadcast(Intent, String)</code> 方法一次向一个receiver发送广播。当每个receiver依次执行时，它可以将结果传播给下一个receiver，或者它可以完全中止广播，<br> 这样它就不会被传递给其他receiver。运行的order receiver可以通过匹配intent-filter的<code>android:priority</code>属性来控制；具有相同优先级的接收器将以任意顺序运行。</li>
-<li><code>sendBroadcast(Intent)</code> 方法以未定义的顺序向所有接收者发送广播。这称为正常广播。这更有效，但意味着receiver无法从其他receiver读取结果、传播从广播接收到的数据或中止广播。</li>
-<li><code>LocalBroadcastManager.sendBroadcast</code> 方法将广播发送到与发送者在同一应用程序中的receiver。如果不需要跨应用发送广播，请使用本地广播。该实现更加高效（不需要进程间通信），无需担心与其他应用程序能够接收或发送您的广播相关的任何安全问题。</li>
+<li><code>sendOrderedBroadcast(Intent, String)</code> 方法一次向一个 receiver 发送广播。当每个 receiver 依次执行时，它可以将结果传播给下一个 receiver，或者它可以完全中止广播，<br> 这样它就不会被传递给其他 receiver。运行的 order receiver 可以通过匹配 intent-filter 的 <code>android:priority</code> 属性来控制；具有相同优先级的接收器将以任意顺序运行。</li>
+<li><code>sendBroadcast(Intent)</code> 方法以未定义的顺序向所有接收者发送广播。这称为正常广播。这更有效，但意味着 receiver 无法从其他 receiver 读取结果、传播从广播接收到的数据或中止广播。</li>
+<li><code>LocalBroadcastManager.sendBroadcast</code> 方法将广播发送到与发送者在同一应用程序中的 receiver。如果不需要跨应用发送广播，请使用本地广播。该实现更加高效（不需要进程间通信），无需担心与其他应用程序能够接收或发送你的广播相关的任何安全问题。</li>
 </ul>
 <figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">Intent().also &#123; intent -&gt;</span><br><span class="line">    intent.setAction(<span class="string">&quot;com.example.broadcast.MY_NOTIFICATION&quot;</span>)</span><br><span class="line">    intent.putExtra(<span class="string">&quot;data&quot;</span>, <span class="string">&quot;Nothing to see here, move along.&quot;</span>)</span><br><span class="line">    sendBroadcast(intent)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-<p>广播消息被包装在一个 Intent 对象中。 intent的action字符串必须提供应用程序的 Java 包名称语法并唯一标识广播事件。<br>可以使用 <code>putExtra(String, Bundle)</code> 将附加信息附加到intent。 还可以通过在 Intent 上调用 <code>setPackage(String)</code> 将广播限制为同一组织中的一组应用程序。</p>
+<p>广播消息被包装在一个 Intent 对象中。 intent 的 action 字符串必须提供应用程序的 Java 包名称语法并唯一标识广播事件。<br>可以使用 <code>putExtra(String, Bundle)</code> 将附加信息附加到 intent。 还可以通过在 Intent 上调用 <code>setPackage(String)</code> 将广播限制为同一组织中的一组应用程序。</p>
 <h1 id="使用权限限制广播"><a href="#使用权限限制广播" class="headerlink" title="使用权限限制广播"></a>使用权限限制广播</h1><p>权限允许将广播限制为拥有某些权限的应用程序集。 可以对广播的发送者或接收者实施限制。</p>
 <h2 id="Sending-with-permissions"><a href="#Sending-with-permissions" class="headerlink" title="Sending with permissions"></a>Sending with permissions</h2><p>在调用 <code>sendBroadcast(Intent, String)</code> 或 <code>sendOrderedBroadcast(Intent, String, BroadcastReceiver, Handler, int, String, Bundle)</code> 时，可以指定权限参数。<br>只有在清单中使用标签请求许可的接收者（如果有危险，随后被授予许可）才能接收广播。 例如，以下代码发送广播：</p>
 <figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sendBroadcast(Intent(<span class="string">&quot;com.example.NOTIFY&quot;</span>), Manifest.permission.SEND_SMS)</span><br></pre></td></tr></table></figure>
@@ -2639,27 +2639,27 @@ intent filters 指定receiver订阅的广播action。</li>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;uses-permission android:name=&quot;android.permission.SEND_SMS&quot;/&gt;</span><br></pre></td></tr></table></figure>
 <p>可以指定现有的系统权限（如 <code>SEND_SMS</code>）或使用 <code>&lt;permission&gt;</code> 元素定义自定义权限。</p>
 <p>注意：自定义权限是在安装应用程序时注册的。 定义自定义权限的应用程序必须在使用它的应用程序之前安装。</p>
-<h2 id="Receiving-with-permissions"><a href="#Receiving-with-permissions" class="headerlink" title="Receiving with permissions"></a>Receiving with permissions</h2><p>如果在注册广播receiver时指定权限参数（使用 <code>registerReceiver(BroadcastReceiver, IntentFilter, String, Handler)</code> 或在清单中的 <code>&lt;receiver&gt;</code> 标记中），<br>则只有使用 <code>&lt;uses-permission&gt;</code> 请求权限的广播者 清单中的标签（如果危险，随后被授予许可）可以向receiver发送 Intent。</p>
+<h2 id="Receiving-with-permissions"><a href="#Receiving-with-permissions" class="headerlink" title="Receiving with permissions"></a>Receiving with permissions</h2><p>如果在注册广播 receiver 时指定权限参数（使用 <code>registerReceiver(BroadcastReceiver, IntentFilter, String, Handler)</code> 或在清单中的 <code>&lt;receiver&gt;</code> 标记中），<br>则只有使用 <code>&lt;uses-permission&gt;</code> 请求权限的广播者 清单中的标签（如果危险，随后被授予许可）可以向receiver发送 Intent。</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">&lt;receiver android:name=&quot;.MyBroadcastReceiver&quot;</span><br><span class="line">          android:permission=&quot;android.permission.SEND_SMS&quot;&gt;</span><br><span class="line">    &lt;intent-filter&gt;</span><br><span class="line">        &lt;action android:name=&quot;android.intent.action.AIRPLANE_MODE&quot;/&gt;</span><br><span class="line">    &lt;/intent-filter&gt;</span><br><span class="line">&lt;/receiver&gt;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">var filter = IntentFilter(Intent.ACTION_AIRPLANE_MODE_CHANGED)</span><br><span class="line">registerReceiver(receiver, filter, Manifest.permission.SEND_SMS, null )</span><br></pre></td></tr></table></figure>
 
 <h1 id="安全注意事项和最佳实践"><a href="#安全注意事项和最佳实践" class="headerlink" title="安全注意事项和最佳实践"></a>安全注意事项和最佳实践</h1><ul>
-<li>如果您不需要向应用程序外部的组件发送广播，请使用支持库中提供的 LocalBroadcastManager 发送和接收本地广播。 LocalBroadcastManager 效率更高（不需要进程间通信），并且允许您避免考虑与其他应用程序能够接收或发送您的广播相关的任何安全问题。 本地广播可以用作您的应用程序中的通用发布&#x2F;订阅事件总线，而无需任何系统范围广播的开销。</li>
+<li>如果你不需要向应用程序外部的组件发送广播，请使用支持库中提供的 LocalBroadcastManager 发送和接收本地广播。 LocalBroadcastManager 效率更高（不需要进程间通信），并且允许你避免考虑与其他应用程序能够接收或发送你的广播相关的任何安全问题。 本地广播可以用作你的应用程序中的通用发布&#x2F;订阅事件总线，而无需任何系统范围广播的开销。</li>
 <li>如果许多应用程序在其清单中注册接收相同的广播，则可能导致系统启动大量应用程序，从而对设备性能和用户体验造成重大影响。 为了避免这种情况，最好使用上下文注册而不是清单声明。 有时，Android 系统本身会强制使用上下文注册的接收器。 例如，CONNECTIVITY_ACTION 广播仅传递给上下文注册的接收器。</li>
-<li>不要使用隐含的意图广播敏感信息。 任何注册接收广播的应用程序都可以读取该信息。有三种方法可以控制谁可以接收您的广播：<ul>
+<li>不要使用隐含的意图广播敏感信息。 任何注册接收广播的应用程序都可以读取该信息。有三种方法可以控制谁可以接收你的广播：<ul>
 <li>在发送广播时指定权限。</li>
-<li>在 Android 4.0 及更高版本中，您可以在发送广播时使用 setPackage(String) 指定一个包。 系统将广播限制为与包匹配的应用程序集。</li>
+<li>在 Android 4.0 及更高版本中，你可以在发送广播时使用 setPackage(String) 指定一个包。 系统将广播限制为与包匹配的应用程序集。</li>
 <li>使用 LocalBroadcastManager 发送本地广播。</li>
 </ul>
 </li>
-<li>当注册接收器时，任何应用都可以向您应用的接收器发送潜在的恶意广播。 有三种方法可以限制您的应用接收的广播：<ul>
+<li>当注册接收器时，任何应用都可以向你应用的接收器发送潜在的恶意广播。 有三种方法可以限制你的应用接收的广播：<ul>
 <li>在注册广播接收器时指定权限。</li>
-<li>对于清单声明的接收者，在清单中将 android:exported 属性设置为“false”。 接收方不接收来自应用程序外部来源的广播。</li>
+<li>对于清单声明的接收者，在清单中将 android:exported 属性设置为 “false”。 接收方不接收来自应用程序外部来源的广播。</li>
 <li>使用 LocalBroadcastManager 将自己限制为仅本地广播。</li>
 </ul>
 </li>
-<li>广播action的命名空间是全局的。 确保动作名称和其他字符串写在您拥有的命名空间中，否则您可能会无意中与其他应用程序发生冲突。</li>
-<li>因为接收者的 <code>onReceive(Context, Intent)</code> 方法在主线程上运行，所以它应该快速执行并返回。 如果您需要执行长时间运行的工作，请注意生成线程或启动后台服务，因为系统可以在 onReceive() 返回后终止整个进程。</li>
-<li>不要从广播接收器开始activity，因为用户体验不和谐； 特别是如果有不止一个接收器。 相反，请考虑显示通知。</li>
+<li>广播action的命名空间是全局的。 确保动作名称和其他字符串写在你拥有的命名空间中，否则你可能会无意中与其他应用程序发生冲突。</li>
+<li>因为接收者的 <code>onReceive(Context, Intent)</code> 方法在主线程上运行，所以它应该快速执行并返回。 如果你需要执行长时间运行的工作，请注意生成线程或启动后台服务，因为系统可以在 onReceive() 返回后终止整个进程。</li>
+<li>不要从广播接收器开始 activity，因为用户体验不和谐； 特别是如果有不止一个接收器。 相反，请考虑显示通知。</li>
 </ul>
 
   </div>
@@ -2685,10 +2685,10 @@ intent filters 指定receiver订阅的广播action。</li>
     <div class='new-meta-box'>
       
         
-          <div class="new-meta-item date" itemprop="dateModified" datetime="2023-07-14T12:40:17+08:00">
+          <div class="new-meta-item date" itemprop="dateModified" datetime="2023-11-07T10:20:58+08:00">
   <a class='notlink'>
     <i class="fa-solid fa-edit fa-fw" aria-hidden="true"></i>
-    <p>更新于：2023年7月14日</p>
+    <p>更新于：2023年11月7日</p>
   </a>
 </div>
 
@@ -3406,7 +3406,7 @@ View.hasIdentityMatrix()：Returns true if the transform matrix...</p>
 </script>
 
 
-  <script type="application/ld+json">[{"@context":"http://schema.org","@type":"Organization","name":"SonGoKu の Blog","url":"https://azxkenzo.github.io/","logo":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png","width":192,"height":192}},{"@context":"http://schema.org","@type":"Person","name":"Son GoKu","image":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png"},"url":"https://azxkenzo.github.io/","sameAs":["https://github.com/volantis-x"],"description":"勤练带来力量"},{"@context":"http://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"item":{"@id":"https://azxkenzo.github.io/","name":"SonGoKu の Blog"}},{"@type":"ListItem","position":3,"item":{"@id":"https://azxkenzo.github.io/2022/09/04/Android-Broadcast/","name":"Android - Broadcast"}}]},{"@context":"http://schema.org","@type":"WebSite","name":"SonGoKu の Blog","url":"https://azxkenzo.github.io/","keywords":"Android,Kotlin,Linux","description":"勤练带来力量","author":{"@type":"Person","name":"Son GoKu","image":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png"},"url":"https://azxkenzo.github.io/","description":"勤练带来力量"},"publisher":{"@type":"Organization","name":"SonGoKu の Blog","url":"https://azxkenzo.github.io/","logo":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png","width":192,"height":192}},"potentialAction":{"@type":"SearchAction","name":"Site Search","target":{"@type":"EntryPoint","urlTemplate":"https://azxkenzo.github.io?s={search_term_string}"},"query-input":"required name=search_term_string"}},{"@context":"http://schema.org","@type":"BlogPosting","headline":"Android - Broadcast","description":"勤练带来力量","inLanguage":"zh-CN","mainEntityOfPage":{"@type":"WebPage","@id":"https://azxkenzo.github.io/2022/09/04/Android-Broadcast/"},"author":{"@type":"Person","name":"Son GoKu","image":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png"},"url":"https://azxkenzo.github.io/"},"publisher":{"@type":"Organization","name":"SonGoKu の Blog","logo":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png","width":192,"height":192}},"url":"https://azxkenzo.github.io/2022/09/04/Android-Broadcast/","wordCount":0,"datePublished":"2022-09-04T03:50:49.000Z","dateModified":"2023-07-14T04:40:17.261Z","keywords":"Android","image":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png","width":192,"height":192}}]</script>
+  <script type="application/ld+json">[{"@context":"http://schema.org","@type":"Organization","name":"SonGoKu の Blog","url":"https://azxkenzo.github.io/","logo":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png","width":192,"height":192}},{"@context":"http://schema.org","@type":"Person","name":"Son GoKu","image":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png"},"url":"https://azxkenzo.github.io/","sameAs":["https://github.com/volantis-x"],"description":"勤练带来力量"},{"@context":"http://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"item":{"@id":"https://azxkenzo.github.io/","name":"SonGoKu の Blog"}},{"@type":"ListItem","position":3,"item":{"@id":"https://azxkenzo.github.io/2022/09/04/Android-Broadcast/","name":"Android - Broadcast"}}]},{"@context":"http://schema.org","@type":"WebSite","name":"SonGoKu の Blog","url":"https://azxkenzo.github.io/","keywords":"Android,Kotlin,Linux","description":"勤练带来力量","author":{"@type":"Person","name":"Son GoKu","image":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png"},"url":"https://azxkenzo.github.io/","description":"勤练带来力量"},"publisher":{"@type":"Organization","name":"SonGoKu の Blog","url":"https://azxkenzo.github.io/","logo":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png","width":192,"height":192}},"potentialAction":{"@type":"SearchAction","name":"Site Search","target":{"@type":"EntryPoint","urlTemplate":"https://azxkenzo.github.io?s={search_term_string}"},"query-input":"required name=search_term_string"}},{"@context":"http://schema.org","@type":"BlogPosting","headline":"Android - Broadcast","description":"勤练带来力量","inLanguage":"zh-CN","mainEntityOfPage":{"@type":"WebPage","@id":"https://azxkenzo.github.io/2022/09/04/Android-Broadcast/"},"author":{"@type":"Person","name":"Son GoKu","image":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png"},"url":"https://azxkenzo.github.io/"},"publisher":{"@type":"Organization","name":"SonGoKu の Blog","logo":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png","width":192,"height":192}},"url":"https://azxkenzo.github.io/2022/09/04/Android-Broadcast/","wordCount":0,"datePublished":"2022-09-04T03:50:49.000Z","dateModified":"2023-11-07T02:20:58.192Z","keywords":"Android","image":{"@type":"ImageObject","url":"https://unpkg.com/volantis-static@0.0.1654736714924/media/org.volantis/blog/favicon/android-chrome-192x192.png","width":192,"height":192}}]</script>
 
 
 
